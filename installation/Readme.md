@@ -115,7 +115,7 @@ This task requires an API key, and works by performing an API search against the
 
 	"ebay": [
 		{
-      			"access_key": ""
+		      "access_key": ""
 		}
 	],
 
@@ -311,7 +311,7 @@ The Scrummage team is well aware another open-source tool called Scumblr, develo
 
 	"scumblr": [
     		{
-  		"host": "",
+ 			"host": "",
  			"port": 5432,
 			"database": "",
 			"user": "",
