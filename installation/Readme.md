@@ -384,6 +384,8 @@ All tasks have a limit option available except for the following:
 * Have I Been Pwned - Breach Search
 * Have I Been Pwned - Password Search
 * Instagram Media Search
+* Pinterest Pin Search
+* Vehicle Registration Search
 
 All tasks that have a limit have their default limit set to 10; therefore, if you don’t specify a limit it’ll be autoset to 10.
 
