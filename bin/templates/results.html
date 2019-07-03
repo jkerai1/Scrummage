@@ -17,7 +17,7 @@
     {% if form_step == 0 %}
 		{% if details %}
 		<div class="field-container">
-			<p id="logintitle">Details for result ID {{results[0]}} - {{results[2]}}</p>
+			<p id="logintitle">Details for Result ID {{results[0]}} - {{results[2]}}</p>
 			<p class="message"><strong>Created at:</strong> {{results[7]}}  |  <strong>Last updated at:</strong> {{results[8]}}</p>
 			<br />
 			<table>
@@ -41,7 +41,7 @@
 							{% endif %}
 						{% else %}
 							{% if is_admin%}
-								{% if '.onion' not in results[6] %}
+								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] %}
 									<td class="buttons_in_table" style="border: 2px solid #FFFFFF;">
 										<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
 											<input name="ss_id" value="{{results[0]}}" type=hidden>
