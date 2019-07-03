@@ -1,3 +1,5 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 # Installation
 
 **This tool currently supports Debian, RHEL, and SUSE based linux distributions.**
@@ -240,8 +242,22 @@ This task requires an API key, and works by performing an API search against the
 
 *API Link: https://developer.twitter.com/en/docs.html*
 
+**Vehicle Registration Search**  
+  
+*Note: This search only supports Australian registration numbers.*  
+  
+This task doesn't require any API keys, and works by performing an API search against a publicly available car insurance site to obtain the details of the vehicle that matches the query provided which should be a valid registration plate number. For this search to work a valid Australian state/territory must be provided in the config.json file, under "vehicle-registration-search":
+
+	"vehicle-registration-search": [
+		{
+			"state": "NSW, QLD, VIC, etc."
+		}
+	]
+
+*Test query: [any australian license plate]*
+
 **Vulners Search**  
-This task requires an API, and works by performing an API search against the vulners.com site, which uses the vulners database that contains exploits and vulnerabilities, to find such items that are similar to the provided query. fter obtaining the API key and other details, please add it to the config.json file, under “vulners”:
+This task requires an API, and works by performing an API search against the vulners.com site, which uses the vulners database that contains exploits and vulnerabilities, to find such items that are similar to the provided query. After obtaining the API key and other details, please add it to the config.json file, under “vulners”:
 
 	"vulners": [
 		{
