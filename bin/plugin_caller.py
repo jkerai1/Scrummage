@@ -49,6 +49,17 @@ def Call_Plugin(**kwargs):
         Thread_2 = threading.Thread(target=Stopper, args=[kwargs["Task_ID"]])
         Thread_2.start()
 
+    elif kwargs["Plugin_Name"] == "Vehicle Registration Search":
+        import plugins.Vehicle_Registration_Search as Vehicle_Registration_Search
+        Thread_0 = threading.Thread(target=Starter, args=[kwargs["Task_ID"]])
+        Thread_0.start()
+        Thread_0.join()
+        Thread_1 = threading.Thread(target=Vehicle_Registration_Search.Search, args=(kwargs["Query"], kwargs["Task_ID"]))
+        Thread_1.start()
+        Thread_1.join()
+        Thread_2 = threading.Thread(target=Stopper, args=[kwargs["Task_ID"]])
+        Thread_2.start()
+
     elif kwargs["Plugin_Name"] == "Twitter Scraper":
         import plugins.Twitter_Scraper as Twitter_Scrape
         Thread_0 = threading.Thread(target=Starter, args=[kwargs["Task_ID"]])
