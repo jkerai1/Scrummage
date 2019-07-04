@@ -28,7 +28,8 @@ All feedback is welcome, as this is version 1 I'm sure there will be lots to imp
 ---
 
 **Dashboard**  
-The dashboard is the home screen which the application directs a user to when they log in. It provides a high-level chart which shows the amount of each results based on their result type. It does this for each kind of finding. However, if a graph doesn’t load, this is most likely due to none of the results being in that category, I.e if there are no closed results, no graph will appear under “Overview of Closed Results”.
+The dashboard is the home screen which the application directs a user to when they log in. It provides a high-level chart which shows the amount of each results based on their result type. It does this for each kind of finding. However, if a graph doesn’t load, this is most likely due to none of the results being in that category, I.e if there are no closed results, no graph will appear under “Overview of Closed Results”.  
+  
 ![Dashboard](/installation/Dashboard.png)
 
 
@@ -47,10 +48,12 @@ The results page, simply shows results that have been created by a task. The res
 
 ![Results](/installation/Results.png)
 
-For optimisation purposes, the results table only displays some of the general information regarding a result, to investigate a result further, the user should use the Details button. The details page allows the user to view the soft copy of the result's link and provides the ability for a user to generate a screenshot.
+For optimisation purposes, the results table only displays some of the general information regarding a result, to investigate a result further, the user should use the Details button. The details page allows the user to view the soft copy of the result's link and provides the ability for a user to generate a screenshot.  
+  
 ![Results](/installation/Result_Details1.png)
 
-Furthermore, buttons for reviewing, inspecting and closing a result are provided to show other users where a result is at in terms of assessment. The buttons are colour coded and are coloured as the result progresses through the assessment.
+Furthermore, buttons for reviewing, inspecting and closing a result are provided to show other users where a result is at in terms of assessment. The buttons are colour coded and are coloured as the result progresses through the assessment.  
+  
 ![Results](/installation/Result_Details2.png)
 
 *Results are categorised into the following:*  
@@ -64,8 +67,8 @@ Furthermore, buttons for reviewing, inspecting and closing a result are provided
 **Tasks**  
 The tasks page shows all created task, and provides the ability for the user to run each task.
 This page doesn’t have a limit on tasks; however, don’t go crazy creating tasks, you can always add a list to a task, rather than having the same task created multiple times for one search. So really you shouldn’t have any more than 50 tasks.
-Tasks have caching and logging for each which can be found in the “protected/output” directory under the tasks name, ex. Google Search is called “google”. If you feel the need to remove the cache, you can delete the appropriate cache file.
-Plugins
+Tasks have caching and logging for each which can be found in the “protected/output” directory under the tasks name, ex. Google Search is called “google”. If you need to remove the cache, you can edit/delete the appropriate cache file.
+  
 ![Tasks](/installation/Tasks.png)
 
 All the plugins are open-source, free to individuals, just like the rest of the code. Furthermore, feel free to use the pre-existing libraries used in other plugins. If you are creating or editting a plugin, make sure to understand that when you run it for the first time, the web app may reload to reload the python cache. This is normal.
