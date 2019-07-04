@@ -79,7 +79,7 @@ def Convert_to_List(String):
         List = [String]
         return List
 
-def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Task_ID, DB_Title, **kwargs):
+def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Task_ID, DB_Title, Concat_Plugin_Name, **kwargs):
 
     if "Dump_Types" in kwargs:
         Dump_Types = kwargs["Dump_Types"]
@@ -102,9 +102,11 @@ def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Ta
 
     if DB_Title:
         Connectors.Main_Database_Insert(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
+        Connectors.Elasticsearch_Main(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
 
     else:
         Connectors.Main_Database_Insert(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
+        Connectors.Elasticsearch_Main(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
 
 def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension):
     Main_File = "Main-file-for-" + Plugin_Name + "-query-" + Query + Main_File_Extension
