@@ -309,67 +309,78 @@ On top of this Scrummage provides an additional 5 ways of alerting the user when
 **Scumblr Database Output**  
 The Scrummage team is well aware another open-source tool called Scumblr, developed by Netflix, performs some of the same functionality as Scrummage; furthermore, those who follow Scumblr know it currently is deprecated, and has been looking for a new developer for the last 6 months. The github repo can be found at https://github.com/Netflix-Skunkworks/Scumblr. Scrummage provides this functionality to current users of Scumblr by providing results to the Scumblr database so they dont have to view results in two different web applications, but can still benefit from both. To enable this, enter Scumblr’s backend postgresql database details to the config.json file, under “scumblr”:
 
-	"scumblr": [
-    		{
- 			"host": "",
- 			"port": 5432,
-			"database": "",
-			"user": "",
-			"password": ""
-		}
-	],
+    "scumblr": [
+        {
+            "host": "",
+            "port": 5432,
+            "database": "",
+            "user": "",
+            "password": ""
+        }
+    ],
 
 **Request Tracker for Incident Response (RTIR) Ticket Alert**  
 In the world of Incident Response, RTIR is a bit of a veteran program; therefore, functionality has been provided for RTIR. Currently, this method only supports Cookie-Based authentication, while there is a python library for RTIR, the library is old and doesn’t support python3. Rather than attempting to rewrite it, the Scrummage developers decided to go with cookie-based auth as it is very common, and used requests to handle it. To enable this mode, enter the RTIR details into the config.json file, under “RTIR”:
 
-	"rtir": [
-		{
-			"service": "http",
-			"host": "",
-			"port": 80,
-			"user": "",
-			"password": "",
-			"authenticator": "cookie_based"
-		}
-	],
+    "rtir": [
+        {
+            "service": "http",
+            "host": "",
+            "port": 80,
+            "user": "",
+            "password": "",
+            "authenticator": ""
+        }
+    ],
 
 Some teams that use RTIR use it’s SMTP functionality and for those teams, they could leverage the email output functionality below to achieve the same result.
 
 **Atlassian JIRA Ticket Alert**  
-While JIRA is typically used for software development projects, for tracking bugs and tasks, in the event a user wishes to use it for tracking incidents it has been provided . To enable this mode, enter the JIRA details into the config.json file, under “JIRA”:
+While JIRA is typically used for software development projects, for tracking bugs and tasks, in the event a user wishes to use it for tracking incidents, it is available. To enable this mode, enter the JIRA details into the config.json file, under “JIRA”:
 
-	"JIRA": [
-		{
-			"project_key": "",
-			"address": "",
-			"username": "",
-			"password": "!",
-			"ticket_type": "Bug"
-		}
-	],
+    "JIRA": [
+        {
+            "project_key": "",
+            "address": "",
+            "username": "",
+            "password": "",
+            "ticket_type": ""
+        }
+    ],
+
+**Elasticsearch Output**  
+Currently Elasticsearch is rapidly growing in popularity and therefore is included as an output option. To enable this mode, please enter the details in config.json under “elasticsearch”:
+
+    "elasticsearch": [
+        {
+            "service": "http://",
+            "host": "",
+            "port": 9200
+        }
+    ],
 
 **Email Alerts**  
-Email alerts have been included, where the user specifies both the from address and the to address. The from address will also the user to specify the username and password of the from email address. To enable this, please enter the details in config.json under “email”:
+Email alerts have been included, where the user specifies both the from address and the to address. The from address will also the user to specify the username and password of the from email address. To enable this mode, please enter the details in config.json under “email”:
 
-	"email": [
-		{
-			"smtp_server": "",
-			"smtp_port": ,
-			"from_address": "",
-			"from_password": "",
-			"to_address": ""
-		}
-	],
+    "email": [
+        {
+            "smtp_server": "",
+            "smtp_port": 25,
+            "from_address": "",
+            "from_password": "",
+            "to_address": ""
+        }
+    ],
 
 **Slack Channel Notifications**  
 Slack channel notifications work by having a message sent to a slack channel . To enable this mode, enter the Slack Channel details into the config.json file, under “slack”:
 
-	"slack": [
-		{
-			"token": "",
-			"channel": "#notifications"
-		}
-	],
+    "slack": [
+        {
+            "token": "",
+            "channel": ""
+        }
+    ],
 
 # Setting up your first task
 
