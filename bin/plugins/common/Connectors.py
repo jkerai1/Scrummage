@@ -33,6 +33,29 @@ def Load_Email_Configuration():
     except Exception as e:
         print(str(datetime.datetime.now()) + e)
 
+def Load_Elasticsearch_Configuration():
+    print(str(datetime.datetime.now()) + " Loading elasticsearch configuration data.")
+
+    try:
+        with open(Configuration_File) as JSON_File:
+            Configuration_Data = json.load(JSON_File)
+
+        for Elasticsearch_Details in Configuration_Data['elasticsearch']:
+            Elasticsearch_Service = Elasticsearch_Details['service']
+            Elasticsearch_Host = Elasticsearch_Details['host']
+            Elasticsearch_Port = int(Elasticsearch_Details['port'])
+
+        if Elasticsearch_Service and Elasticsearch_Host and Elasticsearch_Port:
+            Use_Elasticsearch = True
+
+        else:
+            Use_Elasticsearch = False
+
+        return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port, Use_Elasticsearch]
+
+    except Exception as e:
+        print(str(datetime.datetime.now()) + e)
+
 def Load_Main_Database():
 
     try:
@@ -247,11 +270,11 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
             Request_Data = "content=id: ticket/new\nQueue: 1\nSubject: " + Ticket_Subject + "\nText: " + Ticket_Text
 
             if RTIR_Details[5] == "cookie_based":
-                Response = requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
+                requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
             else:
                 print(str(datetime.datetime.now()) + " No Authenticator specified, using the default which is cookie-based authentication,")
-                Response = requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
+                requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
             print(str(datetime.datetime.now()) + " RTIR ticket created.")
 
@@ -266,7 +289,7 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
         try:
             JIRA_Options={'server': JIRA_Details[1]}
             JIRA_Session=JIRA(options=JIRA_Options,basic_auth=(JIRA_Details[2], JIRA_Details[3]))
-            New_Issue = JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
+            JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
             print(str(datetime.datetime.now()) + " JIRA ticket created.")
 
         except Exception as e:
@@ -279,11 +302,32 @@ def Slack_Main(Description):
 
         try:
             client = slack.WebClient(token=Slack_Details[0])
-            response = client.chat_postMessage(channel=Slack_Details[1], text=Description)
+            client.chat_postMessage(channel=Slack_Details[1], text=Description)
             print(str(datetime.datetime.now()) + " Slack Notification created.")
 
         except Exception as e:
             print(str(datetime.datetime.now()) + e)
+
+def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
+    Elasticsearch_Details = Load_Elasticsearch_Configuration()
+
+    if Elasticsearch_Details[3]:
+
+        try:
+            URI = Elasticsearch_Details[0] + Elasticsearch_Details[1] + ":" + str(Elasticsearch_Details[2]) + "/scrummage/result/" + Concat_Plugin_Name
+            headers = {"Content-Type": "application/json"}
+            data = {"title": Title, "plugin": Plugin_Name, "domain": Domain, "link": Link, "output_file": Output_File, "result_type": Result_Type, "created_at": str(datetime.datetime.now()), "associated_task_id": str(Task_ID)}
+            data = json.dumps(data)
+            resp = requests.post(URI, data=data, headers=headers)
+
+            if resp.status_code == 200:
+                print(str(datetime.datetime.now()) + " Result created in Elasticsearch.")
+
+            else:
+                print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
+
+        except:
+            print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
 
 def Email_Main(Email_Subject, Email_Body):
     Email_Details = Load_Email_Configuration()
