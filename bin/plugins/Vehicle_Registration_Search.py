@@ -55,7 +55,7 @@ def Search(Query_List, Task_ID):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(Registration_Response, indent=4, sort_keys=True), Title, The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Item_URL, "general-insurance.coles.com.au", "Data Leakage", Task_ID, Title)
+                    General.Connections(Output_file, Query, Plugin_Name, Item_URL, "general-insurance.coles.com.au", "Data Leakage", Task_ID, Title, Concat_Plugin_Name)
 
                 Data_to_Cache.append(Item_URL)
 

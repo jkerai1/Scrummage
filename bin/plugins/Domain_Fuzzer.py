@@ -76,7 +76,7 @@ def Character_Switch(Query_List, Task_ID):
 		if Output_File:
 
 			for Host in Valid_Hosts:
-				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host))
+				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host), Local_Plugin_Name.lower())
 
 	if Cached_Data:
 		General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -145,7 +145,7 @@ def Regular_Extensions(Query_List, Task_ID):
 		if Output_File:
 
 			for Host in Valid_Hosts:
-				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host))
+				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host), Local_Plugin_Name.lower())
 
 	if Cached_Data:
 		General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -214,7 +214,7 @@ def Global_Extensions(Query_List, Task_ID):
 		if Output_File:
 
 			for Host in Valid_Hosts:
-				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host))
+				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host), Local_Plugin_Name.lower())
 
 	if Data_to_Cache:
 
@@ -290,7 +290,7 @@ def All_Extensions(Query_List, Task_ID):
 		if Output_File:
 
 			for Host in Valid_Hosts:
-				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host))
+				General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID, General.Get_Title(Host), Local_Plugin_Name.lower())
 
 		if Data_to_Cache:
 

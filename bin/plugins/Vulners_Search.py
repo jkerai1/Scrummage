@@ -59,7 +59,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Result_URL, "vulners.com", "Exploit", Task_ID, Result_Title)
+                        General.Connections(Output_file, Query, Plugin_Name, Result_URL, "vulners.com", "Exploit", Task_ID, Result_Title, Plugin_Name.lower())
 
                     Data_to_Cache.append(Result_URL)
 

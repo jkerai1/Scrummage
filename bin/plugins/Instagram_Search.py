@@ -64,7 +64,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -84,7 +84,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -104,7 +104,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -121,7 +121,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache:
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
 
                 Data_to_Cache.append(URL)
 

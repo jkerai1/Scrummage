@@ -44,6 +44,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
     for Query in Query_List:
 
         if Type == "pin":
+            Local_Plugin_Name = Plugin_Name + "-" + Type
             Request_URL = "https://api.pinterest.com/v1/pins/" + Query + "/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Ccreated_at%2Ccreator%2Cmedia%2Coriginal_link%2Cmetadata%2Ccounts%2Ccolor%2Cboard%2Cattribution"
             Search_Response = requests.get(Request_URL).text
             Search_Response = json.loads(Search_Response)
@@ -55,14 +56,15 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             Search_Result_Response = requests.get(Result_URL).text
 
             if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
-                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Result_URL, "pinterest.com", "Data Leakage", Task_ID, Result_Title)
+                    General.Connections(Output_file, Query, Local_Plugin_Name, Result_URL, "pinterest.com", "Data Leakage", Task_ID, Result_Title, Local_Plugin_Name.lower())
 
                 Data_to_Cache.append(Result_URL)
 
         elif Type == "board":
+            Local_Plugin_Name = Plugin_Name + "-" + Type
             Request_URL = "https://api.pinterest.com/v1/boards/" + Query + "/pins/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Coriginal_link%2Cmetadata%2Cmedia%2Cimage%2Ccreator%2Ccreated_at%2Ccounts%2Ccolor%2Cboard%2Cattribution"
             Search_Response = requests.get(Request_URL).text
             Search_Response = json.loads(Search_Response)
@@ -76,10 +78,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Search_Result_Response = requests.get(Result_URL).text
 
                 if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
-                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Result_URL, "pinterest.com", "Data Leakage", Task_ID, Result_Title)
+                        General.Connections(Output_file, Query, Local_Plugin_Name, Result_URL, "pinterest.com", "Data Leakage", Task_ID, Result_Title, Local_Plugin_Name.lower())
 
                     Data_to_Cache.append(Result_URL)
                     Current_Step += 1

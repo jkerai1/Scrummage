@@ -54,7 +54,7 @@ def Search(Query_List, Task_ID):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(JSON_Response, indent=4, sort_keys=True), SSLMate_Regex.group(1), The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request))
+                                General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request), Plugin_Name.lower())
 
                     except:
                         print(str(datetime.datetime.now()) + "[-] Failed to create file.")

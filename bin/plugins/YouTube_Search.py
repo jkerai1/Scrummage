@@ -2,21 +2,10 @@
 import plugins.common.General as General, datetime, requests, sys, json, os
 from googleapiclient import discovery
 
-YouTube_Developer_Key = ""
-YouTube_Application_Name = ""
-YouTube_Application_Version = ""
-YouTube_Location = ""
-YouTube_Location_Radius = ""
-
 The_File_Extension = ".html"
 Plugin_Name = "YouTube"
 
 def Load_Configuration():
-    global YouTube_Developer_Key
-    global YouTube_Application_Name
-    global YouTube_Application_Version
-    global YouTube_Location
-    global YouTube_Location_Radius
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
     print(str(datetime.datetime.now()) + " Loading configuration data.")
@@ -33,6 +22,8 @@ def Load_Configuration():
                 YouTube_Location = YouTube_Details['location']
                 YouTube_Location_Radius = YouTube_Details['location_radius']
 
+                return [YouTube_Developer_Key, YouTube_Application_Name, YouTube_Application_Version, YouTube_Location, YouTube_Location_Radius]
+
     except:
         sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
 
@@ -40,15 +31,17 @@ def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if int(kwargs["Limit"]) > 0:
-        Limit = kwargs["Limit"]
+    if "Limit" in kwargs:
+
+        if int(kwargs["Limit"]) > 0:
+            Limit = kwargs["Limit"]
 
     else:
-        Limit = 25
+        Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
     General.Logging(Directory, Plugin_Name)
-    Load_Configuration()
+    YouTube_Details = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:
@@ -57,12 +50,12 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        YouTube_Handler = discovery.build(YouTube_Application_Name, YouTube_Application_Version, developerKey=YouTube_Developer_Key)
+        YouTube_Handler = discovery.build(YouTube_Details[1], YouTube_Details[2], developerKey=YouTube_Details[0])
         Search_Response = YouTube_Handler.search().list(
         q=Query,
         type='video',
-        location=YouTube_Location,
-        locationRadius=YouTube_Location_Radius,
+        location=YouTube_Details[3],
+        locationRadius=YouTube_Details[4],
         part='id,snippet',
         maxResults=Limit,
         ).execute()
@@ -76,7 +69,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Full_Video_URL, "youtube.com", "Data Leakage", Task_ID, General.Get_Title(Full_Video_URL))
+                    General.Connections(Output_file, Query, Plugin_Name, Full_Video_URL, "youtube.com", "Data Leakage", Task_ID, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
 
                 Data_to_Cache.append(Full_Video_URL)
 

@@ -63,7 +63,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
                     if 'url' in JSON_Tweet:
                         Link = JSON_Tweet['url']
                         print(str(datetime.datetime.now()) + Link)
-                        General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link))
+                        General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
 
             Data_to_Cache.append(Link)
 
@@ -75,8 +75,10 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
 
 def Search(Query_List, Task_ID, **kwargs):
 
-    if int(kwargs["Limit"]) > 0:
-        Limit = kwargs["Limit"]
+    if "Limit" in kwargs:
+
+        if int(kwargs["Limit"]) > 0:
+            Limit = kwargs["Limit"]
 
     else:
         Limit = 10

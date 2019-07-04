@@ -9,8 +9,10 @@ def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if int(kwargs["Limit"]) > 0:
-        Limit = kwargs["Limit"]
+    if "Limit" in kwargs:
+
+        if int(kwargs["Limit"]) > 0:
+            Limit = kwargs["Limit"]
 
     else:
         Limit = 10
@@ -52,7 +54,7 @@ def Search(Query_List, Task_ID, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Object_Response, iTunes_Regex.group(1), The_File_Extension)
 
                                 if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, JSON_Object['artistViewUrl'], "itunes.apple.com", "Data Leakage", Task_ID, General.Get_Title(JSON_Object['artistViewUrl']))
+                                    General.Connections(Output_file, Query, Plugin_Name, JSON_Object['artistViewUrl'], "itunes.apple.com", "Data Leakage", Task_ID, General.Get_Title(JSON_Object['artistViewUrl']), Concat_Plugin_Name)
 
                             Data_to_Cache.append(JSON_Object['artistViewUrl'])
 

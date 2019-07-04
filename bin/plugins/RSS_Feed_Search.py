@@ -57,7 +57,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Feed.description, File_Link, The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Feed.link, Domain, "Data Leakage", Task_ID, General.Get_Title(Feed.link), Dump_Types=Dump_Types)
+                            General.Connections(Output_file, Query, Plugin_Name, Feed.link, Domain, "Data Leakage", Task_ID, General.Get_Title(Feed.link), Plugin_Name.lower(), Dump_Types=Dump_Types)
 
                         Data_to_Cache.append(Feed.link)
                         Current_Step += 1

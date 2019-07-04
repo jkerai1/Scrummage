@@ -42,7 +42,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Query_Response, "email", The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link), Local_Plugin_Name.lower())
 
                     Data_to_Cache.append(Link)
 
@@ -71,7 +71,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, JSON_Query_Response, "breach", The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Local_Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link), Local_Plugin_Name.lower())
 
                     Data_to_Cache.append(Link)
 
@@ -99,7 +99,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Query_Response), "password", ".txt")
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link))
+                        General.Connections(Output_file, Query, Local_Plugin_Name, Link, "haveibeenpwned.com", "Data Leakage", Task_ID, General.Get_Title(Link), Local_Plugin_Name.lower())
 
                     Data_to_Cache.append(Link)
 
@@ -131,7 +131,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, JSON_Query_Response, "account", The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Local_Plugin_Name, Link, Current_Response['Domain'], "Data Leakage", Task_ID, General.Get_Title(Link))
+                            General.Connections(Output_file, Query, Local_Plugin_Name, Link, Current_Response['Domain'], "Data Leakage", Task_ID, General.Get_Title(Link), Local_Plugin_Name.lower())
 
                         Data_to_Cache.append(Current_Response['Domain'])
                         Current_Step += 1

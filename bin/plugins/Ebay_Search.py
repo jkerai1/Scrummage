@@ -2,13 +2,10 @@
 import requests, sys, os, re, datetime, plugins.common.General as General, json
 from ebaysdk.finding import Connection
 
-Query = ""
 Plugin_Name = "Ebay"
 The_File_Extension = ".html"
-Ebay_API_Key = ""
 
 def Load_Configuration():
-    global Ebay_API_Key
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
     print(str(datetime.datetime.now()) + " Loading configuration data.")
@@ -19,7 +16,7 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
 
             for Ebay_Details in Configuration_Data[Plugin_Name.lower()]:
-                Ebay_API_Key = Ebay_Details['access_key']
+                return Ebay_Details['access_key']
 
     except:
         sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
@@ -38,7 +35,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
     Directory = General.Make_Directory(Plugin_Name.lower())
     General.Logging(Directory, Plugin_Name)
-    Load_Configuration()
+    Ebay_API_Key = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:
@@ -69,7 +66,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Ebay_Item_Response, Ebay_Item_Regex.group(1), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Ebay_Item_URL, "ebay.com", "Data Leakage", Task_ID, General.Get_Title(Ebay_Item_URL))
+                            General.Connections(Output_file, Query, Plugin_Name, Ebay_Item_URL, "ebay.com", "Data Leakage", Task_ID, General.Get_Title(Ebay_Item_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Ebay_Item_URL)
                         Current_Step += 1

@@ -58,7 +58,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Transaction, The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "blockchain.com", "Blockchain Address", Task_ID, General.Get_Title(Query_URL))
+                            General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "blockchain.com", "Blockchain Address", Task_ID, General.Get_Title(Query_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Query_URL)
                         Current_Step += 1

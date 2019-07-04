@@ -48,7 +48,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Win_Store_Response, Regex_Group_1, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Item_URL, "microsoft.com", "Data Leakage", Task_ID, General.Get_Title(Item_URL))
+                        General.Connections(Output_file, Query, Plugin_Name, Item_URL, "microsoft.com", "Data Leakage", Task_ID, General.Get_Title(Item_URL), Concat_Plugin_Name)
 
                     Data_to_Cache.append(Item_URL)
                     Current_Step += 1

@@ -4,16 +4,8 @@ from googleapiclient.discovery import build
 
 Plugin_Name = "Google"
 The_File_Extension = ".html"
-Google_CX = ""
-Google_Developer_Key = ""
-Google_Application_Name = ""
-Google_Application_Version = ""
 
 def Load_Configuration():
-    global Google_CX
-    global Google_Developer_Key
-    global Google_Application_Name
-    global Google_Application_Version
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
     print(str(datetime.datetime.now()) + " Loading configuration data.")
@@ -29,6 +21,8 @@ def Load_Configuration():
                 Google_Application_Name = Google_Details['application_name']
                 Google_Application_Version = Google_Details['application_version']
 
+                return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
+
     except:
         sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
 
@@ -36,15 +30,17 @@ def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if int(kwargs["Limit"]) > 0:
-        Limit = kwargs["Limit"]
+    if "Limit" in kwargs:
+
+        if int(kwargs["Limit"]) > 0:
+            Limit = kwargs["Limit"]
 
     else:
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
     General.Logging(Directory, Plugin_Name)
-    Load_Configuration()
+    Google_Details = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:
@@ -53,8 +49,8 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        Service = build("customsearch", Google_Application_Version, developerKey=Google_Developer_Key)
-        CSE_Response = Service.cse().list(q=Query, cx=Google_CX, num=Limit).execute()
+        Service = build("customsearch", Google_Details[3], developerKey=Google_Details[1])
+        CSE_Response = Service.cse().list(q=Query, cx=Google_Details[0], num=Limit).execute()
         CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
         CSE_JSON_Response = json.loads(CSE_JSON_Output_Response)
 
@@ -78,7 +74,7 @@ def Search(Query_List, Task_ID, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Google_Item_URL, "google.com", "Domain Spoof", Task_ID, General.Get_Title(Google_Item_URL))
+                                General.Connections(Output_file, Query, Plugin_Name, Google_Item_URL, "google.com", "Domain Spoof", Task_ID, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Google_Item_URL)
 

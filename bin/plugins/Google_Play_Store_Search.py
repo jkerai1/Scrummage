@@ -46,7 +46,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Result_URL, "play.google.com", "Data Leakage", Task_ID, General.Get_Title(Result_URL))
+                            General.Connections(Output_file, Query, Plugin_Name, Result_URL, "play.google.com", "Data Leakage", Task_ID, General.Get_Title(Result_URL), Concat_Plugin_Name)
 
                     Data_to_Cache.append(Result_URL)
 
