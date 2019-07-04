@@ -33,14 +33,18 @@ The dashboard is the home screen which the application directs a user to when th
 
 
 **Events**  
-The events page shows anything that changes within the web application, from logins, to failed login attempts, to any actions performed against a task. This assists with understanding what has recently been happening in the web app, and can assist in matters such as detecting brute-force login attempts or tracking down who altered a task.
-*Note: This page only loads the latest 1000 events, for optimisation of the web application.*
+The events page shows anything that changes within the web application, from logins, to failed login attempts, to any actions performed against a task. This assists with understanding what has recently been happening in the web app, and can assist in matters such as detecting brute-force login attempts or tracking down who altered a task.  
+  
+*Note: This page only loads the latest 1000 events, for optimisation of the web application.*  
+
 ![Events](/installation/Events.png)
 
 
 **Results**  
-The results page, simply shows results that have been created by a task. The results table shows the basic metadata of the result, but also provides a “Details” button which can be used to investigate the result further. As mentioned all results have some kind of output file, if a result is a link the file will be a copy of the HTML of the page. Furthermore screenshot functionality is provided to assist in keeping a photographic record of a result. Both the output and screenshot file will be deleted if the result is deleted.
-*Note: This page only loads the latest 1000 results, for optimisation of the web application.*
+The results page, simply shows results that have been created by a task. The results table shows the basic metadata of the result, but also provides a “Details” button which can be used to investigate the result further. As mentioned all results have some kind of output file, if a result is a link the file will be a copy of the HTML of the page. Furthermore screenshot functionality is provided to assist in keeping a photographic record of a result. Both the output and screenshot file will be deleted if the result is deleted.  
+  
+*Note: This page only loads the latest 1000 results, for optimisation of the web application.*  
+
 ![Results](/installation/Results.png)
 
 For optimisation purposes, the results table only displays some of the general information regarding a result, to investigate a result further, the user should use the Details button. The details page allows the user to view the soft copy of the result's link and provides the ability for a user to generate a screenshot.
