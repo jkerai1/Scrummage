@@ -18,6 +18,13 @@
             "to_address": ""
         }
     ],
+    "elasticsearch": [
+        {
+            "service": "http://",
+            "host": "",
+            "port": 9200
+        }
+    ],
     "facebook": [
         {
             "application_id": "",
@@ -48,7 +55,7 @@
     ],
     "pinterest": [
     	{
-            "oauth_token": ""
+    		"oauth_token": "AlJsKyLmVV0zyjDuYKy0XgqZLX9FFazdAvC763FF9l9kSSCpzAtOADAAAnOTRfZgLBVAzLoAAAAA"
     	}
     ],
     "postgresql": [
@@ -107,6 +114,11 @@
             "CONSUMER_SECRET": "",
             "ACCESS_KEY": "",
             "ACCESS_SECRET": ""
+        }
+    ],
+    "vehicle-registration-search": [
+        {
+            "state": "NSW"
         }
     ],
     "vulners": [
