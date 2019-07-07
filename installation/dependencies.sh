@@ -1,13 +1,13 @@
 #!/bin/bash
 if [ -f /etc/redhat-release ]; then
 	yum update
-	yum install -y yum-utils python36-setuptools postgresql postgresql-contrib python3-psycopg2 ruby ruby-devel rubygems wget unzip
+	yum install -y yum-utils python36-setuptools postgresql postgresql-contrib python3-psycopg2 wget unzip git
 	easy_install-3.6 pip
 fi
 
 if [ -f /etc/lsb-release ]; then
 	apt update
-	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems build-essential wget unzip
+	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib build-essential wget unzip git
 fi
 
 if [ -e /etc/os-release ]; then
@@ -18,7 +18,7 @@ fi
 
 if [[ "$ID_LIKE" = *"suse"* ]]; then
 	zypper update
-	zypper install -n python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems wget unzip
+	zypper install -n python3 python3-pip python3-psycopg2 postgresql postgresql-contrib wget unzip git
 	zypper install -n -t pattern devel_basis
 fi
 
@@ -31,9 +31,13 @@ wget https://chromedriver.storage.googleapis.com/76.0.3809.12/chromedriver_linux
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/bin/chromedriver
 cd ..
+
+git clone https://github.com/bryand1/python-pinterest-api
+cd python-pinterest-api
+python3 setup.py install
+cd ..
 pip3 uninstall requests
 pip3 install -r python_requirements.txt
-gem install brakeman
 echo "[+] Installation Complete."
 
 DATABASE="scrummage"
