@@ -4,9 +4,37 @@ import psycopg2, json, os, sys, datetime, requests, slack, smtplib
 from jira.client import JIRA
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from defectdojo_api import defectdojo
 
 File_Dir = os.path.dirname(os.path.realpath('__file__'))
 Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+
+def Load_Defect_Dojo_Configuration():
+    print(str(datetime.datetime.now()) + " Loading DefectDojo configuration data.")
+
+    try:
+        with open(Configuration_File) as JSON_File:
+            Configuration_Data = json.load(JSON_File)
+
+        for DD_Details in Configuration_Data['defectdojo']:
+            DD_API_Key = DD_Details['api_key']
+            DD_Host = DD_Details['host']
+            DD_User = DD_Details['user']
+            DD_Engagement_ID = DD_Details['engagement-id']
+            DD_Product_ID = DD_Details['product-id']
+            DD_Test_ID = DD_Details['test-id']
+            DD_User_ID = DD_Details['user-id']
+
+        if DD_API_Key and DD_Host and DD_User and DD_Engagement_ID and DD_Product_ID and DD_Test_ID and DD_User_ID:
+            Use_DD = True
+
+        else:
+            Use_DD = False
+
+        return [DD_API_Key, DD_Host, DD_User, DD_Engagement_ID, DD_Product_ID, DD_Test_ID, DD_User_ID, Use_DD]
+
+    except Exception as e:
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_Email_Configuration():
     print(str(datetime.datetime.now()) + " Loading email configuration data.")
@@ -31,10 +59,10 @@ def Load_Email_Configuration():
         return [Email_SMTP_Server, Email_SMTP_Port, Email_From_Address, Email_From_Password, Email_To_Address, Use_Email]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_Elasticsearch_Configuration():
-    print(str(datetime.datetime.now()) + " Loading elasticsearch configuration data.")
+    print(str(datetime.datetime.now()) + " Loading Elasticsearch configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -54,9 +82,10 @@ def Load_Elasticsearch_Configuration():
         return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port, Use_Elasticsearch]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_Main_Database():
+    print(str(datetime.datetime.now()) + " Loading Scrummage's Main Database configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -84,11 +113,6 @@ def Load_Main_Database():
         sys.exit(str(datetime.datetime.now()) + " Failed to connect to database.")
 
 def Load_JIRA_Configuration():
-    JIRA_Project_Key = ""
-    JIRA_Address = ""
-    JIRA_Username = ""
-    JIRA_Password = ""
-    JIRA_Ticket_Type = ""
     print(str(datetime.datetime.now()) + " Loading JIRA configuration data.")
 
     try:
@@ -112,11 +136,9 @@ def Load_JIRA_Configuration():
         return [JIRA_Project_Key, JIRA_Address, JIRA_Username, JIRA_Password, JIRA_Ticket_Type, Use_JIRA]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_Slack_Configuration():
-    Slack_Token = ""
-    Slack_Channel = ""
     print(str(datetime.datetime.now()) + " Loading Slack configuration data.")
 
     try:
@@ -137,14 +159,9 @@ def Load_Slack_Configuration():
         return [Slack_Token, Slack_Channel, Use_Slack]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_Scumblr_Configuration():
-    PostgreSQL_Host = ""
-    PostgreSQL_Port = ""
-    PostgreSQL_Database = ""
-    PostgreSQL_User = ""
-    PostgreSQL_Password = ""
     print(str(datetime.datetime.now()) + " Loading Scumblr configuration data.")
 
     try:
@@ -168,16 +185,9 @@ def Load_Scumblr_Configuration():
         return [PostgreSQL_Host, PostgreSQL_Port, PostgreSQL_Database, PostgreSQL_User, PostgreSQL_Password, Use_PostgreSQL]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
 
 def Load_RTIR_Configuration():
-    Use_RTIR = False
-    RTIR_HTTP_Service = ""
-    RTIR_Host = ""
-    RTIR_Port = ""
-    RTIR_User = ""
-    RTIR_Password = ""
-    RTIR_Authenticator = ""
     print(str(datetime.datetime.now()) + " Loading RTIR configuration data.")
 
     try:
@@ -201,7 +211,28 @@ def Load_RTIR_Configuration():
         return [RTIR_Host, RTIR_Port, RTIR_User, RTIR_Password, RTIR_HTTP_Service, RTIR_Authenticator, Use_RTIR]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + e)
+        print(str(datetime.datetime.now()) + str(e))
+
+def Defect_Dojo_Output(Title, Description):
+    DD_Details = Load_Defect_Dojo_Configuration()
+
+    if DD_Details[7]:
+
+        try:
+            Impact = 'All Scrummage findings have the potential to cause significant damage to a business\' finances, efficiency and reputation. Therefore, findings should be investigated to assist in reducing this risk.'
+            Mitigation = 'It is recommended that this issue be investigated further by the security team to determine whether or not further action needs to be taken.'
+            DD_Connection = defectdojo.DefectDojoAPI(DD_Details[1], DD_Details[0], DD_Details[2], debug=False)
+            Finding = DD_Connection.create_finding(Title, Description, 'Low', '', str(datetime.datetime.now().strftime('%Y-%m-%d')), DD_Details[4], DD_Details[3], DD_Details[5], DD_Details[6], Impact, True, False, Mitigation)
+
+            try:
+                Finding = str(int(str(Finding)))
+                print(str(datetime.datetime.now()) + " DefectDojo finding " + Finding + " created.")
+
+            except:
+                print(str(datetime.datetime.now()) + " Failed to create DefectDojo finding.")
+
+        except (Exception, psycopg2.DatabaseError) as Error:
+            print(str(datetime.datetime.now()) + str(Error))
 
 def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
     Connection = Load_Main_Database()
@@ -232,7 +263,7 @@ def Scumblr_Main(Link, Domain, Title):
     Scumblr_Details = Load_Scumblr_Configuration()
     Connection = ""
 
-    if Scumblr_Details[5] == True:
+    if Scumblr_Details[5]:
 
         try:
             # Connect to the PostgreSQL server.
@@ -279,7 +310,7 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
             print(str(datetime.datetime.now()) + " RTIR ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + e)
+            print(str(datetime.datetime.now()) + str(e))
 
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
@@ -293,7 +324,7 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             print(str(datetime.datetime.now()) + " JIRA ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + e)
+            print(str(datetime.datetime.now()) + str(e))
 
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
@@ -306,7 +337,7 @@ def Slack_Main(Description):
             print(str(datetime.datetime.now()) + " Slack Notification created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + e)
+            print(str(datetime.datetime.now()) + str(e))
 
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
@@ -321,10 +352,10 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
             resp = requests.post(URI, data=data, headers=headers)
 
             if resp.status_code == 200:
-                print(str(datetime.datetime.now()) + " Result created in Elasticsearch.")
+                print(str(datetime.datetime.now()) + " Result created in Elasticsearch, using the URI " + URI + ".")
 
             else:
-                print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
+                print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
 
         except:
             print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
