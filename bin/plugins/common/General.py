@@ -103,10 +103,12 @@ def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Ta
     if DB_Title:
         Connectors.Main_Database_Insert(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
         Connectors.Elasticsearch_Main(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
+        Connectors.Defect_Dojo_Output(DB_Title, Ticket_Text)
 
     else:
         Connectors.Main_Database_Insert(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
         Connectors.Elasticsearch_Main(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
+        Connectors.Defect_Dojo_Output(Plugin_Name, Ticket_Text)
 
 def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension):
     Main_File = "Main-file-for-" + Plugin_Name + "-query-" + Query + Main_File_Extension
