@@ -4,6 +4,17 @@
             "city": "Sydney"
         }
     ],
+    "defectdojo": [
+        {
+            "api_key": "",
+            "host": "https://host.com",
+            "user": "admin",
+            "engagement-id": 1,
+            "product-id": 1,
+            "test-id": 1,
+            "user-id": 1
+        }
+    ],
     "ebay": [
         {
             "access_key": ""
