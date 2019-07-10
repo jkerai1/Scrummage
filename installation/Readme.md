@@ -319,6 +319,21 @@ The Scrummage team is well aware another open-source tool called Scumblr, develo
         }
     ],
 
+**DefectDojo Finding Output**  
+Scrummage supports integration with the DefectDojo API to create findings. To enable this you will need to create a project, engagement and test and retrieve the id for each. After obtaining these, please enter them in the appropriate fields in the config.json file, under “defectdojo”, as well as the rest of the needed information:
+
+    "defectdojo": [
+        {
+            "api_key": "",
+            "host": "https://defectdojo.herokuapp.com",
+            "user": "admin",
+            "engagement-id": 1,
+            "product-id": 1,
+            "test-id": 1,
+            "user-id": 1
+        }
+    ],
+
 **Request Tracker for Incident Response (RTIR) Ticket Alert**  
 In the world of Incident Response, RTIR is a bit of a veteran program; therefore, functionality has been provided for RTIR. Currently, this method only supports Cookie-Based authentication, while there is a python library for RTIR, the library is old and doesn’t support python3. Rather than attempting to rewrite it, the Scrummage developers decided to go with cookie-based auth as it is very common, and used requests to handle it. To enable this mode, enter the RTIR details into the config.json file, under “RTIR”:
 
