@@ -295,7 +295,7 @@ This task requires an API key, and works by performing an API search against the
 FYI: Please use google maps or similar to get your location in a format similar to the location above; furthermore, feel free to change location_radius, but please remember to use kilometres (km) after the integer.
 
 # Output Alert Options  
-By default, Scrummage stores all output data in 1 of 4 main output formats:
+By default, Scrummage plugins individually store their output data in 1 of 4 main output formats:
 * .html
 * .json
 * .csv
@@ -316,6 +316,15 @@ The Scrummage team is well aware another open-source tool called Scumblr, develo
             "database": "",
             "user": "",
             "password": ""
+        }
+    ],
+
+**CSV Output**  
+This option is provided as a lightweight data store, for all results. Each result, regardless of the plugin is stored in a central Output.csv file in the output directory. To enable this output mode, change the "use-csv" switch to true, under "csv" in the config.json file:
+
+    "csv": [
+        {
+            "use-csv": true
         }
     ],
 
