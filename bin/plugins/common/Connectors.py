@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import psycopg2, json, os, sys, datetime, requests, slack, smtplib
+import psycopg2, json, os, sys, datetime, requests, slack, smtplib, csv
 from jira.client import JIRA
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -8,6 +8,20 @@ from defectdojo_api import defectdojo
 
 File_Dir = os.path.dirname(os.path.realpath('__file__'))
 Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+
+def Load_CSV_Configuration():
+    print(str(datetime.datetime.now()) + " Loading CSV configuration data.")
+
+    try:
+        with open(Configuration_File) as JSON_File:
+            Configuration_Data = json.load(JSON_File)
+
+        for CSV_Details in Configuration_Data['csv']:
+            Use_CSV = CSV_Details['use-csv']
+            return Use_CSV
+
+    except Exception as e:
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Defect_Dojo_Configuration():
     print(str(datetime.datetime.now()) + " Loading DefectDojo configuration data.")
@@ -34,7 +48,7 @@ def Load_Defect_Dojo_Configuration():
         return [DD_API_Key, DD_Host, DD_User, DD_Engagement_ID, DD_Product_ID, DD_Test_ID, DD_User_ID, Use_DD]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Email_Configuration():
     print(str(datetime.datetime.now()) + " Loading email configuration data.")
@@ -59,7 +73,7 @@ def Load_Email_Configuration():
         return [Email_SMTP_Server, Email_SMTP_Port, Email_From_Address, Email_From_Password, Email_To_Address, Use_Email]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Elasticsearch_Configuration():
     print(str(datetime.datetime.now()) + " Loading Elasticsearch configuration data.")
@@ -82,7 +96,7 @@ def Load_Elasticsearch_Configuration():
         return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port, Use_Elasticsearch]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Main_Database():
     print(str(datetime.datetime.now()) + " Loading Scrummage's Main Database configuration data.")
@@ -136,7 +150,7 @@ def Load_JIRA_Configuration():
         return [JIRA_Project_Key, JIRA_Address, JIRA_Username, JIRA_Password, JIRA_Ticket_Type, Use_JIRA]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Slack_Configuration():
     print(str(datetime.datetime.now()) + " Loading Slack configuration data.")
@@ -159,7 +173,7 @@ def Load_Slack_Configuration():
         return [Slack_Token, Slack_Channel, Use_Slack]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Scumblr_Configuration():
     print(str(datetime.datetime.now()) + " Loading Scumblr configuration data.")
@@ -185,7 +199,7 @@ def Load_Scumblr_Configuration():
         return [PostgreSQL_Host, PostgreSQL_Port, PostgreSQL_Database, PostgreSQL_User, PostgreSQL_Password, Use_PostgreSQL]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_RTIR_Configuration():
     print(str(datetime.datetime.now()) + " Loading RTIR configuration data.")
@@ -211,7 +225,30 @@ def Load_RTIR_Configuration():
         return [RTIR_Host, RTIR_Port, RTIR_User, RTIR_Password, RTIR_HTTP_Service, RTIR_Authenticator, Use_RTIR]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + str(e))
+        print(str(datetime.datetime.now()) + " " + str(e))
+
+def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
+
+    try:
+        Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
+        Data = [Title, Plugin_Name, Domain, Link, str(datetime.datetime.now()), Output_File, Result_Type, str(Task_ID)]
+        File_Path = os.path.dirname(os.path.realpath('__file__'))
+        File_Path = File_Path + "/static/protected/output/" + Plugin_Name
+        Complete_File = File_Path + "Output.csv"
+
+        if not os.path.exists(Complete_File):
+            CSV_Output = csv.writer(open(Complete_File, 'w'))
+            CSV_Output.writerow(Headings)
+            CSV_Output.writerow(Data)
+            print(str(datetime.datetime.now()) + " CSV output file created.")
+
+        else:
+            CSV_Output = csv.writer(open(Complete_File, 'a'))
+            CSV_Output.writerow(Data)
+            print(str(datetime.datetime.now()) + " CSV output file updated.")
+
+    except Exception as e:
+        print(str(datetime.datetime.now()) + " " + str(e))
 
 def Defect_Dojo_Output(Title, Description):
     DD_Details = Load_Defect_Dojo_Configuration()
@@ -310,7 +347,7 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
             print(str(datetime.datetime.now()) + " RTIR ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + str(e))
+            print(str(datetime.datetime.now()) + " " + str(e))
 
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
@@ -324,7 +361,7 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             print(str(datetime.datetime.now()) + " JIRA ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + str(e))
+            print(str(datetime.datetime.now()) + " " + str(e))
 
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
@@ -337,7 +374,7 @@ def Slack_Main(Description):
             print(str(datetime.datetime.now()) + " Slack Notification created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + str(e))
+            print(str(datetime.datetime.now()) + " " + str(e))
 
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
