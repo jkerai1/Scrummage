@@ -4,6 +4,11 @@
             "city": "Sydney"
         }
     ],
+    "csv": [
+        {
+            "use-csv": false
+        }
+    ],
     "defectdojo": [
         {
             "api_key": "",
