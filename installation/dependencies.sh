@@ -42,7 +42,7 @@ pip3 uninstall requests
 pip3 install -r python_requirements.txt
 
 MODULELOC=`python3 -m site --user-site`
-mv site-packages/defectdojo.py $MODULELOC/defectdojo.py
+cp site-packages/defectdojo.py $MODULELOC/defectdojo.py
 
 gem install brakeman
 echo "[+] Installation Complete."
