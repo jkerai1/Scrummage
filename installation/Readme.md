@@ -175,6 +175,10 @@ This task requires no API keys, and works by performing a search against the itu
 
 *Test query: jack johnson*
 
+**Library Genesis Search**  
+Library Genesis is a website where people can download textbooks and other publications that normally cost money for free. This plugin requires no API keys and works by performing a search against the http://gen.lib.rus.ec site.
+
+*Test query: python*
 
 **Pinterest Search**  
 This task requires an API key, and works by performing a search against the pinterest.com site. There are 2 kinds of search options available, represented by 2 options in the web application:
