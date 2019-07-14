@@ -890,7 +890,8 @@ def tasks():
                                                        error="Task is already running.")
 
                             else:
-                                plugin_caller_thread = threading.Thread(target=plugin_caller.Call_Plugin, kwargs={"Plugin_Name": result[2], "Limit": result[5], "Query": result[1], "Task_ID": Plugin_ID, })
+                                Plugin_to_Call = plugin_caller.Plugin_Caller(Plugin_Name=result[2], Limit=result[5], Query=result[1], Task_ID=Plugin_ID)
+                                plugin_caller_thread = threading.Thread(target=Plugin_to_Call.Call_Plugin)
                                 plugin_caller_thread.start()
 
                         except Exception as e:
