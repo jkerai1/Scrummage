@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from crontab import CronTab
 from logging.handlers import RotatingFileHandler
-import os, re, datetime, plugin_caller, getpass, time, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
+import os, re, datetime, plugin_caller, getpass, time, threading, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
 
 File_Path = os.path.dirname(os.path.realpath('__file__'))
 app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
@@ -38,6 +38,7 @@ app.register_error_handler(404, page_not_found)
 
 @app.route('/')
 def index():
+
     if session.get('user'):
         return render_template('dashboard.html', username=session.get('user'))
 
@@ -889,7 +890,8 @@ def tasks():
                                                        error="Task is already running.")
 
                             else:
-                                plugin_caller.Call_Plugin(Plugin_Name=result[2], Limit=result[5], Query=result[1], Task_ID=Plugin_ID)
+                                plugin_caller_thread = threading.Thread(target=plugin_caller.Call_Plugin, kwargs={"Plugin_Name": result[2], "Limit": result[5], "Query": result[1], "Task_ID": Plugin_ID, })
+                                plugin_caller_thread.start()
 
                         except Exception as e:
                             app.logger.error(e)
