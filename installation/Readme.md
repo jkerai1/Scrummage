@@ -399,6 +399,8 @@ Email alerts have been included, where the user specifies both the from address 
             "to_address": ""
         }
     ],
+    
+*Note: You may be required to change settings in your email settings to allow this, such as allowing "less secure apps" in Gmail.*
 
 **Slack Channel Notifications**  
 Slack channel notifications work by having a message sent to a slack channel . To enable this mode, enter the Slack Channel details into the config.json file, under “slack”:
