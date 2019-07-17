@@ -33,10 +33,10 @@ def Get_Cache(Directory, Plugin_Name):
                 logging.info(str(datetime.datetime.now()) + " No cache file found, caching will not be used for this session.")
 
         except:
-            logging.info(str(datetime.datetime.now()) + " Failed to read file.")
+            logging.warning(str(datetime.datetime.now()) + " Failed to read file.")
 
     else:
-        logging.info(str(datetime.datetime.now()) + " Failed to regex directory. Cache not read.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to regex directory. Cache not read.")
 
 def Write_Cache(Directory, Data_to_Cache, Plugin_Name, Open_File_Type):
     Main_File = Plugin_Name + "-cache.txt"
@@ -52,10 +52,10 @@ def Write_Cache(Directory, Data_to_Cache, Plugin_Name, Open_File_Type):
             File_Output.close()
 
         except:
-            logging.info(str(datetime.datetime.now()) + " Failed to create file.")
+            logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
 
     else:
-        logging.info(str(datetime.datetime.now()) + " Failed to regex directory. Cache not written.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to regex directory. Cache not written.")
 
 def Convert_to_List(String):
 
@@ -138,7 +138,7 @@ def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension)
                     logging.info(str(datetime.datetime.now()) + " Main file appended.")
 
                 else:
-                    logging.warning(str(datetime.datetime.now()) + " No new data has been discovered, no point continuing.")
+                    logging.info(str(datetime.datetime.now()) + " No new data has been discovered, no point continuing.")
 
             else:
                 File_Output = open(Complete_File, "w")
@@ -149,7 +149,7 @@ def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension)
         return Complete_File
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
 
 def Data_Type_Discovery(Data_to_Search):
     # Function responsible for determining the type of data found. Examples: Hash_Type, Credentials, Email, or URL.
@@ -215,7 +215,7 @@ def Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Output_Data,
         return Complete_File
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
 
 def Create_Scrape_Results_File(Directory, Plugin_Name, Output_Data, ID, The_File_Extension):
 
@@ -235,7 +235,7 @@ def Create_Scrape_Results_File(Directory, Plugin_Name, Output_Data, ID, The_File
             logging.info(str(datetime.datetime.now()) + " File already exists, skipping creation.")
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
 
 def Load_Location_Configuration():
     Valid_Locations = ['ac', 'ac', 'ad', 'ae', 'af', 'af', 'ag', 'ag', 'ai', 'ai', 'al', 'am', 'am', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'az', 'ba', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bi', 'bj', 'bn', 'bo', 'bo', 'br', 'bs', 'bt', 'bw', 'by', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm', 'cn', 'cn', 'co', 'co', 'co', 'cr', 'cu', 'cv', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ec', 'ee', 'eg', 'es', 'et', 'eu', 'fi', 'fj', 'fm', 'fr', 'ga', 'ge', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gp', 'gp', 'gr', 'gr', 'gt', 'gy', 'gy', 'gy', 'hk', 'hk', 'hn', 'hr', 'ht', 'ht', 'hu', 'hu', 'id', 'id', 'ie', 'il', 'im', 'im', 'in', 'in', 'io', 'iq', 'iq', 'is', 'it', 'je', 'je', 'jm', 'jo', 'jo', 'jp', 'jp', 'ke', 'kg', 'kh', 'ki', 'kr', 'kw', 'kz', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'ma', 'md', 'me', 'mg', 'mk', 'ml', 'mm', 'mn', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'mx', 'my', 'mz', 'na', 'ne', 'nf', 'ng', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pe', 'pf', 'pg', 'ph', 'pk', 'pk', 'pl', 'pl', 'pn', 'pr', 'ps', 'ps', 'pt', 'py', 'qa', 'qa', 're', 'ro', 'rs', 'rs', 'ru', 'ru', 'rw', 'sa', 'sb', 'sc', 'se', 'sg', 'sh', 'si', 'sk', 'sl', 'sl', 'sm', 'sn', 'so', 'sr', 'st', 'sv', 'sy', 'td', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tt', 'tz', 'ua', 'ua', 'ug', 'uk', 'us', 'us', 'uy', 'uz', 'uz', 'vc', 've', 've', 'vg', 'vi', 'vn', 'vu', 'ws', 'za', 'zm', 'zw']
@@ -279,7 +279,7 @@ def Make_Directory(Plugin_Name):
         return Directory
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Using directory: " + Directory + ".")
+        logging.warning(str(datetime.datetime.now()) + " Using directory: " + Directory + ".")
         return Directory
 
 def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
@@ -301,7 +301,7 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
             Content_String = str(Content)
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Failed to connect, if you are using the Tor network, please make sure you're running the Tor proxy and are connected to it.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to connect, if you are using the Tor network, please make sure you're running the Tor proxy and are connected to it.")
 
     try:
         Scrape_URLs_Raw = re.findall(Scrape_Regex_URL, Content_String)
@@ -312,7 +312,7 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
                 Scrape_URLs.append(Temp_URL_Extensions)
 
     except:
-        logging.info(str(datetime.datetime.now()) + " Failed to regex URLs.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to regex URLs.")
 
     return Scrape_URLs
 
@@ -325,7 +325,7 @@ def Get_Title(URL):
             return Soup.title.text
 
         else:
-            logging.info(str(datetime.datetime.now()) + " this function does not work on files.")
+            logging.warning(str(datetime.datetime.now()) + " this function does not work on files.")
 
     except:
-        logging.info(str(datetime.datetime.now()) + " failed to get title.")
+        logging.warning(str(datetime.datetime.now()) + " failed to get title.")
