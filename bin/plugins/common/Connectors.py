@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import psycopg2, json, os, sys, datetime, requests, slack, smtplib, csv
+import psycopg2, json, os, datetime, requests, slack, smtplib, csv, logging
 from jira.client import JIRA
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -10,7 +10,7 @@ File_Dir = os.path.dirname(os.path.realpath('__file__'))
 Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
 
 def Load_CSV_Configuration():
-    print(str(datetime.datetime.now()) + " Loading CSV configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading CSV configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -21,10 +21,10 @@ def Load_CSV_Configuration():
             return Use_CSV
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Defect_Dojo_Configuration():
-    print(str(datetime.datetime.now()) + " Loading DefectDojo configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading DefectDojo configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -48,10 +48,10 @@ def Load_Defect_Dojo_Configuration():
         return [DD_API_Key, DD_Host, DD_User, DD_Engagement_ID, DD_Product_ID, DD_Test_ID, DD_User_ID, Use_DD]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Email_Configuration():
-    print(str(datetime.datetime.now()) + " Loading email configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading email configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -73,10 +73,10 @@ def Load_Email_Configuration():
         return [Email_SMTP_Server, Email_SMTP_Port, Email_From_Address, Email_From_Password, Email_To_Address, Use_Email]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Elasticsearch_Configuration():
-    print(str(datetime.datetime.now()) + " Loading Elasticsearch configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading Elasticsearch configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -96,10 +96,10 @@ def Load_Elasticsearch_Configuration():
         return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port, Use_Elasticsearch]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Main_Database():
-    print(str(datetime.datetime.now()) + " Loading Scrummage's Main Database configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading Scrummage's Main Database configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -113,7 +113,7 @@ def Load_Main_Database():
                 DB_Database = DB_Info['database']
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load configuration file.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load configuration file.")
 
     try:
         DB_Connection = psycopg2.connect(user=DB_Username,
@@ -124,10 +124,10 @@ def Load_Main_Database():
         return DB_Connection
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to connect to database.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to connect to database.")
 
 def Load_JIRA_Configuration():
-    print(str(datetime.datetime.now()) + " Loading JIRA configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading JIRA configuration data.")
 
     try:
 
@@ -150,10 +150,10 @@ def Load_JIRA_Configuration():
         return [JIRA_Project_Key, JIRA_Address, JIRA_Username, JIRA_Password, JIRA_Ticket_Type, Use_JIRA]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Slack_Configuration():
-    print(str(datetime.datetime.now()) + " Loading Slack configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading Slack configuration data.")
 
     try:
 
@@ -173,10 +173,10 @@ def Load_Slack_Configuration():
         return [Slack_Token, Slack_Channel, Use_Slack]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_Scumblr_Configuration():
-    print(str(datetime.datetime.now()) + " Loading Scumblr configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading Scumblr configuration data.")
 
     try:
 
@@ -199,10 +199,10 @@ def Load_Scumblr_Configuration():
         return [PostgreSQL_Host, PostgreSQL_Port, PostgreSQL_Database, PostgreSQL_User, PostgreSQL_Password, Use_PostgreSQL]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Load_RTIR_Configuration():
-    print(str(datetime.datetime.now()) + " Loading RTIR configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading RTIR configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -225,7 +225,7 @@ def Load_RTIR_Configuration():
         return [RTIR_Host, RTIR_Port, RTIR_User, RTIR_Password, RTIR_HTTP_Service, RTIR_Authenticator, Use_RTIR]
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
 
@@ -240,15 +240,15 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
             CSV_Output = csv.writer(open(Complete_File, 'w'))
             CSV_Output.writerow(Headings)
             CSV_Output.writerow(Data)
-            print(str(datetime.datetime.now()) + " CSV output file created.")
+            logging.info(str(datetime.datetime.now()) + " CSV output file created.")
 
         else:
             CSV_Output = csv.writer(open(Complete_File, 'a'))
             CSV_Output.writerow(Data)
-            print(str(datetime.datetime.now()) + " CSV output file updated.")
+            logging.info(str(datetime.datetime.now()) + " CSV output file updated.")
 
     except Exception as e:
-        print(str(datetime.datetime.now()) + " " + str(e))
+        logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Defect_Dojo_Output(Title, Description):
     DD_Details = Load_Defect_Dojo_Configuration()
@@ -263,13 +263,13 @@ def Defect_Dojo_Output(Title, Description):
 
             try:
                 Finding = str(int(str(Finding)))
-                print(str(datetime.datetime.now()) + " DefectDojo finding " + Finding + " created.")
+                logging.info(str(datetime.datetime.now()) + " DefectDojo finding " + Finding + " created.")
 
             except:
-                print(str(datetime.datetime.now()) + " Failed to create DefectDojo finding.")
+                logging.info(str(datetime.datetime.now()) + " Failed to create DefectDojo finding.")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            print(str(datetime.datetime.now()) + str(Error))
+            logging.warning(str(datetime.datetime.now()) + str(Error))
 
 def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
     Connection = Load_Main_Database()
@@ -285,10 +285,10 @@ def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_F
             Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, str(datetime.datetime.now()), str(datetime.datetime.now()), Output_File, Result_Type, Task_ID,))
 
         else:
-            print(str(datetime.datetime.now()) + " Entry already exists in the database. Skipping...")
+            logging.info(str(datetime.datetime.now()) + " Entry already exists in the database. Skipping...")
 
     except (Exception, psycopg2.DatabaseError) as Error:
-        print(str(datetime.datetime.now()) + str(Error))
+        logging.warning(str(datetime.datetime.now()) + str(Error))
 
     finally:
 
@@ -316,18 +316,18 @@ def Scumblr_Main(Link, Domain, Title):
                 Cursor.execute("INSERT INTO results (title, url, created_at, updated_at, domain) VALUES(%s, %s, %s, %s, %s)", (Title, Link, str(datetime.datetime.now()), str(datetime.datetime.now()), Domain))
 
             else:
-                print(str(datetime.datetime.now()) + " Entry already exists in Scumblr database. Skipping...")
+                logging.info(str(datetime.datetime.now()) + " Entry already exists in Scumblr database. Skipping...")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            print(str(datetime.datetime.now()) + " " + Error)
+            logging.warning(str(datetime.datetime.now()) + " " + Error)
 
         finally:
 
             if Connection is not None:
                 Connection.commit()
                 Connection.close()
-                print(str(datetime.datetime.now()) + " Result added to Scumblr database.")
-                print(str(datetime.datetime.now()) + " Database connection closed.")
+                logging.info(str(datetime.datetime.now()) + " Result added to Scumblr database.")
+                logging.info(str(datetime.datetime.now()) + " Database connection closed.")
 
 def RTIR_Main(Ticket_Subject, Ticket_Text):
     RTIR_Details = Load_RTIR_Configuration()
@@ -341,13 +341,13 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
             else:
-                print(str(datetime.datetime.now()) + " No Authenticator specified, using the default which is cookie-based authentication,")
+                logging.info(str(datetime.datetime.now()) + " No Authenticator specified, using the default which is cookie-based authentication,")
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
-            print(str(datetime.datetime.now()) + " RTIR ticket created.")
+            logging.info(str(datetime.datetime.now()) + " RTIR ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + " " + str(e))
+            logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
@@ -358,10 +358,10 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             JIRA_Options={'server': JIRA_Details[1]}
             JIRA_Session=JIRA(options=JIRA_Options,basic_auth=(JIRA_Details[2], JIRA_Details[3]))
             JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
-            print(str(datetime.datetime.now()) + " JIRA ticket created.")
+            logging.info(str(datetime.datetime.now()) + " JIRA ticket created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + " " + str(e))
+            logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
@@ -371,10 +371,10 @@ def Slack_Main(Description):
         try:
             client = slack.WebClient(token=Slack_Details[0])
             client.chat_postMessage(channel=Slack_Details[1], text=Description)
-            print(str(datetime.datetime.now()) + " Slack Notification created.")
+            logging.info(str(datetime.datetime.now()) + " Slack Notification created.")
 
         except Exception as e:
-            print(str(datetime.datetime.now()) + " " + str(e))
+            logging.warning(str(datetime.datetime.now()) + " " + str(e))
 
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
@@ -389,13 +389,13 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
             resp = requests.post(URI, data=data, headers=headers)
 
             if resp.status_code == 200:
-                print(str(datetime.datetime.now()) + " Result created in Elasticsearch, using the URI " + URI + ".")
+                logging.info(str(datetime.datetime.now()) + " Result created in Elasticsearch, using the URI " + URI + ".")
 
             else:
-                print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
+                logging.info(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
 
         except:
-            print(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
+            logging.warning(str(datetime.datetime.now()) + " Failed to create result in Elasticsearch.")
 
 def Email_Main(Email_Subject, Email_Body):
     Email_Details = Load_Email_Configuration()
@@ -415,7 +415,7 @@ def Email_Main(Email_Subject, Email_Body):
             text = msg.as_string()
             server.sendmail(Email_Details[2], Email_Details[4], text)
             server.quit()
-            print(str(datetime.datetime.now()) + " Email Sent.")
+            logging.info(str(datetime.datetime.now()) + " Email Sent.")
 
         except:
-            print(str(datetime.datetime.now()) + " Failed to send alert! Check email login settings.")
+            logging.warning(str(datetime.datetime.now()) + " Failed to send alert! Check email login settings.")
