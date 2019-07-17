@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests, re, plugins.common.General as General
+import requests, logging, os, re, plugins.common.General as General
 
 Plugin_Name = "Windows-Store"
 Concat_Plugin_Name = "windowsstore"
@@ -20,7 +20,16 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Concat_Plugin_Name)
-    General.Logging(Directory, Concat_Plugin_Name)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Concat_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Location = General.Load_Location_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -58,3 +67,5 @@ def Search(Query_List, Task_ID, **kwargs):
 
     else:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+
+    logging.info('Windows Store Search Plugin Terminated.')

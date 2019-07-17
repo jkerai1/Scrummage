@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests, datetime, sys, json, os, plugins.common.General as General
+import requests, datetime, json, os, logging, plugins.common.General as General
 
 Plugin_Name = "Vehicle-Registration-Search"
 Concat_Plugin_Name = "registrationsearch"
@@ -10,7 +10,7 @@ The_File_Extension = ".json"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -21,13 +21,23 @@ def Load_Configuration():
                 return State
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
 
 def Search(Query_List, Task_ID):
     Data_to_Cache = []
     Cached_Data = []
     Directory = General.Make_Directory(Concat_Plugin_Name)
-    General.Logging(Directory, Concat_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Concat_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     State = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -60,7 +70,7 @@ def Search(Query_List, Task_ID):
                 Data_to_Cache.append(Item_URL)
 
         except:
-            print(str(datetime.datetime.now()) + " No result found for given query.")
+            logging.info(str(datetime.datetime.now()) + " No result found for given query.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

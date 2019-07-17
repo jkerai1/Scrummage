@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import plugins.common.General as General
+import plugins.common.General as General, os, logging
 
 Plugin_Name = "Ahmia"
 Tor_Plugin_Name = "Ahmia-Tor"
@@ -30,7 +30,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:

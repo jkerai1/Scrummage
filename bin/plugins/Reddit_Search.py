@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, os, re, praw, json, datetime, plugins.common.General as General
+import os, re, praw, json, datetime, logging, plugins.common.General as General
 
 Plugin_Name = "Reddit"
 The_File_Extension = ".txt"
@@ -8,7 +8,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:  
@@ -23,7 +23,7 @@ def Load_Configuration():
                 Subreddit_to_Search = Reddit_Details["subreddits"]
                 return [Reddit_Client_ID, Reddit_Client_Secret, Reddit_User_Agent, Reddit_Username, Reddit_Password, Subreddit_to_Search]
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load Reddit details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load Reddit details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -37,7 +37,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Reddit_Details = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -64,7 +74,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Results.append(Current_Result)
 
         except:
-            sys.exit(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")
+            logging.warning(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")
 
         for Result in Results:
 
@@ -80,7 +90,7 @@ def Search(Query_List, Task_ID, **kwargs):
                             General.Connections(Output_file, Query, Plugin_Name, Result[0], "reddit.com", "Data Leakage", Task_ID, General.Get_Title(Result[0]), Plugin_Name.lower())
 
                 except:
-                    print(str(datetime.datetime.now()) + " Failed to create file.")
+                    logging.info(str(datetime.datetime.now()) + " Failed to create file.")
 
                 Data_to_Cache.append(Result[0])
 

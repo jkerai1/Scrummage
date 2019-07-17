@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, re, os, sys, json, datetime, plugins.common.General as General
+import requests, re, logging, os, json, datetime, plugins.common.General as General
 from googleapiclient.discovery import build
 
 Plugin_Name = "Google"
@@ -8,7 +8,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
 
@@ -24,7 +24,7 @@ def Load_Configuration():
                 return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -39,7 +39,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Google_Details = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -80,7 +90,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
 
             except Exception as e:
-                print(str(datetime.datetime.now()) + e)
+                logging.info(str(datetime.datetime.now()) + e)
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

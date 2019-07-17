@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, feedparser, datetime, plugins.common.General as General
+import os, feedparser, datetime, logging, plugins.common.General as General
 
 The_File_Extension = ".html"
 Plugin_Name = "RSS"
@@ -16,6 +16,18 @@ def Search(Query_List, Task_ID, **kwargs):
     else:
         Limit = 10
 
+    Directory = General.Make_Directory(Plugin_Name.lower())
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     try:
         File_Dir = os.path.dirname(os.path.realpath('__file__'))
         Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/RSS_Feeds.txt')
@@ -24,10 +36,8 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(str(datetime.datetime.now()) + " Please provide a valid file, failed to open the file which contains the data to search for.")
 
-    Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:

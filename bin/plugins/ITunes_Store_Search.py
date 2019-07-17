@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, sys, json, re, datetime, plugins.common.General as General
+import requests, logging, json, re, os, datetime, plugins.common.General as General
 
 Plugin_Name = "iTunes-Store"
 Concat_Plugin_Name = "itunesstore"
@@ -18,7 +18,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Concat_Plugin_Name)
-    General.Logging(Directory, Concat_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Location = General.Load_Location_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -33,7 +43,7 @@ def Search(Query_List, Task_ID, **kwargs):
             Response = requests.get("http://itunes.apple.com/search?term=" + Query + "&country=" + Location + "&entity=software&limit=" + str(Limit)).text
 
         except:
-            sys.exit(str(datetime.datetime.now()) + " Failed to make request, are you connected to the internet?")
+            logging.warning(str(datetime.datetime.now()) + " Failed to make request, are you connected to the internet?")
 
         JSON_Response = json.loads(Response)
         General.Main_File_Create(Directory, "iTunes", json.dumps(Response, indent=4, sort_keys=True), Query, ".json")
@@ -59,10 +69,10 @@ def Search(Query_List, Task_ID, **kwargs):
                             Data_to_Cache.append(JSON_Object['artistViewUrl'])
 
                 else:
-                    sys.exit(str(datetime.datetime.now()) + " Invalid value provided, value less than 0.")
+                    logging.warning(str(datetime.datetime.now()) + " Invalid value provided, value less than 0.")
 
             else:
-                sys.exit(str(datetime.datetime.now()) + " Invalid value provided, value equal to 0.")
+                logging.warning(str(datetime.datetime.now()) + " Invalid value provided, value equal to 0.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

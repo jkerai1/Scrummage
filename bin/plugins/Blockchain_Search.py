@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, re, plugins.common.General as General
+import requests, re, os, logging, plugins.common.General as General
 
 Plugin_Name = "Blockchain"
 The_File_Extension = ".html"
@@ -18,7 +18,17 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Local_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Local_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
     if not Cached_Data:
@@ -83,7 +93,17 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Local_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Local_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
     if not Cached_Data:

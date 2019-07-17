@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import play_scraper, requests, re, json, datetime, plugins.common.General as General
+import play_scraper, requests, os, logging, re, json, datetime, plugins.common.General as General
 
 The_File_Extension = ".html"
 Plugin_Name = "Play-Store"
@@ -19,7 +19,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Concat_Plugin_Name)
-    General.Logging(Directory, Concat_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Concat_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:
@@ -51,7 +61,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Data_to_Cache.append(Result_URL)
 
         except:
-            print(str(datetime.datetime.now()) + " Failed to get results, this may be due to the query provided.")
+            logging.info(str(datetime.datetime.now()) + " Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

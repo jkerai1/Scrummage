@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import plugins.common.General as General, datetime, requests, sys, json, os
+import plugins.common.General as General, datetime, requests, json, os, logging
 from googleapiclient import discovery
 
 The_File_Extension = ".html"
@@ -8,7 +8,7 @@ Plugin_Name = "YouTube"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
 
@@ -25,7 +25,7 @@ def Load_Configuration():
                 return [YouTube_Developer_Key, YouTube_Application_Name, YouTube_Application_Version, YouTube_Location, YouTube_Location_Radius]
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -40,7 +40,16 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     YouTube_Details = Load_Configuration()
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 

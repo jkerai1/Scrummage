@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import plugins.common.General as General, json, datetime, sys, os, requests
+import plugins.common.General as General, json, datetime, logging, os, requests
 
 The_File_Extension = ".html"
 Plugin_Name = "Pinterest"
@@ -7,7 +7,7 @@ Plugin_Name = "Pinterest"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
 
@@ -18,7 +18,7 @@ def Load_Configuration():
                 return Pinterest_Details['oauth_token']
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
@@ -33,7 +33,17 @@ def Search(Query_List, Task_ID, Type, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import json, sys, os, tweepy, datetime, plugins.common.General as General
+import json, os, logging, tweepy, datetime, plugins.common.General as General
 
 Plugin_Name = "Twitter"
 The_File_Extension = ".txt"
@@ -9,7 +9,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    print(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
 
     try:
 
@@ -19,7 +19,7 @@ def Load_Configuration():
             return Twitter_Credentials
 
     except:
-        sys.exit(str(datetime.datetime.now()) + " Failed to load Twitter details.")
+        logging.warning(str(datetime.datetime.now()) + " Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
     Data_to_Cache = []
@@ -36,7 +36,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
         Link = ""
 
         try:
-            print(str(datetime.datetime.now()) + Tweet.entities['urls'][0])
+            logging.info(str(datetime.datetime.now()) + Tweet.entities['urls'][0])
             JSON_Response.append({
                 'text': Tweet.text,
                 'author_name': Tweet.user.screen_name,
@@ -58,11 +58,11 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             if Output_file:
 
                 for JSON_Tweet in JSON_Response:
-                    print(JSON_Tweet)
+                    logging.info(JSON_Tweet)
 
                     if 'url' in JSON_Tweet:
                         Link = JSON_Tweet['url']
-                        print(str(datetime.datetime.now()) + Link)
+                        logging.info(str(datetime.datetime.now()) + Link)
                         General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
 
             Data_to_Cache.append(Link)
@@ -84,7 +84,17 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Twitter_Credentials = Load_Configuration()
     Query_List = General.Convert_to_List(Query_List)
 
@@ -97,4 +107,4 @@ def Search(Query_List, Task_ID, **kwargs):
             General_Pull(Query, Limit, Directory, API, Task_ID)
 
         except:
-            print(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")
+            logging.info(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")

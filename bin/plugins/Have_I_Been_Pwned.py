@@ -1,4 +1,4 @@
-import pyhibp, json, plugins.common.General as General
+import pyhibp, json, os, logging, plugins.common.General as General
 from pyhibp import pwnedpasswords as pw
 
 Plugin_Name = "Have-I-Been-Pwned"
@@ -18,7 +18,17 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
         Limit = 10
 
     Directory = General.Make_Directory(Concat_Plugin_Name)
-    General.Logging(Directory, Concat_Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Concat_Plugin_Name)
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Query_List = General.Convert_to_List(Query_List)
 
     if Type_of_Query == "email":
@@ -30,7 +40,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
         for Query in Query_List:
             Query_Response = pyhibp.get_pastes(email_address=Query)
-            print(Query_Response)
+            logging.info(Query_Response)
 
             if Query_Response:
                 Domain = Query_Response[0]["Source"]
@@ -90,7 +100,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
         for Query in Query_List:
             Query_Response = pw.is_password_breached(password=Query)
-            print(Query_Response)
+            logging.info(Query_Response)
 
             if Query_Response:
                 Link = "https://haveibeenpwned.com/Passwords?" + Query

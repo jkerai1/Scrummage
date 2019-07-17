@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, os, json, re, plugins.common.General as General
+import requests, os, logging, json, re, plugins.common.General as General
 
 Plugin_Name = "SSlMate"
 The_File_Extension = ".json"
@@ -21,7 +21,17 @@ def Search(Query_List, Task_ID):
     Cached_Data = []
     Configuration_Details = Load_Configuration()
     Directory = General.Make_Directory(Plugin_Name.lower())
-    General.Logging(Directory, Plugin_Name)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    Log_File = General.Logging(Directory, Plugin_Name.lower())
+    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
     if not Cached_Data:
@@ -57,7 +67,7 @@ def Search(Query_List, Task_ID):
                                 General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request), Plugin_Name.lower())
 
                     except:
-                        print(str(datetime.datetime.now()) + "[-] Failed to create file.")
+                        logging.info(str(datetime.datetime.now()) + "[-] Failed to create file.")
 
                     Data_to_Cache.append(Request)
 
