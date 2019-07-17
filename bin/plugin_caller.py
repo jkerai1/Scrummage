@@ -1,4 +1,4 @@
-import plugins.common.Connectors as Connectors
+import threading, plugins.common.Connectors as Connectors
 
 def Starter(Task_ID):
     Connection = Connectors.Load_Main_Database()
@@ -23,153 +23,228 @@ class Plugin_Caller:
         self.task_id = kwargs["Task_ID"]
 
     def Call_Plugin(self):
-        Starter(self.task_id)
+        Thread_0 = threading.Thread(target=Starter, args=[self.task_id])
+        Thread_0.start()
+        Thread_0.join()
 
         if self.plugin_name == "YouTube Search":
             import plugins.YouTube_Search as YT_Search
-            YT_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=YT_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Windows Store Search":
             import plugins.Windows_Store_Search as WS_Search
-            WS_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=WS_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Vulners Search":
             import plugins.Vulners_Search as Vulners_Search
-            Vulners_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Vulners_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Vehicle Registration Search":
             import plugins.Vehicle_Registration_Search as Vehicle_Registration_Search
-            Vehicle_Registration_Search.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target=Vehicle_Registration_Search.Search, args=(self.query, self.task_id))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Twitter Scraper":
             import plugins.Twitter_Scraper as Twitter_Scrape
-            Twitter_Scrape.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Twitter_Scrape.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "RSS Feed Search":
             import plugins.RSS_Feed_Search as RSS_Feed_Search
-            RSS_Feed_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=RSS_Feed_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Reddit Search":
             import plugins.Reddit_Search as Reddit_Search
-            Reddit_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Reddit_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "PhishTank Search":
             import plugins.Phishtank_Search as Phishtank_Search
-            Phishtank_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Phishtank_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Pinterest Pin Search":
             import plugins.Pinterest_Search as Pinterest_Search
-            Pinterest_Search.Search(self.query, self.task_id, "pin", Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Pinterest_Search.Search, args=(self.query, self.task_id, "pin"), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Pinterest Board Search":
             import plugins.Pinterest_Search as Pinterest_Search
-            Pinterest_Search.Search(self.query, self.task_id, "board", Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Pinterest_Search.Search, args=(self.query, self.task_id, "board"), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Library Genesis Search":
             import plugins.Library_Genesis_Search as Library_Genesis_Search
-            Library_Genesis_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Library_Genesis_Search.Search, args=(self.query, self.task_id, "board"), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "iTunes Store Search":
             import plugins.ITunes_Store_Search as ITunes_Store_Search
-            ITunes_Store_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=ITunes_Store_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Instagram User Search":
             import plugins.Instagram_Search as Instagram_Search
-            Instagram_Search.Search(self.query, self.task_id, "User")
-            
+            Thread_1 = threading.Thread(target=Instagram_Search.Search, args=(self.query, self.task_id, "User"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Instagram Tag Search":
             import plugins.Instagram_Search as Instagram_Search
-            Instagram_Search.Search(self.query, self.task_id, "Tag")
-            
+            Thread_1 = threading.Thread(target=Instagram_Search.Search, args=(self.query, self.task_id, "Tag"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Instagram Media Search":
             import plugins.Instagram_Search as Instagram_Search
-            Instagram_Search.Search(self.query, self.task_id, "Media")
-            
+            Thread_1 = threading.Thread(target=Instagram_Search.Search, args=(self.query, self.task_id, "Media"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Instagram Location Search":
             import plugins.Instagram_Search as Instagram_Search
-            Instagram_Search.Search(self.query, self.task_id, "Location")
-            
+            Thread_1 = threading.Thread(target=Instagram_Search.Search, args=(self.query, self.task_id, "Location"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Have I Been Pwned - Password Search":
             import plugins.Have_I_Been_Pwned as Have_I_Been_Pwned
-            Have_I_Been_Pwned.Search(self.query, self.task_id, "password")
-            
+            Thread_1 = threading.Thread(target=Have_I_Been_Pwned.Search, args=(self.query, self.task_id, "password"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Have I Been Pwned - Email Search":
             import plugins.Have_I_Been_Pwned as Have_I_Been_Pwned
-            Have_I_Been_Pwned.Search(self.query, self.task_id, "email")
-            
+            Thread_1 = threading.Thread(target=Have_I_Been_Pwned.Search, args=(self.query, self.task_id, "email"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Have I Been Pwned - Breach Search":
             import plugins.Have_I_Been_Pwned as Have_I_Been_Pwned
-            Have_I_Been_Pwned.Search(self.query, self.task_id, "breach")
-            
+            Thread_1 = threading.Thread(target=Have_I_Been_Pwned.Search, args=(self.query, self.task_id, "breach"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Have I Been Pwned - Account Search":
             import plugins.Have_I_Been_Pwned as Have_I_Been_Pwned
-            Have_I_Been_Pwned.Search(self.query, self.task_id, "account")
-            
+            Thread_1 = threading.Thread(target=Have_I_Been_Pwned.Search, args=(self.query, self.task_id, "account"))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Google Search":
             import plugins.Google_Search as Google_Search
-            Google_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Google_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Google Play Store Search":
             import plugins.Google_Play_Store_Search as Google_Play_Store_Search
-            Google_Play_Store_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Google_Play_Store_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Ebay Search":
             import plugins.Ebay_Search as Ebay_Search
-            Ebay_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Ebay_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Domain Fuzzer - Regular Domain Suffixes":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Domain_Fuzzer.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target= Domain_Fuzzer.Regular_Extensions, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Domain Fuzzer - Global Domain Suffixes":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Domain_Fuzzer.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target= Domain_Fuzzer.Global_Extensions, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Domain Fuzzer - Alpha-Linguistic Character Switcher":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Domain_Fuzzer.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target= Domain_Fuzzer.Character_Switch, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Domain Fuzzer - All Extensions":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Domain_Fuzzer.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target= Domain_Fuzzer.All_Extensions, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Ahmia Darkweb Search":
             import plugins.Ahmia_Darkweb_Search as Ahmia_Darkweb_Search
-            Ahmia_Darkweb_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target= Ahmia_Darkweb_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Craigslist Search":
             import plugins.Craigslist_Search as Craigslist_Search
-            Craigslist_Search.Search(self.query, self.task_id, Limit=self.limit)
-            
+            Thread_1 = threading.Thread(target=Craigslist_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Certificate Transparency":
             import plugins.Certificate_Transparency as Certificate_Transparency
-            Certificate_Transparency.Search(self.query, self.task_id)
-            
+            Thread_1 = threading.Thread(target=Certificate_Transparency.Search, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Ethereum Transaction Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Transaction_Search(self.query, self.task_id, "eth")
-            
+            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "eth",))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Bitcoin Cash Transaction Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Transaction_Search(self.query, self.task_id, "bch")
-            
+            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "bch",))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Bitcoin Transaction Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Transaction_Search(self.query, self.task_id, "btc")
-            
+            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "btc",))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Ethereum Address Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Address_Search(self.query, self.task_id, "eth")
-            
+            Thread_1 = threading.Thread(target=Blockchain_Search.Address_Search, args=(self.query, self.task_id, "eth",))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Bitcoin Cash Address Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Address_Search(self.query, self.task_id, "bch")
-            
+            Thread_1 = threading.Thread(target=Blockchain_Search.Address_Search, args=(self.query, self.task_id, "bch",))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Bitcoin Address Search":
             import plugins.Blockchain_Search as Blockchain_Search
-            Blockchain_Search.Address_Search(self.query, self.task_id, "btc")
+            Thread_1 = threading.Thread(target=Blockchain_Search.Address_Search, args=(self.query, self.task_id, "btc",))
+            Thread_1.start()
+            Thread_1.join()
             
-        Stopper(self.task_id)
+        Thread_2 = threading.Thread(target=Stopper, args=[self.task_id])
+        Thread_2.start()
         
 if __name__ == "__main__":
     import argparse, sys, plugins.common.General as General
