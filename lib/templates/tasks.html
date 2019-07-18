@@ -21,6 +21,8 @@
                 {% if is_admin == True %}
                     {% if form_step == 0 %}
                     {% elif form_step == 1 %}
+                    <div style="text-align: center; padding-top: 10px;">
+                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
                             <dd>
@@ -44,7 +46,11 @@
                     <form class="form" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
+                    </div>
+                    </div>
                     {% elif form_step == 2 %}
+                    <div style="text-align: center; padding-top: 10px;">
+                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                         <form class="form" action="" method=post autocomplete="off">
                             <dl>
                                 {% if phish_sites %}
@@ -73,6 +79,8 @@
                         <form class="form" action="" method=post autocomplete="off">
                             <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                         </form>
+                    </div>
+                    </div>
                     {% else %}
                         <p id="logintitle">404 Page Not Found.</p>
                         <p class="error">The page you were looking for does not exist.</p>
@@ -138,6 +146,8 @@
                 {% if is_admin %}
                     {% if form_step == 0 %}
                     {% elif form_step == 1 %}
+                    <div style="text-align: center; padding-top: 10px;">
+                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
                             <dd>
@@ -173,7 +183,11 @@
                     <form class="form" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
+                    </div>
+                    </div>
                     {% elif form_step == 2%}
+                    <div style="text-align: center; padding-top: 10px;">
+                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
                             {% if phish_sites %}
@@ -202,6 +216,8 @@
                     <form class="form" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
+                    </div>
+                    </div>
                     {% else %}
                         <p id="logintitle">404 Page Not Found.</p>
                         <p class="error">The page you were looking for does not exist.</p>

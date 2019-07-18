@@ -211,6 +211,8 @@
 	{% elif form_step == 1 %}
 		{% if is_admin %}
     	<div class="field-container">
+		<div style="text-align: center; padding-top: 10px;">
+        <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
             <form class="form" action="" method=post autocomplete="off">
                 <dl>
                     <dd>
@@ -224,6 +226,7 @@
                         <datalist id="browsers">
                             <option value="Data Leakage">
                         	<option value="Domain Spoof">
+							<option value="Exploit">
 							<option value="Phishing">
 							<option value="Blockchain Address">
 							<option value="Blockchain Transaction">
@@ -236,6 +239,8 @@
 				<p id="createresult"><input class="button" name="return" type=submit value="Return"></p>
             </form>
     	</div>
+		</div>
+		</div>
 		{% endif %}
 	{% endif %}
     {% endblock %}
