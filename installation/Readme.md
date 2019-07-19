@@ -4,18 +4,18 @@
 
 **This tool currently supports Debian, RHEL, and SUSE based linux distributions.**
 
-Clone this repository to the location where you want to run the web application from.
-
-    1. git clone https://github.com/matamorphosis/Scrummage
-
-Navigate to the installation directory.
-
-    2. cd installation
-
-Run the dependencies.sh bash script with root privileges, to install all necessary dependencies.
-
-    3. sudo bash dependencies.sh
-
+1. Clone this repository to the location where you want to run the web application from.  
+```console
+user@linux:~$ git clone https://github.com/matamorphosis/Scrummage
+```
+2. Navigate to the installation directory.
+```console
+user@linux:~$ cd installation
+```
+3. Run the dependencies.sh bash script with root privileges, to install all necessary dependencies.
+```console
+user@linux:~$ sudo bash dependencies.sh
+```
 As part of this script it will install all python dependencies in the python_requirements.txt file and run the Create_Tables.py script to create all necessary tables in the backend database. If you want to change the default username and database, which are both set to “Scrummage”, change the following lines in the script:
 
 DATABASE="scrummage"  
