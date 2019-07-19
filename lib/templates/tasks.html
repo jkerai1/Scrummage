@@ -93,6 +93,9 @@
                 {% endif %}
             {% endif %}
             {% if form_step == 0 %}
+                {% if api_check == "Failed" %}
+                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
+                {% endif %}
                 <table id="paginate">
                     <thead>
                         <tr>
