@@ -107,7 +107,7 @@ This task doesn’t require an API key, and works by attempting to resolve a pro
 
 * *All Extensions / Suffixes* – This tool works by simply switching out the domain extension with the extension of every country for each regular extension. Such as .com.au, .net.au, .gov.au, etc. After this the tool iterates through each generated domain and attempts to resolve it to an IP address, if it does a result is created for that domain. FYI this is a slow plugin due to the amount of domains it attempts to resolve.
 
-*Test query: google.com*
+*Test query: google.com*  
 *Note: The domain name body (google is the body of the test query) has a limit of 15 characters in length in the Rotor.py library.*
 
 
