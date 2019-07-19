@@ -944,6 +944,14 @@ def tasks():
                                                        is_admin=session.get('is_admin'), results=task_results,
                                                        error="Task is already running.")
 
+                            if API_Checker(result[2]) == "Failed":
+                                PSQL_Select_Query = "SELECT * FROM tasks"
+                                Cursor.execute(PSQL_Select_Query)
+                                task_results = Cursor.fetchall()
+                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
+                                                       is_admin=session.get('is_admin'), results=task_results,
+                                                       api_check="Failed")
+
                             else:
                                 Plugin_to_Call = plugin_caller.Plugin_Caller(Plugin_Name=result[2], Limit=result[5], Query=result[1], Task_ID=Plugin_ID)
                                 plugin_caller_thread = threading.Thread(target=Plugin_to_Call.Call_Plugin)
