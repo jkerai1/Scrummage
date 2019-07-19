@@ -250,13 +250,7 @@ This task requires an API key, and works by performing an API search against the
   
 *Note: This search only supports Australian registration numbers.*  
   
-This task doesn't require any API keys, and works by performing an API search against a publicly available car insurance site to obtain the details of the vehicle that matches the query provided which should be a valid registration plate number. For this search to work a valid Australian state/territory must be provided in the config.json file, under "vehicle-registration-search":
-
-	"vehicle-registration-search": [
-		{
-			"state": "NSW, QLD, VIC, etc."
-		}
-	]
+This task doesn't require any API keys, and works by performing an API search against a publicly available car insurance site to obtain the details of the vehicle that matches the query provided which should be a valid registration plate number. The API requires a state to be provided; however, this plugin iterates through all 8 Australian States and Territories to avoid having to specify a state each search.
 
 *Test query: [any australian license plate]*
 
