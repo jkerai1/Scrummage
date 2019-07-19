@@ -16,7 +16,12 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
 
             for Vulners_Details in Configuration_Data[Plugin_Name.lower()]:
-                return Vulners_Details['api_key']
+
+                if Vulners_Details['api_key']:
+                    return Vulners_Details
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")

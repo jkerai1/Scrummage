@@ -14,7 +14,12 @@ def Load_Configuration():
         for SSLMate_Details in Configuration_Data[Plugin_Name.lower()]:
             SSLMate_API = SSLMate_Details['api_key']
             SSLMate_Subdomains = SSLMate_Details['search_subdomain']
-            return [SSLMate_API, SSLMate_Subdomains]
+
+            if SSLMate_API and SSLMate_Subdomains:
+                return [SSLMate_API, SSLMate_Subdomains]
+
+            else:
+                return None
 
 def Search(Query_List, Task_ID):
     Data_to_Cache = []

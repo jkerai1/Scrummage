@@ -15,7 +15,12 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
 
             for Pinterest_Details in Configuration_Data[Plugin_Name.lower()]:
-                return Pinterest_Details['oauth_token']
+
+                if Pinterest_Details['oauth_token']:
+                    return Pinterest_Details['oauth_token']
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")

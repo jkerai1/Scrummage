@@ -16,7 +16,12 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
 
             for Ebay_Details in Configuration_Data[Plugin_Name.lower()]:
-                return Ebay_Details['access_key']
+
+                if Ebay_Details['access_key']:
+                    return Ebay_Details['access_key']
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")

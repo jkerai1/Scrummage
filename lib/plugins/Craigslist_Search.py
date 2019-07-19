@@ -17,7 +17,12 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
 
             for Craigslist_Details in Configuration_Data[Plugin_Name.lower()]:
-                return Craigslist_Details['city']
+
+                if Craigslist_Details['city']:
+                    return Craigslist_Details['city']
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")

@@ -22,7 +22,11 @@ def Load_Configuration():
                 YouTube_Location = YouTube_Details['location']
                 YouTube_Location_Radius = YouTube_Details['location_radius']
 
-                return [YouTube_Developer_Key, YouTube_Application_Name, YouTube_Application_Version, YouTube_Location, YouTube_Location_Radius]
+                if YouTube_Developer_Key and YouTube_Application_Name and YouTube_Application_Version and YouTube_Location and YouTube_Location_Radius:
+                    return [YouTube_Developer_Key, YouTube_Application_Name, YouTube_Application_Version, YouTube_Location, YouTube_Location_Radius]
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")

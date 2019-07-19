@@ -16,7 +16,12 @@ def Load_Configuration():
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
             Twitter_Credentials = Configuration_Data[Plugin_Name.lower()]
-            return Twitter_Credentials
+
+            if Twitter_Credentials[Plugin_Name.lower()]:
+                return Twitter_Credentials
+
+            else:
+                return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load Twitter details.")

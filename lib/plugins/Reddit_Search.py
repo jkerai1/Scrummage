@@ -21,7 +21,12 @@ def Load_Configuration():
                 Reddit_Username = Reddit_Details['username']
                 Reddit_Password = Reddit_Details['password']
                 Subreddit_to_Search = Reddit_Details["subreddits"]
-                return [Reddit_Client_ID, Reddit_Client_Secret, Reddit_User_Agent, Reddit_Username, Reddit_Password, Subreddit_to_Search]
+
+                if Reddit_Client_ID and Reddit_Client_Secret and Reddit_User_Agent and Reddit_Username and Reddit_Password and Subreddit_to_Search:
+                    return [Reddit_Client_ID, Reddit_Client_Secret, Reddit_User_Agent, Reddit_Username, Reddit_Password, Subreddit_to_Search]
+
+                else:
+                    return None
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load Reddit details.")
 

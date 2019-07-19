@@ -21,7 +21,11 @@ def Load_Configuration():
                 Google_Application_Name = Google_Details['application_name']
                 Google_Application_Version = Google_Details['application_version']
 
-                return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
+                if Google_CX and Google_Developer_Key and Google_Application_Name and Google_Application_Version:
+                    return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
