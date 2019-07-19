@@ -252,55 +252,5 @@ def Rotor_Combinations(Rotor_Word):
             Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o]
             Rotor_Word_Appender(Newer_List)
 
-    elif (len(Rotor_Word) == 16):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 17):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 18):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 19):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 20):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 21):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 22):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 23):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 24):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x]
-            Rotor_Word_Appender(Newer_List)
-
-    elif (len(Rotor_Word) == 25):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y]
-            Rotor_Word_Appender(Newer_List)
-
     else:
         return("[-] The word entered was either over 20 characters in length or had no characters, this function only permits words with lengths between 1 and 20.")
