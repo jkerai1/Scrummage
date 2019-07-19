@@ -49,6 +49,11 @@
                     </div>
                     </div>
                     {% elif form_step == 2 %}
+                    {% if api_check == "Passed" %}
+                    <div class="success"></div>
+                    {% elif api_check == "Failed" %}
+                    <div class="fail"></div>
+                    {% endif %}
                     <div style="text-align: center; padding-top: 10px;">
                     <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                         <form class="form" action="" method=post autocomplete="off">
@@ -186,6 +191,11 @@
                     </div>
                     </div>
                     {% elif form_step == 2%}
+                    {% if api_check == "Passed" %}
+                    <div class="success"></div><p class="message">API Configuration Check Passed.</p>
+                    {% elif api_check == "Failed" %}
+                    <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+                    {% endif %}
                     <div style="text-align: center; padding-top: 10px;">
                     <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
