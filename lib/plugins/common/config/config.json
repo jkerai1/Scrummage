@@ -132,11 +132,6 @@
             "ACCESS_SECRET": ""
         }
     ],
-    "vehicle-registration-search": [
-        {
-            "state": "NSW"
-        }
-    ],
     "vulners": [
         {
             "api_key": ""
