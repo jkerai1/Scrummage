@@ -436,3 +436,15 @@ Verifying the task has been created:
 
 Verifying the cronjob has been created:  
 ![Char Switch](/installation/task_3.png)
+
+
+**API Verification**  
+This simple feature displays either a green tick or a red cross when creating a task that relies on an API. It is verifying that the user has provided API information to the config.json file. If you receive a red cross when creating a task you can finish creating the task; however, you cannot run the task until the API requirements are fulfilled:
+
+![API_Verification](/installation/task_4.png)  
+  
+![API_Verification](/installation/task_5.png)  
+
+The same error will appear if you attempt to run the plugin without fulfilling the API requirements:
+
+![API_Verification](/installation/task_6.png)
