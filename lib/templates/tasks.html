@@ -43,7 +43,7 @@
                         </dl>
                         <p style="padding-top: 10px; display: inline-block;"><input name="edittask" class="button" type=submit value="Next"></p>
                     </form>
-                    <form class="form" action="" method=post autocomplete="off">
+                    <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
                     </div>
@@ -81,7 +81,7 @@
                             </dl>
                             <p style="padding-top: 10px; display: inline-block;""><input name="edittask" class="button" type=submit value="Update"></p>
                         </form>
-                        <form class="form" action="" method=post autocomplete="off">
+                        <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
                             <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                         </form>
                     </div>
@@ -145,8 +145,11 @@
                 </table>
             </div>
                 {% if is_admin %}
-                <form class="form_left" action="" method=post autocomplete="off">
+                <form class="form_left" style="display: inline-block;" action="" method=post autocomplete="off">
                     <input name="newtask" class="button" type=submit value="New Task">
+                </form>
+                <form class="form_left" style="display: inline-block;"  action="/verify_output" method=post autocomplete="off">
+                    <input name="verify" class="button" type=submit value="Verify Output">
                 </form>
                 {% endif %}
             {% endif %}
@@ -188,7 +191,7 @@
                         </dl>
                         <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Next"></p>
                     </form>
-                    <form class="form" action="" method=post autocomplete="off">
+                    <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
                     </div>
@@ -226,7 +229,7 @@
                         </dl>
                         <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Finish"></p>
                     </form>
-                    <form class="form" action="" method=post autocomplete="off">
+                    <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
                     </div>

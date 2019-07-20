@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="static/js/datatables.min.js"></script>
+		<script type="text/javascript" src="static/js/main.js"></script>
+        <title>Scrummage Verify Output</title>
+    </head>
+    <body>
+    {% extends "template.html" %}
+    {% block content %}
+    {% if is_admin %}
+    <div class="field-container">
+        <table id="paginate">
+            <thead>
+                <tr>
+                    <th>Output</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for Configuration in Configurations %}
+                <tr>
+                    <td style="padding: 0px 0px 0px 10px;" class="nonscreenshottab">{{Configuration[0]}}</td>
+                    {% if Configuration[1] %}
+                    <td class="nonscreenshottab" style="padding: 2px 0px 2px 0px;"><div class="success"></div></td>
+                    {% else %}
+                    <td class="nonscreenshottab" style="padding: 2px 0px 2px 0px;"><div class="fail"></div></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% endblock %}
+    </body>
+</html>
