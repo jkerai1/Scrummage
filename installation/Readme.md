@@ -406,6 +406,10 @@ Slack channel notifications work by having a message sent to a slack channel . T
             "channel": ""
         }
     ],
+    
+All output functions can be verified by using the "Verify Output" button at the bottom of the tasks page, which will perform a series of checks for all output options available:  
+
+![Output](/installation/verify_output.png)
 
 # Setting up your first task
 
