@@ -417,17 +417,20 @@ def dashboard():
 def dropsession():
 
     try:
-        username = session.get('user')
-        session.pop('user', None)
-        session.pop('is_admin', False)
-        Message = "Session for user: " + username + " terminated."
-        app.logger.warning(Message)
-        Create_Event(Message)
+
+        if session.get('user'):
+            username = session.get('user')
+            session.pop('user', None)
+            session.pop('is_admin', False)
+            Message = "Session for user: " + username + " terminated."
+            app.logger.warning(Message)
+            Create_Event(Message)
+
         return render_template('index.html', loggedout=True)
 
     except Exception as e:
         app.logger.error(e)
-        return render_template('index.html', loggedout=True)
+        return redirect(url_for('dashboard'))
 
 @app.route('/events', methods=['GET'])
 def events():
