@@ -193,6 +193,35 @@ def login():
 def no_session():
     return render_template('no_session.html')
 
+@app.route('/verify_output', methods=['POST'])
+def verify_output():
+
+    if session.get('user'):
+
+        if session.get('is_admin'):
+
+            if request.method == 'POST':
+                CSV = Connectors.Load_CSV_Configuration()
+                DD = Connectors.Load_Defect_Dojo_Configuration()
+                Email = Connectors.Load_Email_Configuration()
+                Elastic = Connectors.Load_Elasticsearch_Configuration()
+                Main_DB = Connectors.Load_Main_Database()
+                JIRA = Connectors.Load_JIRA_Configuration()
+                RTIR = Connectors.Load_RTIR_Configuration()
+                Slack = Connectors.Load_Slack_Configuration()
+                Scumblr = Connectors.Load_Scumblr_Configuration()
+
+                return render_template('verify_output.html', username=session.get('user'), Configurations=[["Main Database", Main_DB], ["CSV", CSV], ["DefectDojo", DD], ["Email", Email], ["ElasticSearch", Elastic], ["JIRA", JIRA], ["RTIR", RTIR], ["Slack Channel Notification", Slack], ["Scumblr Database", Scumblr]], is_admin=session.get('is_admin'))
+
+            else:
+                return redirect(url_for('no_method'))
+
+        else:
+            return redirect(url_for('tasks'))
+
+    else:
+        return redirect(url_for('no_session'))
+
 def requirement(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -1309,4 +1338,4 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
