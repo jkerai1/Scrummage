@@ -18,7 +18,12 @@ def Load_CSV_Configuration():
 
         for CSV_Details in Configuration_Data['csv']:
             Use_CSV = CSV_Details['use-csv']
-            return Use_CSV
+
+            if Use_CSV:
+                return Use_CSV
+
+            else:
+                return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -40,12 +45,10 @@ def Load_Defect_Dojo_Configuration():
             DD_User_ID = DD_Details['user-id']
 
         if DD_API_Key and DD_Host and DD_User and DD_Engagement_ID and DD_Product_ID and DD_Test_ID and DD_User_ID:
-            Use_DD = True
+            return [DD_API_Key, DD_Host, DD_User, DD_Engagement_ID, DD_Product_ID, DD_Test_ID, DD_User_ID]
 
         else:
-            Use_DD = False
-
-        return [DD_API_Key, DD_Host, DD_User, DD_Engagement_ID, DD_Product_ID, DD_Test_ID, DD_User_ID, Use_DD]
+            return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -65,12 +68,10 @@ def Load_Email_Configuration():
             Email_To_Address = Email_Details['to_address']
 
         if Email_SMTP_Server and Email_SMTP_Port and Email_From_Address and Email_From_Password and Email_To_Address:
-            Use_Email = True
+            return [Email_SMTP_Server, Email_SMTP_Port, Email_From_Address, Email_From_Password, Email_To_Address]
 
         else:
-            Use_Email = False
-
-        return [Email_SMTP_Server, Email_SMTP_Port, Email_From_Address, Email_From_Password, Email_To_Address, Use_Email]
+            return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -88,12 +89,10 @@ def Load_Elasticsearch_Configuration():
             Elasticsearch_Port = int(Elasticsearch_Details['port'])
 
         if Elasticsearch_Service and Elasticsearch_Host and Elasticsearch_Port:
-            Use_Elasticsearch = True
+            return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port]
 
         else:
-            Use_Elasticsearch = False
-
-        return [Elasticsearch_Service, Elasticsearch_Host, Elasticsearch_Port, Use_Elasticsearch]
+            return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -121,7 +120,12 @@ def Load_Main_Database():
                                       host=DB_Host,
                                       port=DB_Port,
                                       database=DB_Database)
-        return DB_Connection
+
+        if DB_Connection:
+            return DB_Connection
+
+        else:
+            return None
 
     except:
         logging.warning(str(datetime.datetime.now()) + " Failed to connect to database.")
@@ -142,12 +146,10 @@ def Load_JIRA_Configuration():
                 JIRA_Ticket_Type = JSON_Details['ticket_type']
 
             if JIRA_Project_Key and JIRA_Address and JIRA_Username and JIRA_Password and JIRA_Ticket_Type:
-                Use_JIRA = True
+                return [JIRA_Project_Key, JIRA_Address, JIRA_Username, JIRA_Password, JIRA_Ticket_Type]
 
             else:
-                Use_JIRA = False
-
-        return [JIRA_Project_Key, JIRA_Address, JIRA_Username, JIRA_Password, JIRA_Ticket_Type, Use_JIRA]
+                return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -165,12 +167,10 @@ def Load_Slack_Configuration():
                 Slack_Channel = JSON_Details['channel']
 
             if Slack_Token and Slack_Channel:
-                Use_Slack = True
+                return [Slack_Token, Slack_Channel]
 
             else:
-                Use_Slack = False
-
-        return [Slack_Token, Slack_Channel, Use_Slack]
+                return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -191,12 +191,10 @@ def Load_Scumblr_Configuration():
                 PostgreSQL_Password = PostgreSQL_Details['password']
 
             if PostgreSQL_Host and PostgreSQL_Port and PostgreSQL_Database and PostgreSQL_User and PostgreSQL_Password:
-                Use_PostgreSQL = True
+                return [PostgreSQL_Host, PostgreSQL_Port, PostgreSQL_Database, PostgreSQL_User, PostgreSQL_Password]
 
             else:
-                Use_PostgreSQL = False
-
-        return [PostgreSQL_Host, PostgreSQL_Port, PostgreSQL_Database, PostgreSQL_User, PostgreSQL_Password, Use_PostgreSQL]
+                return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -217,12 +215,10 @@ def Load_RTIR_Configuration():
                 RTIR_Authenticator = RTIR_Details['authenticator']
 
             if RTIR_HTTP_Service and RTIR_Host and RTIR_Port and RTIR_User and RTIR_Password and RTIR_Authenticator:
-                Use_RTIR = True
+                return [RTIR_Host, RTIR_Port, RTIR_User, RTIR_Password, RTIR_HTTP_Service, RTIR_Authenticator]
 
             else:
-                Use_RTIR = False
-
-        return [RTIR_Host, RTIR_Port, RTIR_User, RTIR_Password, RTIR_HTTP_Service, RTIR_Authenticator, Use_RTIR]
+                return None
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -230,22 +226,25 @@ def Load_RTIR_Configuration():
 def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
 
     try:
-        Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
-        Data = [Title, Plugin_Name, Domain, Link, str(datetime.datetime.now()), Output_File, Result_Type, str(Task_ID)]
-        File_Path = os.path.dirname(os.path.realpath('__file__'))
-        File_Path = File_Path + "/static/protected/output/" + Plugin_Name
-        Complete_File = File_Path + "Output.csv"
+        Use_CSV = Load_CSV_Configuration()
 
-        if not os.path.exists(Complete_File):
-            CSV_Output = csv.writer(open(Complete_File, 'w'))
-            CSV_Output.writerow(Headings)
-            CSV_Output.writerow(Data)
-            logging.info(str(datetime.datetime.now()) + " CSV output file created.")
+        if Use_CSV:
+            Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
+            Data = [Title, Plugin_Name, Domain, Link, str(datetime.datetime.now()), Output_File, Result_Type, str(Task_ID)]
+            File_Path = os.path.dirname(os.path.realpath('__file__'))
+            File_Path = File_Path + "/static/protected/output/" + Plugin_Name
+            Complete_File = File_Path + "Output.csv"
 
-        else:
-            CSV_Output = csv.writer(open(Complete_File, 'a'))
-            CSV_Output.writerow(Data)
-            logging.info(str(datetime.datetime.now()) + " CSV output file updated.")
+            if not os.path.exists(Complete_File):
+                CSV_Output = csv.writer(open(Complete_File, 'w'))
+                CSV_Output.writerow(Headings)
+                CSV_Output.writerow(Data)
+                logging.info(str(datetime.datetime.now()) + " CSV output file created.")
+
+            else:
+                CSV_Output = csv.writer(open(Complete_File, 'a'))
+                CSV_Output.writerow(Data)
+                logging.info(str(datetime.datetime.now()) + " CSV output file updated.")
 
     except Exception as e:
         logging.warning(str(datetime.datetime.now()) + " " + str(e))
@@ -253,7 +252,7 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
 def Defect_Dojo_Output(Title, Description):
     DD_Details = Load_Defect_Dojo_Configuration()
 
-    if DD_Details[7]:
+    if DD_Details:
 
         try:
             Impact = 'All Scrummage findings have the potential to cause significant damage to a business\' finances, efficiency and reputation. Therefore, findings should be investigated to assist in reducing this risk.'
@@ -274,33 +273,35 @@ def Defect_Dojo_Output(Title, Description):
 def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
     Connection = Load_Main_Database()
 
-    try:
-        # Create connection cursor.
-        Cursor = Connection.cursor()
-        Cursor.execute("SELECT * FROM results WHERE link like %s", (Link,))
-        Item_Already_in_Database = Cursor.fetchone()
+    if Connection:
 
-        if Item_Already_in_Database is None:
-            # Execute statement.
-            Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, str(datetime.datetime.now()), str(datetime.datetime.now()), Output_File, Result_Type, Task_ID,))
+        try:
+            # Create connection cursor.
+            Cursor = Connection.cursor()
+            Cursor.execute("SELECT * FROM results WHERE link like %s", (Link,))
+            Item_Already_in_Database = Cursor.fetchone()
 
-        else:
-            logging.info(str(datetime.datetime.now()) + " Entry already exists in the database. Skipping...")
+            if Item_Already_in_Database is None:
+                # Execute statement.
+                Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, str(datetime.datetime.now()), str(datetime.datetime.now()), Output_File, Result_Type, Task_ID,))
 
-    except (Exception, psycopg2.DatabaseError) as Error:
-        logging.warning(str(datetime.datetime.now()) + str(Error))
+            else:
+                logging.info(str(datetime.datetime.now()) + " Entry already exists in the database. Skipping...")
 
-    finally:
+        except (Exception, psycopg2.DatabaseError) as Error:
+            logging.warning(str(datetime.datetime.now()) + str(Error))
 
-        if Connection is not None:
-            Connection.commit()
-            Connection.close()
+        finally:
+
+            if Connection is not None:
+                Connection.commit()
+                Connection.close()
 
 def Scumblr_Main(Link, Domain, Title):
     Scumblr_Details = Load_Scumblr_Configuration()
     Connection = ""
 
-    if Scumblr_Details[5]:
+    if Scumblr_Details:
 
         try:
             # Connect to the PostgreSQL server.
@@ -332,7 +333,7 @@ def Scumblr_Main(Link, Domain, Title):
 def RTIR_Main(Ticket_Subject, Ticket_Text):
     RTIR_Details = Load_RTIR_Configuration()
 
-    if RTIR_Details[6]:
+    if RTIR_Details:
 
         try:
             Request_Data = "content=id: ticket/new\nQueue: 1\nSubject: " + Ticket_Subject + "\nText: " + Ticket_Text
@@ -352,7 +353,7 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
 
-    if JIRA_Details[5]:
+    if JIRA_Details:
 
         try:
             JIRA_Options={'server': JIRA_Details[1]}
@@ -366,7 +367,7 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
 
-    if Slack_Details[2]:
+    if Slack_Details:
 
         try:
             client = slack.WebClient(token=Slack_Details[0])
@@ -379,7 +380,7 @@ def Slack_Main(Description):
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
 
-    if Elasticsearch_Details[3]:
+    if Elasticsearch_Details:
 
         try:
             URI = Elasticsearch_Details[0] + Elasticsearch_Details[1] + ":" + str(Elasticsearch_Details[2]) + "/scrummage/result/" + Concat_Plugin_Name
@@ -400,7 +401,7 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
 def Email_Main(Email_Subject, Email_Body):
     Email_Details = Load_Email_Configuration()
 
-    if Email_Details[5]:
+    if Email_Details:
 
         try: # Send Email Alerts when called.
             server = smtplib.SMTP(Email_Details[0], Email_Details[1])
