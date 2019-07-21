@@ -197,7 +197,7 @@ def login():
 def no_session():
     return render_template('no_session.html')
 
-@app.route('/verify_output', methods=['POST'])
+@app.route('/verify_output', methods=['POST', 'GET'])
 def verify_output():
 
     if session.get('user'):
