@@ -15,10 +15,10 @@ File_Path = os.path.dirname(os.path.realpath('__file__'))
 app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
 app.permanent_session_lifetime = timedelta(minutes=5)
 Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "Certificate Transparency", "Craigslist Search", "Domain Fuzzer - All Extensions",
-                 "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Google Search", "Have I Been Pwned - Password Search",
+                 "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
                  "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Account Search", "Instagram Location Search", "Instagram Media Search", "Instagram Tag Search", "Instagram User Search", "iTunes Store Search", "Library Genesis Search", "PhishTank Search", "Google Play Store Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "RSS Feed Search", "Twitter Scraper", "Vehicle Registration Search", "Vulners Search", "Windows Store Search", "YouTube Search"]
 Plugins_without_Limit = ["Certificate Transparency", "Domain Fuzzer - All Extensions", "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Password Search", "Instagram Media Search", "Pinterest Pin Search", "Vehicle Registration Search"]
-API_Plugins = ["Certificate Transparency", "Craigslist Search", "Ebay Search", "Google Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "Twitter Scraper", "Vulners Search", "YouTube Search"]
+API_Plugins = ["Certificate Transparency", "Craigslist Search", "Ebay Search", "Flickr Search", "Google Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "Twitter Scraper", "Vulners Search", "YouTube Search"]
 Phishing_Sites = [["All", "All"], [139, "ABL"], [201, "ABN"], [92, "ABSA Bank"], [68, "Accurint"], [207, "Adobe"], [209, "Aetna"], [211, "Alibaba.com"], [160, "Allegro"], [51, "Alliance Bank"], [28, "Amarillo"], [61, "Amazon.com"], [118, "American Airlines"], [184, "American Express"], [141, "American Greetings"], [15, "Ameritrade"], [133, "ANZ"], [110, "AOL"], [183, "Apple"], [170, "ArenaNet"], [144, "ASB"], [17, "Associated Bank"], [189, 'AT&T'], [165, "ATO"], [249, "B-tc.ws"], [73, "Banca di Roma"], [178, "Banca Intesa"], [124, "Bancasa"], [158, "Banco De Brasil"], [125, "Banco Real"], [208, "Bank Millennium"], [6, "Bank of America / MBNA"], [40, "Bank of KC"], [45, "Bank of the West"], [5, "Barclays"], [63, "BB&amp;T"], [27, "Bendigo"], [226, "Binance"], [217, "Bitfinex"], [224, "bitFlyer"], [229, "Bitmex"], [122, "Blizzard"], [210, "Blockchain"], [96, "BloomSpot"], [44, "BMO"], [82, "Bradesco"], [212, "BT"], [98, "BuyWithMe"], [126, "Cahoot"], [138, "Caixa"], [120, "Caixo"], [29, "Capital One"], [156, "Capitec Bank"], [65, "Career Builder"], [105, "Cariparma Credit Agricole"], [107, "Cartasi"], [131, "Centurylink"], [19, "Charter One"], [3, "Chase"], [32, "CIBC"], [137, "Cielo"], [150, "CIMB Bank"], [42, "Citibank"], [14, "Citizens"], [230, "CNB"], [146, "Co-operative Bank"], [214, "Coinbase"], [22, "Comerica"], [167, "Commonwealth Bank of Australia"], [30, "Compass"], [113, "Craigslist"], [219, "Credit Karma"], [31, "Crown"], [87, "CUA (Credit Union Australia)"], [33, "DBS"], [140, "Delta"], [185, "Deutsche Bank"], [197, "DHL"], [188, "Diners Club"], [187, "Discover Bank"], [186, "Discover Card"], [196, "Discovery"], [60, "Downey Savings"], [194, "Dropbox"], [59, "e-gold"], [2, "eBay"], [102, "Egg"], [77, "EPPICard"], [74, "Facebook"], [41, "FHB"], [48, "Fifth Third Bank"], [103, "First Direct"], [50, "First Federal Bank of California"], [91, "First National Bank (South Africa)"], [39, "Franklin"], [218, "GitHub"], [76, "Google"], [94, "Groupon"], [106, "Gruppo Carige"], [151, "GTBank"], [171, "GuildWars2"], [81, "Habbo"], [104, "Halifax"], [108, "HMRC"], [97, "HomeRun"], [154, "Hotmail"], [4, "HSBC"], [18, "Huntington"], [228, "IDEX"], [57, "Independent Bank"], [123, "ING"], [67, "Interactive Brokers"], [202, "Intesa Sanpaolo"], [62, "IRS"], [135, "Itau"], [72, "KCFCU (Kauai Credit Union)"], [20, "Key Bank"], [203, "Kiwibank"], [9, "LaSalle"], [204, "LinkedIn"], [152, "Littlewoods"], [112, "Live"], [95, "LivingSocial"], [182, "Lloyds Bank"], [215, "LocalBitcoins.com"], [179, "Lottomatica"], [12, "M &amp; I"], [130, "Mastercard"], [66, "MBTrading"], [173, "Metro Bank"], [177, "Microsoft"], [227, "MyCrypto"], [223, "MyEtherWallet"], [225, "MyMonero"], [78, "MySpace"], [164, "NAB"], [37, "Nantucket Bank"], [34, "National City"], [148, "Nationwide"], [26, "NatWest"], [71, "Nedbank"], [200, "Netflix"], [161, "Nets"], [205, "NetSuite"], [127, "NEXON"], [175, "Nordea"], [149, "Northern Rock"], [168, "Orange"], [89, "Orkut"], [8, "Other"], [159, "otoMoto"], [192, "PagSeguro"], [216, "Paxful"], [1, "PayPal"], [23, "Peoples"], [195, "Permanent TSB"], [180, "Pintrest"], [176, "PKO"], [114, "Playdom"], [115, "Playfish"], [100, "Plum District"], [69, "PNC Bank"], [64, "Poste"], [128, "Rabobank"], [221, "Rackspace"], [36, "RBC"], [70, "RBS"], [16, "Regions"], [134, "RuneScape"], [121, "Safra National Bank of New York"], [35, "Salem Five"], [75, "Salesforce"], [109, "Santander UK"], [84, "Scotiabank"], [55, "Sky Financial"], [117, "Skype"], [147, "Smile Bank"], [93, "South African Revenue Service"], [166, "St George Bank"], [90, "Standard Bank Ltd."], [86, "Steam"], [163, "Suncorp"], [172, "Swedbank"], [145, "Tagged"], [136, "TAM Fidelidade"], [43, "TD Canada Trust"], [193, "Tesco"], [85, "Tibia"], [99, "Tippr"], [181, "TSB"], [132, "Twitter"], [213, "Uber"], [220, "UniCredit"], [157, "US Airways"], [24, "US Bank"], [199, "USAA"], [169, "Verizon"], [153, "Very"], [248, "Virustotal"], [129, "Visa"], [155, "Vodafone"], [58, "Volksbanken Raiffeisenbanken"], [13, "Wachovia"], [56, "WalMart"], [21, "Washington Mutual"], [7, "Wells Fargo"], [53, "Western Union"], [25, "Westpac"], [206, "WhatsApp"], [88, "World of Warcraft"], [222, "Xapo"], [111, "Yahoo"], [116, "ZML"], [101, "Zynga"]]
 Bad_Characters = ["|", "&", "?", "\\", "\"", "\'", "[", "]", ">", "<", "~", "`", ";", "{", "}", "%", "^", "--", "++", "+", "'", "(", ")", "*", "="]
 Finding_Types = ['Domain Spoof', 'Data Leakage', 'Phishing', 'Blockchain Transaction', 'Blockchain Address', 'Exploit']
@@ -45,26 +45,30 @@ def API_Checker(Plugin_Name):
                 Result = Ebay_Search.Load_Configuration()
 
             elif Plugin_Name == API_Plugins[3]:
+                import plugins.Flickr_Search as Flickr_Search
+                Result = Flickr_Search.Load_Configuration()
+
+            elif Plugin_Name == API_Plugins[4]:
                 import plugins.Google_Search as Google_Search
                 Result = Google_Search.Load_Configuration()
 
-            elif Plugin_Name == API_Plugins[4] or Plugin_Name == API_Plugins[5]:
+            elif Plugin_Name == API_Plugins[5] or Plugin_Name == API_Plugins[6]:
                 import plugins.Pinterest_Search as Pinterest_Search
                 Result = Pinterest_Search.Load_Configuration()
 
-            elif Plugin_Name == API_Plugins[6]:
+            elif Plugin_Name == API_Plugins[7]:
                 import plugins.Reddit_Search as Reddit_Search
                 Result = Reddit_Search.Load_Configuration()
 
-            elif Plugin_Name == API_Plugins[7]:
+            elif Plugin_Name == API_Plugins[8]:
                 import plugins.Twitter_Scraper as Twitter_Scraper
                 Result = Twitter_Scraper.Load_Configuration()
 
-            elif Plugin_Name == API_Plugins[8]:
+            elif Plugin_Name == API_Plugins[9]:
                 import plugins.Vulners_Search as Vulners_Search
                 Result = Vulners_Search.Load_Configuration()
 
-            elif Plugin_Name == API_Plugins[9]:
+            elif Plugin_Name == API_Plugins[10]:
                 import plugins.YouTube_Search as YouTube_Search
                 Result = YouTube_Search.Load_Configuration()
 
@@ -81,7 +85,7 @@ def API_Checker(Plugin_Name):
         app.logger.error(e)
 
 def Create_Event(Description):
-    Cursor.execute("INSERT INTO events (description, created_at) VALUES (%s,%s)", (Description, datetime.datetime.now()))
+    Cursor.execute("INSERT INTO events (description, created_at) VALUES (%s,%s)", (Description, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     Connection.commit()
 
 @app.errorhandler(404)
@@ -470,7 +474,7 @@ def tasks():
                             result = Cursor.fetchone()
 
                             if result:
-                                Current_Timestamp = datetime.datetime.now()  # Variable set to create consistency in timestamps across two seperate database queries.
+                                Current_Timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Variable set to create consistency in timestamps across two seperate database queries.
                                 PSQL_Insert_Query = 'INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
                                 Cursor.execute(PSQL_Insert_Query, (result[1], result[2], result[3], result[4], str(result[5]), "Stopped", str(Current_Timestamp), str(Current_Timestamp)))
                                 Connection.commit()
@@ -687,7 +691,7 @@ def tasks():
                                                                        error="Failed to update cron job.")
 
                                     PSQL_Update_Query = 'UPDATE tasks SET query = %s, plugin = %s, description = %s, frequency = %s, task_limit = %s, updated_at = %s WHERE task_id = %s'
-                                    Cursor.execute(PSQL_Update_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), datetime.datetime.now(), session.get('task_id'),))
+                                    Cursor.execute(PSQL_Update_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), session.get('task_id'),))
                                     Connection.commit()
                                     time.sleep(1)
 
@@ -903,7 +907,7 @@ def tasks():
                                                                        error="Invalid query selected, please choose a pre-defined query from the list.")
 
 
-                                    Current_Timestamp = datetime.datetime.now()  # Variable set as it is needed for two different functions and needs to be consistent.
+                                    Current_Timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Variable set as it is needed for two different functions and needs to be consistent.
                                     PSQL_Insert_Query = 'INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
                                     Cursor.execute(PSQL_Insert_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), "Stopped",
                                     Current_Timestamp, Current_Timestamp,))
@@ -1083,7 +1087,7 @@ def results():
                                         PSQL_Insert_Query = 'INSERT INTO results (title, status, domain, link, created_at, result_type) VALUES (%s,%s,%s,%s,%s,%s)'
                                         Cursor.execute(PSQL_Insert_Query, (
                                         Query_List[Iterator], "Open", URL_Regex.group(2), Hosts_List[Iterator],
-                                        datetime.datetime.now(), Type,))
+                                        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), Type,))
                                         Connection.commit()
 
                                     except Exception as e:
@@ -1147,7 +1151,7 @@ def results():
                         try:
                             result_id = int(request.form['close'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Closed", str(datetime.datetime.now()), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Closed", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " closed by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1165,7 +1169,7 @@ def results():
                         try:
                             result_id = int(request.form['open'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Open", str(datetime.datetime.now()), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Open", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " re-opened by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1183,7 +1187,7 @@ def results():
                         try:
                             result_id = int(request.form['inspect'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Inspecting", str(datetime.datetime.now()), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Inspecting", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " now under inspection by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1201,7 +1205,7 @@ def results():
                         try:
                             result_id = int(request.form['review'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Reviewing", str(datetime.datetime.now()), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Reviewing", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " now under review by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1341,4 +1345,4 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
