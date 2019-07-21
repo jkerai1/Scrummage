@@ -30,13 +30,13 @@ def Get_Cache(Directory, Plugin_Name):
                 return Cached_Data
 
             else:
-                logging.info(str(datetime.datetime.now()) + " No cache file found, caching will not be used for this session.")
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " No cache file found, caching will not be used for this session.")
 
         except:
-            logging.warning(str(datetime.datetime.now()) + " Failed to read file.")
+            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to read file.")
 
     else:
-        logging.warning(str(datetime.datetime.now()) + " Failed to regex directory. Cache not read.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to regex directory. Cache not read.")
 
 def Write_Cache(Directory, Data_to_Cache, Plugin_Name, Open_File_Type):
     Main_File = Plugin_Name + "-cache.txt"
@@ -52,10 +52,10 @@ def Write_Cache(Directory, Data_to_Cache, Plugin_Name, Open_File_Type):
             File_Output.close()
 
         except:
-            logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
+            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create file.")
 
     else:
-        logging.warning(str(datetime.datetime.now()) + " Failed to regex directory. Cache not written.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to regex directory. Cache not written.")
 
 def Convert_to_List(String):
 
@@ -90,7 +90,7 @@ def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Ta
     Connectors.Email_Main(Ticket_Subject, Ticket_Text)
     Connectors.Slack_Main(Ticket_Text)
     Relative_File = Complete_File.replace(os.path.dirname(os.path.realpath('__file__')), "")
-    logging.info(str(datetime.datetime.now()) + " Adding item to Scrummage database.")
+    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Adding item to Scrummage database.")
 
     if DB_Title:
         Connectors.Main_Database_Insert(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
@@ -115,7 +115,7 @@ def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension)
             File_Output = open(Complete_File, "w")
             File_Output.write(Output)
             File_Output.close()
-            logging.info(str(datetime.datetime.now()) + " Main file created.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Main file created.")
 
         else:
 
@@ -130,26 +130,26 @@ def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension)
                         Appendable_Output_Data.append(Temp_Scrape)
 
                 if Appendable_Output_Data:
-                    logging.info(str(datetime.datetime.now()) + " New data has been discovered and will be appended to the existing file.")
+                    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " New data has been discovered and will be appended to the existing file.")
                     Appendable_Output_Data_String = "\n".join(Appendable_Output_Data)
                     File_Output = open(Complete_File, "a")
                     File_Output.write("\n" + Appendable_Output_Data_String)
                     File_Output.close()
-                    logging.info(str(datetime.datetime.now()) + " Main file appended.")
+                    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Main file appended.")
 
                 else:
-                    logging.info(str(datetime.datetime.now()) + " No new data has been discovered, no point continuing.")
+                    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " No new data has been discovered, no point continuing.")
 
             else:
                 File_Output = open(Complete_File, "w")
                 File_Output.write(Output)
                 File_Output.close()
-                logging.info(str(datetime.datetime.now()) + " Main file created.")
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Main file created.")
 
         return Complete_File
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create file.")
 
 def Data_Type_Discovery(Data_to_Search):
     # Function responsible for determining the type of data found. Examples: Hash_Type, Credentials, Email, or URL.
@@ -207,15 +207,15 @@ def Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Output_Data,
             with open(Complete_File, 'w') as Current_Output_file:
                 Current_Output_file.write(Output_Data)
 
-            logging.info(str(datetime.datetime.now()) + " File: " + Complete_File + " created.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " File: " + Complete_File + " created.")
 
         else:
-            logging.info(str(datetime.datetime.now()) + " File already exists, skipping creation.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " File already exists, skipping creation.")
 
         return Complete_File
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create file.")
 
 def Create_Scrape_Results_File(Directory, Plugin_Name, Output_Data, ID, The_File_Extension):
 
@@ -228,14 +228,14 @@ def Create_Scrape_Results_File(Directory, Plugin_Name, Output_Data, ID, The_File
             with open(Complete_File, 'w') as Current_Output_file:
                 Current_Output_file.write(Output_Data)
 
-            logging.info(str(datetime.datetime.now()) + " File: " + Complete_File + " created.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " File: " + Complete_File + " created.")
             return Complete_File
 
         else:
-            logging.info(str(datetime.datetime.now()) + " File already exists, skipping creation.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " File already exists, skipping creation.")
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to create file.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create file.")
 
 def Load_Location_Configuration():
     Valid_Locations = ['ac', 'ac', 'ad', 'ae', 'af', 'af', 'ag', 'ag', 'ai', 'ai', 'al', 'am', 'am', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'az', 'ba', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bi', 'bj', 'bn', 'bo', 'bo', 'br', 'bs', 'bt', 'bw', 'by', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm', 'cn', 'cn', 'co', 'co', 'co', 'cr', 'cu', 'cv', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ec', 'ee', 'eg', 'es', 'et', 'eu', 'fi', 'fj', 'fm', 'fr', 'ga', 'ge', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gp', 'gp', 'gr', 'gr', 'gt', 'gy', 'gy', 'gy', 'hk', 'hk', 'hn', 'hr', 'ht', 'ht', 'hu', 'hu', 'id', 'id', 'ie', 'il', 'im', 'im', 'in', 'in', 'io', 'iq', 'iq', 'is', 'it', 'je', 'je', 'jm', 'jo', 'jo', 'jp', 'jp', 'ke', 'kg', 'kh', 'ki', 'kr', 'kw', 'kz', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'ma', 'md', 'me', 'mg', 'mk', 'ml', 'mm', 'mn', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'mx', 'my', 'mz', 'na', 'ne', 'nf', 'ng', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pe', 'pf', 'pg', 'ph', 'pk', 'pk', 'pl', 'pl', 'pn', 'pr', 'ps', 'ps', 'pt', 'py', 'qa', 'qa', 're', 'ro', 'rs', 'rs', 'ru', 'ru', 'rw', 'sa', 'sb', 'sc', 'se', 'sg', 'sh', 'si', 'sk', 'sl', 'sl', 'sm', 'sn', 'so', 'sr', 'st', 'sv', 'sy', 'td', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tt', 'tz', 'ua', 'ua', 'ug', 'uk', 'us', 'us', 'uy', 'uz', 'uz', 'vc', 've', 've', 'vg', 'vi', 'vn', 'vu', 'ws', 'za', 'zm', 'zw']
@@ -249,17 +249,17 @@ def Load_Location_Configuration():
                 Location = General_Details['location']
 
             if (len(Location) > 2) or (Location not in Valid_Locations):
-                logging.warning(str(datetime.datetime.now()) + " An invalid location has been specified, please provide a valid location in the config.json file.")
+                logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " An invalid location has been specified, please provide a valid location in the config.json file.")
 
             else:
-                logging.info(str(datetime.datetime.now()) + " Country code " + Location + " selected.")
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Country code " + Location + " selected.")
                 return Location
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
 
 def Make_Directory(Plugin_Name):
-    Today = datetime.datetime.now()
+    Today = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     Year = str(Today.year)
     Month = str(Today.month)
     Day = str(Today.day)
@@ -275,11 +275,11 @@ def Make_Directory(Plugin_Name):
 
     try:
         os.makedirs(Directory)
-        logging.info(str(datetime.datetime.now()) + " Using directory: " + Directory + ".")
+        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Using directory: " + Directory + ".")
         return Directory
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Using directory: " + Directory + ".")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Using directory: " + Directory + ".")
         return Directory
 
 def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
@@ -290,7 +290,7 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
 
     try:
         if Is_Tor:
-            logging.info(str(datetime.datetime.now()) + " Querying Tor.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Querying Tor.")
             Tor_Session.proxies['http'] = 'socks5h://' + Tor_Host + ':' + Tor_Port
             Tor_Session.proxies['https'] = 'socks5h://' + Tor_Host + ':' + Tor_Port
             Content = Tor_Session.get(Pull_URL, Tor_Session_Headers=Tor_Session_Headers).text
@@ -301,7 +301,7 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
             Content_String = str(Content)
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to connect, if you are using the Tor network, please make sure you're running the Tor proxy and are connected to it.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to connect, if you are using the Tor network, please make sure you're running the Tor proxy and are connected to it.")
 
     try:
         Scrape_URLs_Raw = re.findall(Scrape_Regex_URL, Content_String)
@@ -312,9 +312,33 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL, Is_Tor):
                 Scrape_URLs.append(Temp_URL_Extensions)
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to regex URLs.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to regex URLs.")
 
     return Scrape_URLs
+
+# def Query_Existing_Files(File_Query, Query_Output_File):
+#     # Function to query existing files for new clients.
+
+#     for Bad_Character in Bad_Characters:
+
+#         if Bad_Character in File_Query:
+#             logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Bad Characters found in query. Please remove any conflicting special characters.")
+
+#     os.system(' grep -Hrn ' + File_Query + ' * > ' + Query_Output_File)
+
+#     try:
+#         Current_File = open(Query_File, "r")
+#         Query_Inputs = Current_File.read().splitlines()
+#         Current_File.close()
+
+#     except:
+#         logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to open file.")
+
+#     for Query_Input in Query_Inputs:
+#         Query_Input_Regex = re.search(r"(.*\.txt)\:(\d+)\:(.*)", Query_Input)
+
+#         if Query_Input_Regex:
+#             logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " The query " + File_Query + " was found on line: " + Query_Input_Regex.group(2) + " of file: " + Query_Input_Regex.group(1) + ".")
 
 def Get_Title(URL):
 
@@ -325,7 +349,7 @@ def Get_Title(URL):
             return Soup.title.text
 
         else:
-            logging.warning(str(datetime.datetime.now()) + " this function does not work on files.")
+            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " this function does not work on files.")
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " failed to get title.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " failed to get title.")

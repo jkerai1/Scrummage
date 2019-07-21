@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import itertools
-
 Altered_URLs = []
 
 def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives):
@@ -145,7 +144,10 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         U_List.extend([u"ù", u"ú", u"û", u"ü", u"ũ", u"ū", u"ŭ", u"ů"])
         Y_List.extend([u"ý", u"ÿ"])
 
-    return [["a", A_List], ["b", B_List], ["c", C_List], ["d", D_List], ["e", E_List], ["f", F_List], ["g", G_List], ["h", H_List], ["i", I_List], ["j", J_List], ["k", K_List], ["l", L_List], ["m", M_List], ["n", N_List], ["o", O_List], ["p", P_List], ["q", Q_List], ["r", R_List], ["s", S_List], ["t", T_List], ["u", U_List], ["v", V_List], ["w", W_List], ["x", X_List], ["y", Y_List], ["z", Z_List]]
+    return [["a", A_List], ["b", B_List], ["c", C_List], ["d", D_List], ["e", E_List], ["f", F_List], ["g", G_List],
+            ["h", H_List], ["i", I_List], ["j", J_List], ["k", K_List], ["l", L_List], ["m", M_List], ["n", N_List],
+            ["o", O_List], ["p", P_List], ["q", Q_List], ["r", R_List], ["s", S_List], ["t", T_List], ["u", U_List],
+            ["v", V_List], ["w", W_List], ["x", X_List], ["y", Y_List], ["z", Z_List]]
 
 def Search(Query, English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives):
     global Altered_URLs
@@ -154,7 +156,8 @@ def Search(Query, English_Lower, English_Upper, Numbers, Special_Characters, Cyr
     Altered_URLs = []
     URL_Allowed_Characters_List = ['$', '-', '_', '.', '+', '!', '*', '\'', '(', ')', ',']
 
-    Lists = List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives)
+    Lists = List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek,
+                           Phoenetic_Alternatives)
 
     for Letter in Query:
 
@@ -176,81 +179,80 @@ def Rotor_Word_Appender(List_to_Append):
     Altered_URLs.append(URL_Body)
 
 def Rotor_Combinations(Rotor_Word):
-
     if (len(Rotor_Word) == 1):
         for a in list(itertools.product(*Rotor_Word)):
             Newer_List = [a]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 2):
-        for a,b in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b]
+        for a, b in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 3):
-        for a,b,c in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c]
+        for a, b, c in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 4):
-        for a,b,c,d in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d]
+        for a, b, c, d in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 5):
-        for a,b,c,d,e in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e]
+        for a, b, c, d, e in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 6):
-        for a,b,c,d,e,f in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f]
+        for a, b, c, d, e, f in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 7):
-        for a,b,c,d,e,f,g in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g]
+        for a, b, c, d, e, f, g in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 8):
-        for a,b,c,d,e,f,g,h in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h]
+        for a, b, c, d, e, f, g, h in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 9):
-        for a,b,c,d,e,f,g,h,i in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i]
+        for a, b, c, d, e, f, g, h, i in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 10):
-        for a,b,c,d,e,f,g,h,i,j in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j]
+        for a, b, c, d, e, f, g, h, i, j in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 11):
-        for a,b,c,d,e,f,g,h,i,j,k in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k]
+        for a, b, c, d, e, f, g, h, i, j, k in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j, k]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 12):
-        for a,b,c,d,e,f,g,h,i,j,k,l in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l]
+        for a, b, c, d, e, f, g, h, i, j, k, l in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j, k, l]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 13):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m]
+        for a, b, c, d, e, f, g, h, i, j, k, l, m in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j, k, l, m]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 14):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n]
+        for a, b, c, d, e, f, g, h, i, j, k, l, m, n in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j, k, l, m, n]
             Rotor_Word_Appender(Newer_List)
 
     elif (len(Rotor_Word) == 15):
-        for a,b,c,d,e,f,g,h,i,j,k,l,m,n,o in list(itertools.product(*Rotor_Word)):
-            Newer_List = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o]
+        for a, b, c, d, e, f, g, h, i, j, k, l, m, n, o in list(itertools.product(*Rotor_Word)):
+            Newer_List = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o]
             Rotor_Word_Appender(Newer_List)
 
     else:
-        return("[-] The word entered was either over 20 characters in length or had no characters, this function only permits words with lengths between 1 and 20.")
+        return ("[-] The word entered was either over 20 characters in length or had no characters, this function only permits words with lengths between 1 and 20.")
