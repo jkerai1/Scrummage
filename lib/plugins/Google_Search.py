@@ -8,7 +8,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
 
     try:
 
@@ -28,7 +28,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to load location details.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -94,7 +94,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
 
             except Exception as e:
-                logging.info(str(datetime.datetime.now()) + e)
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

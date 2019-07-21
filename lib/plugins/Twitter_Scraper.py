@@ -9,7 +9,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
 
     try:
 
@@ -24,7 +24,7 @@ def Load_Configuration():
                 return None
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to load Twitter details.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
     Data_to_Cache = []
@@ -41,7 +41,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
         Link = ""
 
         try:
-            logging.info(str(datetime.datetime.now()) + Tweet.entities['urls'][0])
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Tweet.entities['urls'][0])
             JSON_Response.append({
                 'text': Tweet.text,
                 'author_name': Tweet.user.screen_name,
@@ -67,7 +67,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
 
                     if 'url' in JSON_Tweet:
                         Link = JSON_Tweet['url']
-                        logging.info(str(datetime.datetime.now()) + Link)
+                        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Link)
                         General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
 
             Data_to_Cache.append(Link)
@@ -112,4 +112,4 @@ def Search(Query_List, Task_ID, **kwargs):
             General_Pull(Query, Limit, Directory, API, Task_ID)
 
         except:
-            logging.info(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to get results. Are you connected to the internet?")

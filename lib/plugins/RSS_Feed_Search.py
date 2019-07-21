@@ -36,7 +36,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        logging.warning(str(datetime.datetime.now()) + " Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide a valid file, failed to open the file which contains the data to search for.")
 
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 

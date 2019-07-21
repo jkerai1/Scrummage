@@ -8,7 +8,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now()) + " Loading configuration data.")
+    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:  
@@ -28,7 +28,7 @@ def Load_Configuration():
                 else:
                     return None
     except:
-        logging.warning(str(datetime.datetime.now()) + " Failed to load Reddit details.")
+        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load Reddit details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -79,7 +79,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Results.append(Current_Result)
 
         except:
-            logging.warning(str(datetime.datetime.now()) + " Failed to get results. Are you connected to the internet?")
+            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to get results. Are you connected to the internet?")
 
         for Result in Results:
 
@@ -95,7 +95,7 @@ def Search(Query_List, Task_ID, **kwargs):
                             General.Connections(Output_file, Query, Plugin_Name, Result[0], "reddit.com", "Data Leakage", Task_ID, General.Get_Title(Result[0]), Plugin_Name.lower())
 
                 except:
-                    logging.info(str(datetime.datetime.now()) + " Failed to create file.")
+                    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create file.")
 
                 Data_to_Cache.append(Result[0])
 

@@ -32,7 +32,7 @@ def Character_Switch(Query_List, Task_ID):
 	if not Cached_Data:
 		Cached_Data = []
 
-	logging.info(str(datetime.datetime.now()) + " Character Switching Selected.")
+	logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Character Switching Selected.")
 	Query_List = General.Convert_to_List(Query_List)
 
 	for Query in Query_List:
@@ -52,12 +52,12 @@ def Character_Switch(Query_List, Task_ID):
 				URL_Extension = URL_Regex.group(4)
 
 		else:
-			logging.warning(str(datetime.datetime.now()) + " Please provide valid URLs.")
+			logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide valid URLs.")
 
-		logging.info(str(datetime.datetime.now()) + URL_Body)
+		logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + URL_Body)
 		URL_List = list(URL_Body)
 		Altered_URLs = Rotor.Search(URL_List, True, False, False, False, True, True, True)
-		logging.info(str(datetime.datetime.now()) + ", ".join(Altered_URLs))
+		logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + ", ".join(Altered_URLs))
 
 		for Altered_URL in Altered_URLs:
 
@@ -77,9 +77,9 @@ def Character_Switch(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now()) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
 
-		logging.info(str(datetime.datetime.now()) + Directory)
+		logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Directory)
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
 
@@ -117,7 +117,7 @@ def Regular_Extensions(Query_List, Task_ID):
 	if not Cached_Data:
 		Cached_Data = []
 
-	logging.info(str(datetime.datetime.now()) + " Regular Extensions Selected.")
+	logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Regular Extensions Selected.")
 	Query_List = General.Convert_to_List(Query_List)
 
 	for Query in Query_List:
@@ -137,7 +137,7 @@ def Regular_Extensions(Query_List, Task_ID):
 				URL_Extension = URL_Regex.group(4)
 
 		else:
-			logging.warning(str(datetime.datetime.now()) + " Please provide valid URLs.")
+			logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide valid URLs.")
 
 		for Extension in Generic_Extensions:
 
@@ -157,7 +157,7 @@ def Regular_Extensions(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now()) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -196,7 +196,7 @@ def Global_Extensions(Query_List, Task_ID):
 	if not Cached_Data:
 		Cached_Data = []
 
-	logging.info(str(datetime.datetime.now()) + " Global Suffixes Selected.")
+	logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Global Suffixes Selected.")
 	Query_List = General.Convert_to_List(Query_List)
 
 	for Query in Query_List:
@@ -216,7 +216,7 @@ def Global_Extensions(Query_List, Task_ID):
 				URL_Extension = URL_Regex.group(4)
 
 		else:
-			logging.warning(str(datetime.datetime.now()) + " Please provide valid URLs.")
+			logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide valid URLs.")
 
 		for suffix in Global_Domain_Suffixes:
 
@@ -236,7 +236,7 @@ def Global_Extensions(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now()) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -277,7 +277,7 @@ def All_Extensions(Query_List, Task_ID):
 	if not Cached_Data:
 		Cached_Data = []
 
-	logging.info(str(datetime.datetime.now()) + " All Extensions Selected.")
+	logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " All Extensions Selected.")
 	Query_List = General.Convert_to_List(Query_List)
 
 	for Query in Query_List:
@@ -297,7 +297,7 @@ def All_Extensions(Query_List, Task_ID):
 				URL_Extension = URL_Regex.group(4)
 
 		else:
-			logging.warning(str(datetime.datetime.now()) + " Please provide valid URLs.")
+			logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide valid URLs.")
 
 		for Extension in Generic_Extensions:
 
@@ -309,7 +309,7 @@ def All_Extensions(Query_List, Task_ID):
 
 					try:
 						Query = URL_Body + Extension + suffix
-						logging.info(str(datetime.datetime.now()) + Query)
+						logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Query)
 						Web_Host = URL_Prefix.replace("s://", "://") + Query
 						Response = socket.gethostbyname(Query)
 
@@ -322,7 +322,7 @@ def All_Extensions(Query_List, Task_ID):
 								Valid_Hosts.append(Web_Host)
 
 					except Exception as e:
-						logging.info(str(datetime.datetime.now()) + e)
+						logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)

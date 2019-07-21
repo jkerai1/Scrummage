@@ -61,7 +61,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Data_to_Cache.append(Result_URL)
 
         except:
-            logging.info(str(datetime.datetime.now()) + " Failed to get results, this may be due to the query provided.")
+            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -72,7 +72,7 @@ def Search(Query_List, Task_ID):
                                 General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request), Plugin_Name.lower())
 
                     except:
-                        logging.info(str(datetime.datetime.now()) + "[-] Failed to create file.")
+                        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + "[-] Failed to create file.")
 
                     Data_to_Cache.append(Request)
 
