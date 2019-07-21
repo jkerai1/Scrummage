@@ -279,7 +279,7 @@ def screenshot():
                     Cursor.execute(PSQL_Select_Query, (ss_id,))
                     result = Cursor.fetchone()
 
-                    if '.onion' in result[0] or 'general-insurance.coles.com.au':
+                    if '.onion' in result[0] or 'general-insurance.coles.com.au' in result[0]:
                         return redirect(url_for('results'))
 
                     else:
