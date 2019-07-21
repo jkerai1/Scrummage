@@ -8,12 +8,14 @@
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Verify Output</title>
     </head>
-    <body>
+    <body onload="myFunction()">
     {% extends "template.html" %}
     {% block content %}
     {% if is_admin %}
-    <div class="field-container">
-        <table id="paginate">
+    <div id="loader"></div>
+    <p id="loader-message" class="loaderabout">Verifying Output Options...</p>
+    <div style="display: none;" id="fc" class="field-container">
+        <table style="display:none;" id="paginate">
             <thead>
                 <tr>
                     <th>Output</th>
@@ -34,6 +36,20 @@
             </tbody>
         </table>
     </div>
+    <script>
+    var myVar;
+
+    function myFunction() {
+      myVar = setTimeout(showPage, 1000);
+    }
+
+    function showPage() {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("loader-message").style.display = "none";
+        document.getElementById("paginate").style.display = null;
+        document.getElementById("fc").style.display = null;
+    }
+    </script>
     {% endif %}
     {% endblock %}
     </body>

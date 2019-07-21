@@ -8,91 +8,97 @@
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <title>Scrummage Tasks</title>
     </head>
-    <body>
+    <body onload="myFunction()">
 	    {% extends "template.html" %}
-	    {% block content %}
-    	<div class="field-container">
-            {% if error %}
-                <p class="message"><strong>Error:</strong> {{ error }}</p>
-            {% elif message %}
-                <p class="message"><strong>Message:</strong> {{ message }}</p>
-            {% endif %}
-            {% if edit_task %}
-                {% if is_admin == True %}
-                    {% if form_step == 0 %}
-                    {% elif form_step == 1 %}
-                    <div style="text-align: center; padding-top: 10px;">
-                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+        {% block content %}
+        {% if error %}
+            <p class="message"><strong>Error:</strong> {{ error }}</p>
+        {% elif message %}
+            <p class="message"><strong>Message:</strong> {{ message }}</p>
+        {% endif %}
+        {% if edit_task %}
+            {% if is_admin == True %}
+                {% if form_step == 0 %}
+                {% elif form_step == 1 %}
+                <div class="field-container">
+                <div style="text-align: center; padding-top: 10px;">
+                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <form class="form" action="" method=post autocomplete="off">
+                    <dl>
+                        <dd>
+                            <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{results[2]}}">
+
+                            <datalist id="browsers">
+                                {% for plugin in Valid_Plugins%}
+                                <option value="{{plugin}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </dd>
+                        <dd>
+                            <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{results[4]}}">
+                        </dd>
+                        <dd>
+                            <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
+                        </dd>
+                    </dl>
+                    <p style="padding-top: 10px; display: inline-block;"><input name="edittask" class="button" type=submit value="Next"></p>
+                </form>
+                <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
+                    <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
+                </form>
+                </div>
+                </div>
+                </div>            
+                {% elif form_step == 2 %}
+                {% if api_check == "Passed" %}
+                <div class="success"></div>
+                {% elif api_check == "Failed" %}
+                <div class="fail"></div>
+                {% endif %}
+                <div class="field-container">
+                <div style="text-align: center; padding-top: 10px;">
+                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
+                            {% if phish_sites %}
                             <dd>
-                                <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{results[2]}}">
+                                <input class="field_textarea" list="browsers" name=query onkeypress="return false;" placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
 
                                 <datalist id="browsers">
-                                    {% for plugin in Valid_Plugins%}
-                                    <option value="{{plugin}}">
-                                    {% endfor %}
+                                {% for site in phish_sites%}
+                                <option value="{{site[1]}}"></option>
+                                {% endfor %}
                                 </datalist>
                             </dd>
+                            {% else %}
                             <dd>
-                                <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{results[4]}}">
+                                <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
                             </dd>
+                            {% endif %}
+                            {% if use_limit %}
                             <dd>
-                                <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
+                                <input class="field_textarea" type=number name=limit placeholder="Limit" value="{{results[5]}}">
                             </dd>
+                            {% endif %}
                         </dl>
-                        <p style="padding-top: 10px; display: inline-block;"><input name="edittask" class="button" type=submit value="Next"></p>
+                        <p style="padding-top: 10px; display: inline-block;""><input name="edittask" class="button" type=submit value="Update"></p>
                     </form>
                     <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
                         <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
                     </form>
-                    </div>
-                    </div>
-                    {% elif form_step == 2 %}
-                    {% if api_check == "Passed" %}
-                    <div class="success"></div>
-                    {% elif api_check == "Failed" %}
-                    <div class="fail"></div>
-                    {% endif %}
-                    <div style="text-align: center; padding-top: 10px;">
-                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
-                        <form class="form" action="" method=post autocomplete="off">
-                            <dl>
-                                {% if phish_sites %}
-                                <dd>
-                                    <input class="field_textarea" list="browsers" name=query onkeypress="return false;" placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
-
-                                    <datalist id="browsers">
-                                    {% for site in phish_sites%}
-                                    <option value="{{site[1]}}">
-                                    {% endfor %}
-                                    </datalist>
-                                </dd>
-                                {% else %}
-                                <dd>
-                                    <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
-                                </dd>
-                                {% endif %}
-                                {% if use_limit %}
-                                <dd>
-                                    <input class="field_textarea" type=number name=limit placeholder="Limit" value="{{results[5]}}">
-                                </dd>
-                                {% endif %}
-                            </dl>
-                            <p style="padding-top: 10px; display: inline-block;""><input name="edittask" class="button" type=submit value="Update"></p>
-                        </form>
-                        <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
-                            <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
-                        </form>
-                    </div>
-                    </div>
-                    {% else %}
-                        <p id="logintitle">404 Page Not Found.</p>
-                        <p class="error">The page you were looking for does not exist.</p>
-                    {% endif %}
+                </div>
+                </div>
+                </div>
+                {% else %}
+                    <p id="logintitle">404 Page Not Found.</p>
+                    <p class="error">The page you were looking for does not exist.</p>
                 {% endif %}
             {% endif %}
-            {% if form_step == 0 %}
+        {% endif %}
+        {% if form_step == 0 %}
+            <div id="loader"></div>
+            <p id="loader-message" class="loaderabout">Loading Tasks...</p>
+            <div style="display: none;" style="margin:0;" id="fc" class="field-container">
                 {% if api_check == "Failed" %}
                 <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
                 {% endif %}
@@ -143,104 +149,117 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
                 {% if is_admin %}
-                <form class="form_left" style="display: inline-block;" action="" method=post autocomplete="off">
+                <form style="display: inline-block;" action="" method=post autocomplete="off">
                     <input name="newtask" class="button" type=submit value="New Task">
                 </form>
                 <form class="form_left" style="display: inline-block;"  action="/verify_output" method=post autocomplete="off">
                     <input name="verify" class="button" type=submit value="Verify Output">
                 </form>
                 {% endif %}
-            {% endif %}
-            {% if new_task %}
-                {% if is_admin %}
-                    {% if form_step == 0 %}
-                    {% elif form_step == 1 %}
-                    <div style="text-align: center; padding-top: 10px;">
-                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
-                    <form class="form" action="" method=post autocomplete="off">
-                        <dl>
-                            <dd>
-                                {% if task_type_field %}
-                                <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
-                                {% else %}
-                                <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
-                                {% endif %}
+            </div>
+            <script>
+            var myVar;
 
-                                <datalist id="browsers">
-                                    {% for plugin in Valid_Plugins%}
-                                    <option value="{{plugin}}">
-                                    {% endfor %}
-                                </datalist>
-                            </dd>
-                            <dd>
-                                {% if frequency_field %}
-                                <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{frequency_field}}">
-                                {% else %}
-                                <input class="field_textarea" type=text name=frequency placeholder="Frequency">
-                                {% endif %}
-                            </dd>
-                            <dd>
-                                {% if description_field %}
-                                <input class="field_textarea" type=text name=description placeholder="Description" value="{{description_field}}">
-                                {% else %}
-                                <input class="field_textarea" type=text name=description placeholder="Description">
-                                {% endif %}
-                            </dd>
-                        </dl>
-                        <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Next"></p>
-                    </form>
-                    <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
-                        <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
-                    </form>
-                    </div>
-                    </div>
-                    {% elif form_step == 2%}
-                    {% if api_check == "Passed" %}
-                    <div class="success"></div><p class="message">API Configuration Check Passed.</p>
-                    {% elif api_check == "Failed" %}
-                    <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
-                    {% endif %}
-                    <div style="text-align: center; padding-top: 10px;">
-                    <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
-                    <form class="form" action="" method=post autocomplete="off">
-                        <dl>
-                            {% if phish_sites %}
-                            <dd>
-                                <input class="field_textarea" list="browsers" name=query onkeypress="return false;" placeholder="* Query, you can use commas (,) to enter multiple queries.">
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
 
-                                <datalist id="browsers">
-                                {% for site in phish_sites%}
-                                <option value="{{site[1]}}">
-                                {% endfor %}
-                                </datalist>
-                            </dd>
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("paginate").style.display = null;
+                document.getElementById("fc").style.display = null;
+            }
+            </script>
+        {% endif %}
+        {% if new_task %}
+            {% if is_admin %}
+                <div class="field-container">
+                {% if form_step == 0 %}
+                {% elif form_step == 1 %}
+                <div style="text-align: center; padding-top: 10px;">
+                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <form class="form" action="" method=post autocomplete="off">
+                    <dl>
+                        <dd>
+                            {% if task_type_field %}
+                            <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
                             {% else %}
-                            <dd>
-                                <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
-                            </dd>
+                            <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
                             {% endif %}
-                            {% if use_limit %}
-                            <dd>
-                                <input class="field_textarea" type=text name=limit placeholder="Limit">
-                            </dd>
+                            <datalist id="browsers">
+                                {% for plugin in Valid_Plugins%}
+                                <option value="{{plugin}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </dd>
+                        <dd>
+                            {% if frequency_field %}
+                            <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{frequency_field}}">
+                            {% else %}
+                            <input class="field_textarea" type=text name=frequency placeholder="Frequency">
                             {% endif %}
-                        </dl>
-                        <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Finish"></p>
-                    </form>
-                    <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
-                        <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
-                    </form>
-                    </div>
-                    </div>
-                    {% else %}
-                        <p id="logintitle">404 Page Not Found.</p>
-                        <p class="error">The page you were looking for does not exist.</p>
-                    {% endif %}
+                        </dd>
+                        <dd>
+                            {% if description_field %}
+                            <input class="field_textarea" type=text name=description placeholder="Description" value="{{description_field}}">
+                            {% else %}
+                            <input class="field_textarea" type=text name=description placeholder="Description">
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Next"></p>
+                </form>
+                <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
+                    <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
+                </form>
+                </div>
+                </div>
+                {% elif form_step == 2%}
+                {% if api_check == "Passed" %}
+                <div class="success"></div><p class="message">API Configuration Check Passed.</p>
+                {% elif api_check == "Failed" %}
+                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
                 {% endif %}
+                <div style="text-align: center; padding-top: 10px;">
+                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <form class="form" action="" method=post autocomplete="off">
+                    <dl>
+                        {% if phish_sites %}
+                        <dd>
+                            <input class="field_textarea" list="browsers" name=query onkeypress="return false;" placeholder="* Query, you can use commas (,) to enter multiple queries.">
+                            <datalist id="browsers">
+                            {% for site in phish_sites%}
+                            <option value="{{site[1]}}"></option>
+                            {% endfor %}
+                            </datalist>
+                        </dd>
+                        {% else %}
+                        <dd>
+                            <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
+                        </dd>
+                        {% endif %}
+                        {% if use_limit %}
+                        <dd>
+                            <input class="field_textarea" type=text name=limit placeholder="Limit">
+                        </dd>
+                        {% endif %}
+                    </dl>
+                    <p style="padding-top: 10px; display: inline-block;"><input name="newtask" class="button" type=submit value="Finish"></p>
+                </form>
+                <form class="form" style="display: inline-block;" action="" method=post autocomplete="off">
+                    <p style="padding-top: 10px; display: inline-block;"><input class="button" name="return" type=submit value="Return"></p>
+                </form>
+                </div>
+                </div>
+                {% else %}
+                    <p id="logintitle">404 Page Not Found.</p>
+                    <p class="error">The page you were looking for does not exist.</p>
+                {% endif %}
+            </div>
             {% endif %}
-    	</div>
+        {% endif %}
     	{% endblock %}
     </body>
 </html>

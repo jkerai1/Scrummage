@@ -8,11 +8,13 @@
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Events</title>
     </head>
-    <body>
+    <body onload="myFunction()" style="margin:0;">
 	    {% extends "template.html" %}
 	    {% block content %}
-    	<div class="field-container">
-    		<table id="paginate">
+		<div id="loader"></div>
+		<p id="loader-message" class="loaderabout">Loading Events...</p>
+    	<div style="display: none;" id="fc" class="field-container">
+    		<table style="display:none;" id="paginate">
     			<thead>
 	    			<tr>
 	    				<th>ID</th>
@@ -30,8 +32,22 @@
 	    			{% endfor %}
     			</tbody>
     		</table>
+			<p class="message">This page only loads the latest 1000 entries.</p>
     	</div>
-		<p class="message">This page only loads the latest 1000 entries.</p>
+		<script>
+		var myVar;
+
+		function myFunction() {
+		  myVar = setTimeout(showPage, 1000);
+		}
+
+		function showPage() {
+			document.getElementById("loader").style.display = "none";
+			document.getElementById("loader-message").style.display = "none";
+			document.getElementById("paginate").style.display = null;
+			document.getElementById("fc").style.display = null;
+		}
+		</script>
     	{% endblock %}
     </body>
 </html>
