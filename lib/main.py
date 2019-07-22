@@ -1120,13 +1120,13 @@ def results():
                             Cursor.execute(PSQL_Select_Query, (result_id,))
                             Result = Cursor.fetchone()
 
-                            if Result[6]:
+                            if Result[9]:
                                 Screenshot_File = File_Path + "/static/protected/screenshots/" + Result[9]
 
                                 if os.path.exists(Screenshot_File):
                                     os.remove(Screenshot_File)
 
-                            if Result[7]:
+                            if Result[10]:
                                 Output_File = File_Path + "/" + Result[10]
 
                                 if os.path.exists(Output_File):
@@ -1142,9 +1142,7 @@ def results():
                         except:
                             PSQL_Select_Query = "SELECT * FROM results ORDER BY result_id DESC LIMIT 1000"
                             Cursor.execute(PSQL_Select_Query)
-                            return render_template('results.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                   results=Cursor.fetchall(), is_admin=session.get('is_admin'),
-                                                   error="Invalid request")
+                            return render_template('results.html', username=session.get('user'), form_step=session.get('form_step'), results=Cursor.fetchall(), is_admin=session.get('is_admin'), error="Invalid request")
 
                     elif 'close' in request.form:
 
