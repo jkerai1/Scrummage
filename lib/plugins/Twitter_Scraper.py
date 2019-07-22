@@ -15,13 +15,18 @@ def Load_Configuration():
 
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
-            Twitter_Credentials = Configuration_Data[Plugin_Name.lower()]
 
-            if Twitter_Credentials[Plugin_Name.lower()]:
-                return Twitter_Credentials
+            for Twitter_Details in Configuration_Data[Plugin_Name.lower()]:
+                Consumer_Key = Twitter_Details['CONSUMER_KEY']
+                Consumer_Secret = Twitter_Details['CONSUMER_SECRET']
+                Access_Key = Twitter_Details['ACCESS_KEY']
+                Access_Secret = Twitter_Details['ACCESS_SECRET']
 
-            else:
-                return None
+                if Consumer_Key and Consumer_Secret and Access_Key and Access_Secret:
+                    return [Consumer_Key, Consumer_Secret, Access_Key, Access_Secret]
+
+                else:
+                    return None
 
     except:
         logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load Twitter details.")
@@ -106,8 +111,8 @@ def Search(Query_List, Task_ID, **kwargs):
     for Query in Query_List:
 
         try:
-            Authentication = tweepy.OAuthHandler(Twitter_Credentials[0]["CONSUMER_KEY"], Twitter_Credentials[0]["CONSUMER_SECRET"])
-            Authentication.set_access_token(Twitter_Credentials[0]["ACCESS_KEY"], Twitter_Credentials[0]["ACCESS_SECRET"])
+            Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
+            Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
             API = tweepy.API(Authentication)
             General_Pull(Query, Limit, Directory, API, Task_ID)
 
