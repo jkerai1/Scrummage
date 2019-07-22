@@ -40,11 +40,9 @@
 						<td class="nonscreenshottab" id="resultid" style="border: 2px solid #FFFFFF;">{{results[3]}}</td>
 						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{results[11]}}</td>
 						{% if results[9] %}
-							{% if '.onion' not in results[6] %}
-								<td style="border: 2px solid #FFFFFF;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
-							{% endif %}
+						<td style="border: 2px solid #FFFFFF;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
 						{% else %}
-							{% if is_admin%}
+							{% if is_admin %}
 								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] %}
 									<td class="buttons_in_table" style="border: 2px solid #FFFFFF;">
 										<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
@@ -171,6 +169,10 @@
 					</tr>
 				</tbody>
 			</table>
+			<form style="padding: 10px 0px 0px 3px" class="form_left" action="" method=post autocomplete="off">
+				<input name="delete" value="{{results[0]}}" type=hidden>
+				<input class="button" type=submit value="Delete Result">
+			</form>
 		</div>
 		{% else %}
 		<div id="loader"></div>
@@ -269,10 +271,8 @@
                         </datalist>
                     </dd>
                 </dl>
-                <p id="createresult"><input class="button" name="newresult" type=submit value="Create Result"></p>
-            </form>
-            <form class="form" action="" method=post autocomplete="off">
-				<p id="createresult"><input class="button" name="return" type=submit value="Return"></p>
+				<input style="display: inline-block;" class="button" name="return" type=submit value="Return">
+                <input style="display: inline-block;" class="button" name="newresult" type=submit value="Create Result">
             </form>
     	</div>
 		</div>
