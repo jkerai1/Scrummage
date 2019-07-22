@@ -137,7 +137,7 @@
                                     </form>
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="delete_id" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Delete">
+                                        <input onclick="return confirm('Are you sure you want to delete task item {{result[0]}}?');" class="button" type=submit value="Delete">
                                     </form>
                                 </td>
                             {% endif %}
