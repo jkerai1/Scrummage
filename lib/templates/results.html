@@ -169,10 +169,12 @@
 					</tr>
 				</tbody>
 			</table>
+			{% if is_admin %}
 			<form style="padding: 10px 0px 0px 3px" class="form_left" action="" method=post autocomplete="off">
 				<input name="delete" value="{{results[0]}}" type=hidden>
 				<input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button" type=submit value="Delete Result">
 			</form>
+			{% endif %}
 		</div>
 		{% else %}
 		<div id="loader"></div>
