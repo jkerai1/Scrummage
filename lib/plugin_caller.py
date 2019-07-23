@@ -159,6 +159,12 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "Flickr Search":
+            import plugins.Flickr_Search as Flickr_Search
+            Thread_1 = threading.Thread(target=Flickr_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Ebay Search":
             import plugins.Ebay_Search as Ebay_Search
             Thread_1 = threading.Thread(target=Ebay_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
