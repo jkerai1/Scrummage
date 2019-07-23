@@ -94,7 +94,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
 
             except Exception as e:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

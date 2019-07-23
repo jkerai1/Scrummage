@@ -77,7 +77,7 @@ def Character_Switch(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
 
 		logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Directory)
 		URL_Domain = URL_Body + URL_Extension
@@ -157,7 +157,7 @@ def Regular_Extensions(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -236,7 +236,7 @@ def Global_Extensions(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
+					logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -322,7 +322,7 @@ def All_Extensions(Query_List, Task_ID):
 								Valid_Hosts.append(Web_Host)
 
 					except Exception as e:
-						logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + e)
+						logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
