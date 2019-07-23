@@ -41,19 +41,19 @@
                             <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
                         </dd>
                     </dl>
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="return" type=submit value="Return">
+                    <input style="padding-top: 10px; display: inline-block;" class="button" name="editreturn" type=submit value="Return">
                     <input style="padding-top: 10px; display: inline-block;" class="button" name="edittask" type=submit value="Next">
                 </form>
                 </div>
                 </div>
-                </div>            
+                </div>
                 {% elif form_step == 2 %}
-                {% if api_check == "Passed" %}
-                <div class="success"></div>
-                {% elif api_check == "Failed" %}
-                <div class="fail"></div>
-                {% endif %}
                 <div class="field-container">
+                {% if api_check == "Passed" %}
+                <div class="success"></div><p class="message">API Configuration Check Passed.</p>
+                {% elif api_check == "Failed" %}
+                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+                {% endif %}
                 <div style="text-align: center; padding-top: 10px;">
                 <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
@@ -79,7 +79,7 @@
                             </dd>
                             {% endif %}
                         </dl>
-                        <input style="padding-top: 10px; display: inline-block;" class="button" name="return" type=submit value="Return">
+                        <input style="padding-top: 10px; display: inline-block;" class="button" name="editreturn" type=submit value="Return">
                         <input style="padding-top: 10px; display: inline-block;" class="button" name="edittask" type=submit value="Update">
                     </form>
                 </div>
@@ -205,7 +205,7 @@
                             {% endif %}
                         </dd>
                     </dl>
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="return" type=submit value="Return">
+                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newreturn" type=submit value="Return">
                     <input style="padding-top: 10px; display: inline-block;" class="button" name="newtask" type=submit value="Next">
                 </form>
                 </div>
@@ -240,7 +240,7 @@
                         </dd>
                         {% endif %}
                     </dl>
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="return" type=submit value="Return">
+                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newreturn" type=submit value="Return">
                     <input style="padding-top: 10px; display: inline-block;" class="button" name="newtask" type=submit value="Finish">
                 </form>
                 </div>
