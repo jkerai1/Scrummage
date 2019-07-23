@@ -504,12 +504,18 @@ def tasks():
                         except Exception as e:
                             app.logger.error(e)
 
-                    elif 'return' in request.form:
+                    if 'newreturn' in request.form:
 
                         if session.get('form_step') == 1:
 
                             try:
                                 session['form_step'] = 0
+                                PSQL_Select_Query = "SELECT * FROM tasks;"
+                                Cursor.execute(PSQL_Select_Query)
+                                results = Cursor.fetchall()
+                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
+                                                       Valid_Plugins=Valid_Plugins, results=results,
+                                                       is_admin=session.get('is_admin'))
 
                             except Exception as e:
                                 app.logger.error(e)
@@ -519,6 +525,32 @@ def tasks():
                             try:
                                 session['form_step'] -= 1
                                 return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'), is_admin=session.get('is_admin'), form_step=session.get('form_step'), new_task=True, frequency_field=session.get('task_frequency'), description_field=session.get('task_description'), task_type_field=session.get('form_type'), Valid_Plugins=Valid_Plugins)
+
+                            except Exception as e:
+                                app.logger.error(e)
+
+                    if 'editreturn' in request.form:
+
+                        if session.get('form_step') == 1:
+
+                            try:
+                                session['form_step'] = 0
+                                PSQL_Select_Query = "SELECT * FROM tasks"
+                                Cursor.execute(PSQL_Select_Query)
+                                results = Cursor.fetchall()
+                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), Valid_Plugins=Valid_Plugins, results=results, is_admin=session.get('is_admin'))
+
+                            except Exception as e:
+                                app.logger.error(e)
+
+                        elif session.get('form_step') == 2:
+
+                            try:
+                                session['form_step'] -= 1
+                                PSQL_Select_Query = "SELECT * FROM tasks WHERE task_id = %s;"
+                                Cursor.execute(PSQL_Select_Query, (session.get('task_id'),))
+                                results = Cursor.fetchone()
+                                return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'), is_admin=session.get('is_admin'), form_step=session.get('form_step'), edit_task=True, frequency_field=session.get('task_frequency'), description_field=session.get('task_description'), task_type_field=session.get('form_type'), Valid_Plugins=Valid_Plugins, results=results)
 
                             except Exception as e:
                                 app.logger.error(e)
@@ -566,7 +598,7 @@ def tasks():
 
                                 if request.form['tasktype'] in Valid_Plugins:
 
-                                    if request.form['frequency']:
+                                    if 'frequency' in request.form:
                                         session['task_frequency'] = request.form['frequency']
                                         task_frequency_regex = re.search(
                                             r"[\d\/\*\-\,]+\s[\d\/\*\-\,]+\s[\d\/\*\-\,]+\s[\d\/\*\-\,]+\s[\d\/\*\-\,]+", session.get('task_frequency'))
@@ -578,6 +610,15 @@ def tasks():
                                                                    error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* /5 * * *\"")
 
                                     if 'description' in request.form:
+
+                                        for char in Bad_Characters:
+
+                                            if char in request.form['description']:
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
+                                                           edit_task=True, Valid_Plugins=Valid_Plugins,
+                                                           is_admin=session.get('is_admin'), results=results,
+                                                           error="Invalid description, please ensure the description doesn't contain any special characters.")
+
                                         session['task_description'] = request.form['description']
 
                                     session['form_type'] = request.form['tasktype']
@@ -828,7 +869,14 @@ def tasks():
                                                                    error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* */5 * * *\"")
 
                                     if 'description' in request.form:
-                                        session['task_description'] = request.form['description']
+
+                                        for char in Bad_Characters:
+
+                                            if char in request.form['description']:
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
+                                                           edit_task=True, Valid_Plugins=Valid_Plugins,
+                                                           is_admin=session.get('is_admin'), results=results,
+                                                           error="Invalid description, please ensure the description doesn't contain any special characters.")
 
                                     session['form_type'] = request.form['tasktype']
                                     session['form_step'] += 1
@@ -1343,4 +1391,4 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
