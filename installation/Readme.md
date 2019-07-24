@@ -245,6 +245,10 @@ This task requires no API keys, and works by performing a search against a pre-s
 
 *Test query: [Refer to the predefined list in the web app.]*
 
+**Torrent Search**
+This task requires no API keys; however, it does work by performing an API search against a replica of thepiratebay.org website. Therefore, no details need to be added to the config.json file.
+
+*Test query: Modern Family*
 
 **Twitter Search**  
 This task requires an API key, and works by performing an API search against the twitter.com website. Registration is free and easy. After obtaining the API key and other details, please add it to the config.json file, under “twitter”:
