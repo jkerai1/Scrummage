@@ -52,8 +52,14 @@ class Plugin_Caller:
             Thread_1.join()
 
         elif self.plugin_name == "Twitter Scraper":
-            import plugins.Twitter_Scraper as Twitter_Scrape
-            Thread_1 = threading.Thread(target=Twitter_Scrape.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            import plugins.Twitter_Scraper as Twitter_Scraper
+            Thread_1 = threading.Thread(target=Twitter_Scraper.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Torrent Search":
+            import plugins.Torrent_Search as Torrent_Search
+            Thread_1 = threading.Thread(target=Torrent_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
             Thread_1.start()
             Thread_1.join()
 
