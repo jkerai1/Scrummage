@@ -284,8 +284,8 @@ def screenshot():
                         PSQL_Select_Query = 'SELECT link FROM results WHERE result_id = %s'
                         Cursor.execute(PSQL_Select_Query, (screenshot_id,))
                         result = Cursor.fetchone()
-                        SQL_Select_Query = 'SELECT screenshot_url FROM results WHERE result_id = %s'
-                        Cursor.execute(SQL_Select_Query, (screenshot_id,))
+                        PSQL_Select_Query = 'SELECT screenshot_url FROM results WHERE result_id = %s'
+                        Cursor.execute(PSQL_Select_Query, (screenshot_id,))
                         SS_URL = Cursor.fetchone()
 
                         if not SS_URL[0]:
@@ -334,8 +334,14 @@ def screenshot():
                         return redirect(url_for('results'))
 
                 ss_id = int(request.form['ss_id'])
-                Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id,))
-                Thread_1.start()
+
+                if not session.get('screenshot_in_progress') == ss_id:
+                    session['screenshot_in_progress'] = ss_id
+                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id,))
+                    Thread_1.start()
+
+                else:
+                    app.logger.warning("Screenshot already requested for result id " + str(screenshot_id) + ".")
 
             return redirect(url_for('results'))
 
