@@ -124,6 +124,21 @@ This task requires an API key, and works by performing an API search against the
 
 *API Link: https://developer.ebay.com/*
 
+**Flickr Search**
+This task requires an API key, and works by performing an API search against the flickr.com website. Registration for this API is free and easy. After obtaining the API key and secret, and the details to the relevant fields in the config.json file, under “flickr”:
+
+    "flickr": [
+        {
+            "api_key": "",
+            "api_secret": ""
+        }
+    ],
+
+Queries can either be a Flickr username or a user's email address.  
+
+*Test query: tomquirkphoto*  
+
+*API Link: https://www.flickr.com/services/api/*
 
 **Google Play Store Search**  
 This task requires no API keys, and works by querying the play.google.com site.
