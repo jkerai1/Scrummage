@@ -278,54 +278,64 @@ def screenshot():
 
             if 'ss_id' in request.form:
 
-                try:
-                    ss_id = int(request.form['ss_id'])
-                    PSQL_Select_Query = 'SELECT link FROM results WHERE result_id = %s'
-                    Cursor.execute(PSQL_Select_Query, (ss_id,))
-                    result = Cursor.fetchone()
+                def grab_screenshot(screenshot_id):
 
-                    for String in Bad_Link_Strings:
+                    try:
+                        PSQL_Select_Query = 'SELECT link FROM results WHERE result_id = %s'
+                        Cursor.execute(PSQL_Select_Query, (screenshot_id,))
+                        result = Cursor.fetchone()
+                        SQL_Select_Query = 'SELECT screenshot_url FROM results WHERE result_id = %s'
+                        Cursor.execute(SQL_Select_Query, (screenshot_id,))
+                        SS_URL = Cursor.fetchone()
 
-                        if String in result[0]:
-                            return redirect(url_for('results'))
+                        if not SS_URL[0]:
 
-                    screenshot_file = result[0].replace("http://", "")
-                    screenshot_file = screenshot_file.replace("https://", "")
+                            for String in Bad_Link_Strings:
 
-                    if screenshot_file.endswith('/'):
-                        screenshot_file = screenshot_file[:-1]
+                                if String in result[0]:
+                                    return redirect(url_for('results'))
 
-                    screenshot_file = screenshot_file.replace("/", "-")
-                    screenshot_file = screenshot_file.replace("?", "-")
-                    screenshot_file = screenshot_file.replace("=", "-") + ".png"
+                            screenshot_file = result[0].replace("http://", "")
+                            screenshot_file = screenshot_file.replace("https://", "")
 
-                    CHROME_PATH = '/usr/bin/google-chrome'
-                    CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
-                    # WINDOW_SIZE = "1920,1080"
+                            if screenshot_file.endswith('/'):
+                                screenshot_file = screenshot_file[:-1]
 
-                    chrome_options = Options()
-                    chrome_options.add_argument("--headless")
-                    # chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
-                    chrome_options.binary_location = CHROME_PATH
+                            screenshot_file = screenshot_file.replace("/", "-")
+                            screenshot_file = screenshot_file.replace("?", "-")
+                            screenshot_file = screenshot_file.replace("=", "-") + ".png"
 
-                    driver = webdriver.Chrome(
-                        executable_path=CHROMEDRIVER_PATH,
-                        chrome_options=chrome_options
-                    )
+                            CHROME_PATH = '/usr/bin/google-chrome'
+                            CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
+                            # WINDOW_SIZE = "1920,1080"
 
-                    driver.get(result[0])
-                    # total_width = driver.execute_script("return document.body.offsetWidth")
-                    total_height = driver.execute_script("return document.body.scrollHeight")
-                    driver.set_window_size(1920, total_height)
-                    driver.save_screenshot("static/protected/screenshots/" + screenshot_file)
-                    driver.close()
+                            chrome_options = Options()
+                            chrome_options.add_argument("--headless")
+                            # chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
+                            chrome_options.binary_location = CHROME_PATH
 
-                    PSQL_Update_Query = 'UPDATE results SET screenshot_url = %s WHERE result_id = %s'
-                    Cursor.execute(PSQL_Update_Query, (screenshot_file, ss_id,))
-                    Connection.commit()
+                            driver = webdriver.Chrome(
+                                executable_path=CHROMEDRIVER_PATH,
+                                chrome_options=chrome_options
+                            )
 
-                except:
-                    return redirect(url_for('results'))
+                            driver.get(result[0])
+                            # total_width = driver.execute_script("return document.body.offsetWidth")
+                            total_height = driver.execute_script("return document.body.scrollHeight")
+                            driver.set_window_size(1920, total_height)
+                            driver.save_screenshot("static/protected/screenshots/" + screenshot_file)
+                            driver.close()
+
+                            PSQL_Update_Query = 'UPDATE results SET screenshot_url = %s WHERE result_id = %s'
+                            Cursor.execute(PSQL_Update_Query, (screenshot_file, screenshot_id,))
+                            Connection.commit()
+
+                    except:
+                        return redirect(url_for('results'))
+
+                ss_id = int(request.form['ss_id'])
+                Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id,))
+                Thread_1.start()
 
             return redirect(url_for('results'))
 
