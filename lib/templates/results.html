@@ -43,7 +43,7 @@
 						<td style="border: 2px solid #FFFFFF;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
 						{% else %}
 							{% if is_admin %}
-								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] %}
+								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
 									<td class="buttons_in_table" style="border: 2px solid #FFFFFF;">
 										<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
 											<input name="ss_id" value="{{results[0]}}" type=hidden>
