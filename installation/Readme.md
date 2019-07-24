@@ -245,7 +245,7 @@ This task requires no API keys, and works by performing a search against a pre-s
 
 *Test query: [Refer to the predefined list in the web app.]*
 
-**Torrent Search**
+**Torrent Search**  
 This task requires no API keys; however, it does work by performing an API search against a replica of thepiratebay.org website. Therefore, no details need to be added to the config.json file.
 
 *Test query: Modern Family*
