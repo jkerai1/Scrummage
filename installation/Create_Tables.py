@@ -55,7 +55,8 @@ try:
           updated_at TEXT NOT NULL,
           screenshot_url TEXT UNIQUE,
           output_file TEXT,
-          result_type TEXT NOT NULL);'''
+          result_type TEXT NOT NULL,
+          screenshot_requested BOOLEAN);'''
 
     create_tasks_query = '''CREATE TABLE tasks
           (task_id SERIAL PRIMARY KEY NOT NULL,
@@ -78,10 +79,13 @@ try:
     print("[+] Events table created successfully in PostgreSQL.")
     connection.commit()
     print("Table created successfully in PostgreSQL ")
-    
-    cursor.close()
-    connection.close()
-    print("PostgreSQL connection closed.")
 
 except (Exception, psycopg2.DatabaseError) as error :
     print ("Error while creating PostgreSQL table. ", error)
+
+finally:
+    #closing database connection.
+        if(connection):
+            cursor.close()
+            connection.close()
+            print("PostgreSQL connection closed.")
