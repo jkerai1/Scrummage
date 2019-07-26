@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from crontab import CronTab
 from logging.handlers import RotatingFileHandler
-import os, re, datetime, plugin_caller, getpass, time, threading, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
+import os, re, datetime, plugin_caller, getpass, time, threading, html, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
 
 File_Path = os.path.dirname(os.path.realpath('__file__'))
 app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
@@ -287,8 +287,14 @@ def screenshot():
                         PSQL_Select_Query = 'SELECT screenshot_url FROM results WHERE result_id = %s'
                         Cursor.execute(PSQL_Select_Query, (screenshot_id,))
                         SS_URL = Cursor.fetchone()
+                        PSQL_Select_Query = 'SELECT screenshot_requested FROM results WHERE result_id = %s'
+                        Cursor.execute(PSQL_Select_Query, (screenshot_id,))
+                        SS_Req = Cursor.fetchone()
 
-                        if not SS_URL[0]:
+                        if not SS_URL[0] and not SS_Req[0]:
+                            PSQL_Update_Query = 'UPDATE results SET screenshot_requested = %s WHERE result_id = %s'
+                            Cursor.execute(PSQL_Update_Query, (True, screenshot_id,))
+                            Connection.commit()
 
                             for String in Bad_Link_Strings:
 
@@ -628,16 +634,7 @@ def tasks():
                                                                    error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* /5 * * *\"")
 
                                     if 'description' in request.form:
-
-                                        for char in Bad_Characters:
-
-                                            if char in request.form['description']:
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                           edit_task=True, Valid_Plugins=Valid_Plugins,
-                                                           is_admin=session.get('is_admin'), results=results,
-                                                           error="Invalid description, please ensure the description doesn't contain any special characters.")
-
-                                        session['task_description'] = request.form['description']
+                                        session['task_description'] = html.escape(request.form['description'])
 
                                     session['form_type'] = request.form['tasktype']
                                     session['form_step'] += 1
@@ -887,14 +884,7 @@ def tasks():
                                                                    error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* */5 * * *\"")
 
                                     if 'description' in request.form:
-
-                                        for char in Bad_Characters:
-
-                                            if char in request.form['description']:
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                           edit_task=True, Valid_Plugins=Valid_Plugins,
-                                                           is_admin=session.get('is_admin'), results=results,
-                                                           error="Invalid description, please ensure the description doesn't contain any special characters.")
+                                        session['task_description'] = html.escape(request.form['description'])
 
                                     session['form_type'] = request.form['tasktype']
                                     session['form_step'] += 1
