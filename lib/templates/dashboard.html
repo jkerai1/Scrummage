@@ -11,7 +11,7 @@
     {% block content %}
         <div class="dashboard_field-container">
             <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Open Findings</p><canvas id="chart1" width="450" height="300"></canvas>
+                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Open Findings</p><canvas id="chart1" width="425" height="300"></canvas>
                 <script>
                   var pieData1 = [
                     {% for item, label, colors in open_set %}
@@ -31,7 +31,7 @@
                 </script></div>
             </div>
             <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Closed Findings</p><canvas id="chart2" width="450" height="300"></canvas>
+                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Closed Findings</p><canvas id="chart2" width="425" height="300"></canvas>
                 <script>
                   var pieData2 = [
                     {% for item, label, colors in closed_set %}
@@ -51,7 +51,7 @@
                 </script></div>
             </div>
             <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Findings Under Inspection or Review</p><canvas id="chart3" width="450" height="300"></canvas>
+                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Findings Under Inspection or Review</p><canvas id="chart3" width="425" height="300"></canvas>
                 <script>
                   var pieData3 = [
                     {% for item, label, colors in mixed_set %}
@@ -68,6 +68,45 @@
                   max = {{ max }}
                   // draw pie chart
                   new Chart(document.getElementById("chart3").getContext("2d")).Pie(pieData3);
+                </script></div>
+            </div>
+            <div class="dashboard_outer_div">
+                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Most Commonly used Plugins</p><canvas id="chart4" width="1312" height="400"></canvas>
+                <script>
+                  var barData = {
+                    labels : [
+                      {% for item in bar_labels %}
+                       "{{ item }}",
+                      {% endfor %}
+                ],
+                    datasets : [{
+                      fillColor: "rgba(151,187,205,0.2)",
+                      strokeColor: "rgba(151,187,205,1)",
+                      pointColor: "rgba(151,187,205,1)",
+                      data : [
+                        {% for item in bar_values %}
+                           "{{ item }}",
+                          {% endfor %}
+                    ]
+                      }
+                    ]
+                  }
+                 // get bar chart canvas
+                 var mychart4 = document.getElementById("chart4").getContext("2d");
+                   steps = 5
+                   bar_max = {{bar_max}}
+                 // draw bar chart
+                 new Chart(mychart4).Bar(barData, {
+                   scaleOverride: true,
+                   scaleSteps: steps,
+                   scaleStepWidth: Math.ceil(bar_max / steps),
+                   scaleStartValue: 0,
+                   scaleShowVerticalLines: true,
+                   scaleShowGridLines : true,
+                   barShowStroke : true,
+                   scaleShowLabels: true
+                   }
+                 );
                 </script></div>
             </div>
         </div>
