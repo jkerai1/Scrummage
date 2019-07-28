@@ -64,6 +64,11 @@ This task doesn’t require an API key, and contains 2 subtasks, 1 for searching
 * Blockchain Bitcoin Cash Transaction Search
 * Blockchain Ethereum Transaction Search
 
+**BSB Search**  
+*Note: Australian Bank Account BSBs only.*  
+This task doesn't require an API, and works by performing a search for a BSB against a database.
+
+*Test Query: Your BSB.*
 
 **Certificate Transparency**  
 This task requires an API key, and works by performing an API search against the sslmate.com website. Registration is free and easy. After obtaining the API key, please add it to the config.json file, under “sslmate”:
