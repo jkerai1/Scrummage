@@ -225,6 +225,12 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "BSB Search":
+            import plugins.BSB_Search as BSB_Search
+            Thread_1 = threading.Thread(target=BSB_Search.Search, args=(self.query, self.task_id))
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Bitcoin Cash Transaction Search":
             import plugins.Blockchain_Search as Blockchain_Search
             Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "bch",))
