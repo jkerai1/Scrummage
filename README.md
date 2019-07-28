@@ -21,7 +21,6 @@ All feedback is welcome, as this is version 1 I'm sure there will be lots to imp
 **What's on the Horizon for Scrummage?**  
 * Support for more crypto-currencies for the blockchain plugin
 * Public record search plugins
-* Torrent Site Search plugins
 * More social media site plugins
 * Ongoing support for the web application
 
