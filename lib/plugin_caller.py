@@ -219,6 +219,18 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "Business Search - Australian Business Name":
+            import plugins.Australian_Business_Search as Australian_Business_Search
+            Thread_1 = threading.Thread(target=Australian_Business_Search.Search, args=(self.query, self.task_id, "ABN",))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Business Search - Australian Company Name":
+            import plugins.Australian_Business_Search as Australian_Business_Search
+            Thread_1 = threading.Thread(target=Australian_Business_Search.Search, args=(self.query, self.task_id, "ACN",), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Blockchain Ethereum Transaction Search":
             import plugins.Blockchain_Search as Blockchain_Search
             Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "eth",))
