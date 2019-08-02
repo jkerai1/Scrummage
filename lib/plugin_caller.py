@@ -219,7 +219,7 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
-        elif self.plugin_name == "Business Search - Australian Business Name":
+        elif self.plugin_name == "Business Search - Australian Business Number":
             import plugins.Australian_Business_Search as Australian_Business_Search
             Thread_1 = threading.Thread(target=Australian_Business_Search.Search, args=(self.query, self.task_id, "ABN",))
             Thread_1.start()
