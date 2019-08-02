@@ -55,7 +55,9 @@ This task requires no API keys, and works by performing a search for both Tor an
 *Test query: test*
 
 **Australian Business Search**
-This task doesn't require any API keys, and works by performing a search against a public database for ABNs and ACNs.  
+This task doesn't require any API keys, and works by performing a search against a public database for ABNs and ACNs. Therefore, this plugin is split into two different search options:  
+* Business Search - Australian Business Number
+* Business Search - Australian Company Name  
 
 **Blockchain Search**  
 This task doesn’t require an API key, and contains 2 subtasks, 1 for searching blockchain addresses and the other for search tasks. Furthermore, these tasks currently search for Bitcoin, Bitcoin Cash, and Ethereum. Therefore, in the web app there are 6 options:
