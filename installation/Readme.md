@@ -54,7 +54,7 @@ This task requires no API keys, and works by performing a search for both Tor an
 
 *Test query: test*
 
-**Business Search**
+**Business Search**  
 This task doesn't require any API keys, and works by performing a search against a public database for ABNs and ACNs; furthermore, this plugin is stored across different plugin files due to location. This plugin is split into 6 different search options:  
 * Business Search - American Central Index Key
 * Business Search - American Company Name
