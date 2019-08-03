@@ -85,7 +85,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
 
 def Search(Query_List, Task_ID, **kwargs):
 
-    if "Limit" in kwargs:
+    if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]

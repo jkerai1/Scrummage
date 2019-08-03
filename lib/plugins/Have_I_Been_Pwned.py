@@ -9,7 +9,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if "Limit" in kwargs:
+    if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]

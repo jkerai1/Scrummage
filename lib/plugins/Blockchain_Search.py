@@ -9,7 +9,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if "Limit" in kwargs:
+    if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
@@ -84,7 +84,7 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
     Cached_Data = []
 
-    if "Limit" in kwargs:
+    if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]

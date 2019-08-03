@@ -2,8 +2,8 @@
 
 import os, re, logging, requests, datetime, plugins.common.General as General
 
-Plugin_Name = "Australian-Business"
-Concat_Plugin_Name = "australianbusiness"
+Plugin_Name = "American-Business"
+Concat_Plugin_Name = "americanbusiness"
 The_File_Extension = ".html"
 
 def Search(Query_List, Task_ID, Type, **kwargs):
@@ -31,29 +31,28 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
     for Query in Query_List:
 
-        if Type == "ABN":
-            Main_URL = 'https://abr.business.gov.au/ABN/View?id=' + Query
+        if Type == "CIK":
+            Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + Query + '&owner=exclude&count=40&hidefilings=0'
             Response = requests.get(Main_URL).text
 
             try:
 
-                if 'Error searching ABN Lookup' not in Response:
+                if 'No matching CIK.' not in Response:
                     Query = str(int(Query))
 
                     if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Main_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                            General.Connections(Output_file, Query, Plugin_Name, Main_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
                             Data_to_Cache.append(Main_URL)
 
             except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for ABN Search.")
+                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for CIK Search.")
 
         elif Type == "ACN":
-            Main_URL = 'https://abr.business.gov.au/Search/Run'
-            Data = {'SearchParameters.SearchText': Query, 'SearchParameters.AllNames': 'true', 'ctl00%24ContentPagePlaceholder%24SearchBox%24MainSearchButton': 'Search'}
-            Response = requests.post(Main_URL, data=Data).text
+            Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?company=' + Query + '&owner=exclude&action=getcompany'
+            Response = requests.get(Main_URL).text
 
             if kwargs.get('Limit'):
 
@@ -64,26 +63,25 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Limit = 10
 
             try:
-                ACN_Regex = re.search(r".*[a-zA-Z].*", Query)
+                ACN = re.search(r".*[a-zA-Z].*", Query)
 
-                if ACN_Regex:
+                if ACN:
                     General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
                     Current_Step = 0
-                    ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
+                    CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
 
-                    if ABNs_Regex:
+                    if CIKs_Regex:
 
-                        for ABN_URL, ACN in ABNs_Regex:
-                            Full_ABN_URL = 'https://abr.business.gov.au/ABN/View?abn=' + ABN_URL
+                        for CIK_URL, ACN in CIKs_Regex:
+                            Full_CIK_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + CIK_URL + '&owner=exclude&count=40&hidefilings=0'
 
-                            if Full_ABN_URL not in Cached_Data and Full_ABN_URL not in Data_to_Cache and Current_Step < int(Limit):
-                                ACN = ACN.rstrip()
-                                Current_Response = requests.get(Full_ABN_URL).text
+                            if Full_CIK_URL not in Cached_Data and Full_CIK_URL not in Data_to_Cache and Current_Step < int(Limit):
+                                Current_Response = requests.get(Full_CIK_URL).text
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
 
                                 if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, Full_ABN_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Full_ABN_URL), Plugin_Name)
-                                    Data_to_Cache.append(Full_ABN_URL)
+                                    General.Connections(Output_file, Query, Plugin_Name, Full_CIK_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Full_CIK_URL), Plugin_Name)
+                                    Data_to_Cache.append(Full_CIK_URL)
                                     Current_Step += 1
 
             except:
