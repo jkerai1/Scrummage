@@ -219,6 +219,18 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "Business Search - Canadian Business Number":
+            import plugins.Canadian_Business_Search as Canadian_Business_Search
+            Thread_1 = threading.Thread(target=Canadian_Business_Search.Search, args=(self.query, self.task_id, "CBN",))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Business Search - Canadian Company Name":
+            import plugins.Canadian_Business_Search as Canadian_Business_Search
+            Thread_1 = threading.Thread(target=Canadian_Business_Search.Search, args=(self.query, self.task_id, "CCN",), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Business Search - Australian Business Number":
             import plugins.Australian_Business_Search as Australian_Business_Search
             Thread_1 = threading.Thread(target=Australian_Business_Search.Search, args=(self.query, self.task_id, "ABN",))
@@ -228,6 +240,18 @@ class Plugin_Caller:
         elif self.plugin_name == "Business Search - Australian Company Name":
             import plugins.Australian_Business_Search as Australian_Business_Search
             Thread_1 = threading.Thread(target=Australian_Business_Search.Search, args=(self.query, self.task_id, "ACN",), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Business Search - American Central Index Key":
+            import plugins.American_Business_Search as American_Business_Search
+            Thread_1 = threading.Thread(target=American_Business_Search.Search, args=(self.query, self.task_id, "CIK",))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Business Search - American Company Name":
+            import plugins.American_Business_Search as American_Business_Search
+            Thread_1 = threading.Thread(target=American_Business_Search.Search, args=(self.query, self.task_id, "ACN",), kwargs={"Limit": self.limit, })
             Thread_1.start()
             Thread_1.join()
 
