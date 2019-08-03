@@ -219,6 +219,18 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "Business Search - New Zealand Business Number":
+            import plugins.NZ_Business_Search as NZ_Business_Search
+            Thread_1 = threading.Thread(target=NZ_Business_Search.Search, args=(self.query, self.task_id, "NZBN",))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Business Search - New Zealand Company Name":
+            import plugins.NZ_Business_Search as NZ_Business_Search
+            Thread_1 = threading.Thread(target=NZ_Business_Search.Search, args=(self.query, self.task_id, "NZCN",), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Business Search - Canadian Business Number":
             import plugins.Canadian_Business_Search as Canadian_Business_Search
             Thread_1 = threading.Thread(target=Canadian_Business_Search.Search, args=(self.query, self.task_id, "CBN",))
