@@ -55,7 +55,7 @@ This task requires no API keys, and works by performing a search for both Tor an
 *Test query: test*
 
 **Business Search**  
-This task doesn't require any API keys, and works by performing a search against a public database for ABNs and ACNs; furthermore, this plugin is stored across different plugin files due to location. This plugin is split into 6 different search options:  
+This is a compilation of 5 tasks, each with 2 options. Four of the five tasks don't require any API keys, but one does. They all work similarly by performing a search against a public database for Business Numbers (Central Index Key for USA) and Company Names. In total there are 10 options:
 * Business Search - American Central Index Key
 * Business Search - American Company Name
 * Business Search - Australian Business Number
@@ -63,7 +63,21 @@ This task doesn't require any API keys, and works by performing a search against
 * Business Search - Canadian Business Number
 * Business Search - Canadian Company Name
 * Business Search - New Zealand Business Number
-* Business Search - New Zealand Company Name  
+* Business Search - New Zealand Company Name
+* Business Search - United Kingdom Business Number
+* Business Search - United Kingdom Company Name:
+
+~~~~
+"ukbusiness": [
+	{
+	    "api_key": ""
+	}
+],
+~~~~
+
+The format of the api_key field is the unencoded api_key followed by a colon (:). The plugin will take care of the rest
+
+*API Link: https://developer.companieshouse.gov.uk*
 
 **Blockchain Search**  
 This task doesn’t require an API key, and contains 2 subtasks, 1 for searching blockchain addresses and the other for search tasks. Furthermore, these tasks currently search for Bitcoin, Bitcoin Cash, and Ethereum. Therefore, in the web app there are 6 options:
