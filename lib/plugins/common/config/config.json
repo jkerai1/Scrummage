@@ -138,6 +138,11 @@
             "ACCESS_SECRET": ""
         }
     ],
+    "ukbusiness": [
+        {
+            "api_key": ""
+        }
+    ],
     "vulners": [
         {
             "api_key": ""
