@@ -3,6 +3,7 @@
 # Installation
 
 **This tool currently supports Debian, RHEL, and SUSE based linux distributions.**
+**Ubuntu 18.04 + is recommended.**
 
 1. Clone this repository to the location where you want to run the web application from.  
 ```console
