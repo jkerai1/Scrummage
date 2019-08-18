@@ -1,4 +1,4 @@
-import psycopg2, datetime, argparse, sys, re
+import psycopg2, datetime, argparse, sys, re, json
 from werkzeug.security import generate_password_hash
 
 Parser = argparse.ArgumentParser(description='To create users.')
