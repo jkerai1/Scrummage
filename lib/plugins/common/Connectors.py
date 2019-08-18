@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from defectdojo_api import defectdojo
 
 File_Dir = os.path.dirname(os.path.realpath('__file__'))
-Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
 
 def Load_CSV_Configuration():
     logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading CSV configuration data.")
