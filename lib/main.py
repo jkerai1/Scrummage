@@ -375,87 +375,93 @@ def dashboard():
 
     if session.get('user'):
 
-        # try:
-        labels = Finding_Types
-        colors = ["#2471A3", "#8B008B", "#DC143C", "#FFA500", "#DAFF00", "#00FF7F"]
+        try:
+            labels = Finding_Types
+            colors = ["#2471A3", "#8B008B", "#DC143C", "#FFA500", "#DAFF00", "#00FF7F"]
 
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
-        open_domain_spoof_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Data Leakage",))
-        open_data_leakages = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Phishing",))
-        open_phishing_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Transaction",))
-        open_blockchain_transaction_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Address",))
-        open_blockchain_address_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Open", "Exploit",))
-        open_exploit_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
+            open_domain_spoof_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Data Leakage",))
+            open_data_leakages = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Phishing",))
+            open_phishing_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Transaction",))
+            open_blockchain_transaction_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Address",))
+            open_blockchain_address_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Open", "Exploit",))
+            open_exploit_results = Cursor.fetchall()
 
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Domain Spoof",))
-        closed_domain_spoof_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Data Leakage",))
-        closed_data_leakages = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Phishing",))
-        closed_phishing_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Transaction",))
-        closed_blockchain_transaction_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Address",))
-        closed_blockchain_address_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-        Cursor.execute(PSQL_Select_Query, ("Closed", "Exploit",))
-        closed_exploit_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Domain Spoof",))
+            closed_domain_spoof_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Data Leakage",))
+            closed_data_leakages = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Phishing",))
+            closed_phishing_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Transaction",))
+            closed_blockchain_transaction_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Address",))
+            closed_blockchain_address_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+            Cursor.execute(PSQL_Select_Query, ("Closed", "Exploit",))
+            closed_exploit_results = Cursor.fetchall()
 
-        Mixed_Options = ['Inspecting', 'Reviewing']
+            Mixed_Options = ['Inspecting', 'Reviewing']
 
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Domain Spoof", Mixed_Options,))
-        mixed_domain_spoof_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Data Leakage", Mixed_Options,))
-        mixed_data_leakages = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Phishing", Mixed_Options,))
-        mixed_phishing_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Blockchain Transaction", Mixed_Options,))
-        mixed_blockchain_transaction_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Blockchain Address", Mixed_Options,))
-        mixed_blockchain_address_results = Cursor.fetchall()
-        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-        Cursor.execute(PSQL_Select_Query, ("Exploit", Mixed_Options,))
-        mixed_exploit_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Domain Spoof", Mixed_Options,))
+            mixed_domain_spoof_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Data Leakage", Mixed_Options,))
+            mixed_data_leakages = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Phishing", Mixed_Options,))
+            mixed_phishing_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Blockchain Transaction", Mixed_Options,))
+            mixed_blockchain_transaction_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Blockchain Address", Mixed_Options,))
+            mixed_blockchain_address_results = Cursor.fetchall()
+            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+            Cursor.execute(PSQL_Select_Query, ("Exploit", Mixed_Options,))
+            mixed_exploit_results = Cursor.fetchall()
 
-        most_common_tasks_labels = []
-        most_common_tasks_values = []
-        most_common_tasks_colors = ["#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA", "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1", "#C71585", "#FF4500"]
-        Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
-        most_common_tasks = Cursor.fetchall()
+            most_common_tasks_labels = []
+            most_common_tasks_values = []
+            most_common_tasks_colors = ["#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA", "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1", "#C71585", "#FF4500"]
+            Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
+            most_common_tasks = Cursor.fetchall()
 
-        for mc_task in most_common_tasks:
-            most_common_tasks_labels.append(mc_task[0])
-            most_common_tasks_values.append(mc_task[1])
+            if most_common_tasks:
+              
+                for mc_task in most_common_tasks:
+                    most_common_tasks_labels.append(mc_task[0])
+                    most_common_tasks_values.append(mc_task[1])
 
-        open_values = [open_domain_spoof_results[0][0], open_data_leakages[0][0], open_phishing_results[0][0], open_blockchain_transaction_results[0][0], open_blockchain_address_results[0][0], open_exploit_results[0][0]]
-        closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
-        mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
+            open_values = [open_domain_spoof_results[0][0], open_data_leakages[0][0], open_phishing_results[0][0], open_blockchain_transaction_results[0][0], open_blockchain_address_results[0][0], open_exploit_results[0][0]]
+            closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
+            mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
 
-        return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+            if most_common_tasks:
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
 
-        # except Exception as e:
-            # app.logger.error(e)
+            else:
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=0, bar_values=most_common_tasks_values)
+              
+        except Exception as e:
+            app.logger.error(e)
 
     else:
         return redirect(url_for('no_session'))
