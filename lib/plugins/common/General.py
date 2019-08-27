@@ -259,7 +259,7 @@ def Load_Location_Configuration():
         logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
 
 def Make_Directory(Plugin_Name):
-    Today = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    Today = datetime.datetime.now()
     Year = str(Today.year)
     Month = str(Today.month)
     Day = str(Today.day)
