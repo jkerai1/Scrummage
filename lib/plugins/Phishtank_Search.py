@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from bs4 import BeautifulSoup
-import logging, os, requests, plugins.common.General as General
+import logging, os, requests, datetime, plugins.common.General as General
 
 Plugin_Name = "PhishTank"
 The_File_Extension = ".html"
@@ -37,38 +37,48 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        Pull_URL = "https://www.phishtank.com/target_search.php?target_id=" + Query + "&valid=y&active=All&Search=Search"
-        Content = requests.get(Pull_URL).text
-        soup = BeautifulSoup(Content, features="lxml")
-        tds = soup.findAll('td')
-        Links = []
 
-        for td in tds:
-            link = td.find('a')
+        try:
+            Pull_URL = "https://www.phishtank.com/target_search.php?target_id=" + Query + "&valid=y&active=All&Search=Search"
+            Content = requests.get(Pull_URL).text
+            soup = BeautifulSoup(Content, features="lxml")
+            tds = soup.findAll('td')
+            Links = []
 
-            if link and 'phish_detail.php?phish_id=' in link.attrs['href']:
-                Full_Link = "https://www.phishtank.com/" + link.attrs['href']
-                Links.append(Full_Link)
+            for td in tds:
+                link = td.find('a')
 
-        Current_Step = 0
+                if link and 'phish_detail.php?phish_id=' in link.attrs['href']:
+                    Full_Link = "https://www.phishtank.com/" + link.attrs['href']
+                    Links.append(Full_Link)
 
-        for Link in Links:
-            Current_Content = requests.get(Link).text
-            Current_Soup = BeautifulSoup(Current_Content, features="lxml")
-            Spans = Current_Soup.find('span', {"style": "word-wrap:break-word;"})
-            Current_Link = Spans.string
+            Current_Step = 0
 
-            if Current_Link:
-                Phish_Site_Response = requests.get(Current_Link).text
-                Output_file_query = Query.replace(" ", "-")
-                Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
+            for Link in Links:
+                Current_Content = requests.get(Link).text
+                Current_Soup = BeautifulSoup(Current_Content, features="lxml")
+                Spans = Current_Soup.find('span', {"style": "word-wrap:break-word;"})
+                Current_Link = Spans.string
 
-                if Output_file:
+                if Current_Link:
 
-                    if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
-                        General.Connections(Output_file, Query, Plugin_Name, Current_Link, "phishtank.com", "Phishing", Task_ID, General.Get_Title(Current_Link), Plugin_Name.lower())
-                        Data_to_Cache.append(Current_Link)
-                        Current_Step += 1
+                    try:
+                        Phish_Site_Response = requests.get(Current_Link).text
+                        Output_file_query = Query.replace(" ", "-")
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
+
+                        if Output_file:
+
+                            if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
+                                General.Connections(Output_file, Query, Plugin_Name, Current_Link, "phishtank.com", "Phishing", Task_ID, General.Get_Title(Current_Link), Plugin_Name.lower())
+                                Data_to_Cache.append(Current_Link)
+                                Current_Step += 1
+
+                    except:
+                        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make request for result, link may no longer be available.")
+
+        except:
+            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
