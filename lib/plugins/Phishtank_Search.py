@@ -63,13 +63,13 @@ def Search(Query_List, Task_ID, **kwargs):
                 if Current_Link:
 
                     try:
-                        Phish_Site_Response = requests.get(Current_Link).text
-                        Output_file_query = Query.replace(" ", "-")
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
+                        
+                        if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
+                            Phish_Site_Response = requests.get(Current_Link).text
+                            Output_file_query = Query.replace(" ", "-")
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
 
-                        if Output_file:
-
-                            if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
+                            if Output_file:
                                 General.Connections(Output_file, Query, Plugin_Name, Current_Link, "phishtank.com", "Phishing", Task_ID, General.Get_Title(Current_Link), Plugin_Name.lower())
                                 Data_to_Cache.append(Current_Link)
                                 Current_Step += 1
