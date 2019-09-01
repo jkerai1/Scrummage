@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import play_scraper, requests, os, logging, re, json, datetime, plugins.common.General as General
+import play_scraper, requests, os, logging, re, json, plugins.common.General as General
 
 The_File_Extension = ".html"
 Plugin_Name = "Play-Store"
@@ -58,10 +58,13 @@ def Search(Query_List, Task_ID, **kwargs):
                         if Output_file:
                             General.Connections(Output_file, Query, Plugin_Name, Result_URL, "play.google.com", "Data Leakage", Task_ID, General.Get_Title(Result_URL), Concat_Plugin_Name)
 
+                    else:
+                        logging.info(General.Date() + " Failed to match regular expression.")
+
                     Data_to_Cache.append(Result_URL)
 
         except:
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to get results, this may be due to the query provided.")
+            logging.info(General.Date() + " Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

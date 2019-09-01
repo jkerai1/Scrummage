@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from bs4 import BeautifulSoup
-import logging, os, requests, datetime, plugins.common.General as General
+import logging, os, requests, plugins.common.General as General
 
 Plugin_Name = "PhishTank"
 The_File_Extension = ".html"
@@ -63,22 +63,22 @@ def Search(Query_List, Task_ID, **kwargs):
                 if Current_Link:
 
                     try:
-                        
-                        if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
-                            Phish_Site_Response = requests.get(Current_Link).text
-                            Output_file_query = Query.replace(" ", "-")
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
+                        Phish_Site_Response = requests.get(Current_Link).text
+                        Output_file_query = Query.replace(" ", "-")
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Output_file_query, Plugin_Name, Phish_Site_Response, Link.replace("https://www.phishtank.com/phish_detail.php?phish_id=", ""), The_File_Extension)
 
-                            if Output_file:
+                        if Output_file:
+
+                            if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
                                 General.Connections(Output_file, Query, Plugin_Name, Current_Link, "phishtank.com", "Phishing", Task_ID, General.Get_Title(Current_Link), Plugin_Name.lower())
                                 Data_to_Cache.append(Current_Link)
                                 Current_Step += 1
 
                     except:
-                        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make request for result, link may no longer be available.")
+                        logging.warning(General.Date() + " Failed to make request for result, link may no longer be available.")
 
         except:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make request.")
+            logging.warning(General.Date() + " Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

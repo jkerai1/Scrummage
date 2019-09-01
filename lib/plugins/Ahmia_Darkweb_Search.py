@@ -15,7 +15,6 @@ Tor_General_URL = "https://ahmia.fi/search/?q="
 I2P_General_URL = "https://ahmia.fi/search/i2p/?q="
 Tor_Scrape_Regex_URL = "(http\:\/\/[\d\w]+\.onion(?:\/[\/\.\-\?\=\%\d\w]+)?)"
 I2P_Scrape_Regex_URL = "(http\:\/\/[\d\w]+\.i2p(?:\/[\/\.\-\?\=\%\d\w]+)?)"
-Is_Tor = False
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -50,7 +49,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
     for Query in Query_List:
         Tor_Pull_URL = Tor_General_URL + Query
-        Tor_Scrape_URLs = General.Get_Latest_URLs(Tor_Pull_URL, Tor_Scrape_Regex_URL, Is_Tor)
+        Tor_Scrape_URLs = General.Get_Latest_URLs(Tor_Pull_URL, Tor_Scrape_Regex_URL)
 
         if Tor_Scrape_URLs:
             Output_file = General.Main_File_Create(Directory, Tor_Plugin_Name.lower(), "\n".join(Tor_Scrape_URLs), Query, The_File_Extension)
@@ -65,11 +64,14 @@ def Search(Query_List, Task_ID, **kwargs):
                         Data_to_Cache.append(URL)
                         Current_Step += 1
 
+        else:
+            logging.info(General.Date() + " No Tor links scraped.")
+
         I2P_Pull_URL = I2P_General_URL + Query
-        I2P_Scrape_URLs = General.Get_Latest_URLs(I2P_Pull_URL, I2P_Scrape_Regex_URL, Is_Tor)
+        I2P_Scrape_URLs = General.Get_Latest_URLs(I2P_Pull_URL, I2P_Scrape_Regex_URL)
 
         if I2P_Scrape_URLs:
-            Output_file = General.Main_File_Create(Directory, I2P_Plugin_Name.lower(), "\n".join(Scrape_URLs), Query, The_File_Extension)
+            Output_file = General.Main_File_Create(Directory, I2P_Plugin_Name.lower(), "\n".join(I2P_Scrape_URLs), Query, The_File_Extension)
 
             if Output_file:
                 Current_Step = 0
@@ -80,6 +82,9 @@ def Search(Query_List, Task_ID, **kwargs):
                         General.Connections(Output_file, Query, I2P_Plugin_Name, URL, "ahmia.fl", "Domain Spoof", Task_ID, General.Get_Title(URL), Plugin_Name.lower())
                         Data_to_Cache.append(URL)
                         Current_Step += 1
+
+        else:
+            logging.info(General.Date() + " No I2P links scraped.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

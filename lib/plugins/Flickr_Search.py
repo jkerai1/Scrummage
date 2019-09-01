@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, logging, os, re, datetime, plugins.common.General as General, json, flickr_api
+import requests, logging, os, re, plugins.common.General as General, json, flickr_api
 
 Plugin_Name = "Flickr"
 The_File_Extension = ".html"
@@ -7,7 +7,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
+    logging.info(General.Date() + " Loading configuration data.")
 
     try:
 
@@ -23,7 +23,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
+        logging.warning(General.Date() + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -61,7 +61,7 @@ def Search(Query_List, Task_ID, **kwargs):
         flickr_api.set_keys(api_key=Flickr_Details[0], api_secret=Flickr_Details[1])
 
     except:
-        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to establish API identity.")
+        logging.info(General.Date() + " Failed to establish API identity.")
 
     for Query in Query_List:
         Email_Regex = re.search(r"[^@]+@[^\.]+\..+", Query)
@@ -89,7 +89,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
             except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make API call.")
+                logging.info(General.Date() + " Failed to make API call.")
 
         else:
 
@@ -115,7 +115,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
             except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to make API call.")
+                logging.info(General.Date() + " Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

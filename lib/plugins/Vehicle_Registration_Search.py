@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests, datetime, json, os, logging, plugins.common.General as General
+import requests, json, os, logging, plugins.common.General as General
 
 Plugin_Name = "Vehicle-Registration-Search"
 Concat_Plugin_Name = "registrationsearch"
@@ -56,7 +56,7 @@ def Search(Query_List, Task_ID):
                     Data_to_Cache.append(Item_URL)
 
             except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " No result found for given query " + Query + " for state " + State + ".")
+                logging.info(General.Date() + " No result found for given query " + Query + " for state " + State + ".")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

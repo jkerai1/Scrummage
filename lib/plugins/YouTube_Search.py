@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import plugins.common.General as General, datetime, requests, json, os, logging
+import plugins.common.General as General, requests, json, os, logging
 from googleapiclient import discovery
 
 The_File_Extension = ".html"
@@ -8,7 +8,7 @@ Plugin_Name = "YouTube"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
+    logging.info(General.Date() + " Loading configuration data.")
 
     try:
 
@@ -29,7 +29,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
+        logging.warning(General.Date() + " Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
