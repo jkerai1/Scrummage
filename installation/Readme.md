@@ -193,8 +193,8 @@ This task requires an API key, and works by performing an API search against the
 *API Links: https://console.developers.google.com/apis/dashboard, https://developers.google.com/apis-explorer/#p/*
 
 
-**Have I Been Pwned Search**  
-This task requires no API keys, and works by performing a search against the haveibeenpwned.com site. There are 4 kinds of search options represented by four options in the web application:
+**Have I Been Pwned Search (VERSION 2 - NOW REQUIRES API)**  
+This task requires used to not require any API keys but now does, and works by performing an API search against the haveibeenpwned.com site. There are 4 kinds of search options represented by four options in the web application:
 * Email Search – Gets pastes affecting a given email address.
 * Breach Search – Use this to search for a public data breach.
 *Test query: Adobe*
@@ -202,6 +202,14 @@ This task requires no API keys, and works by performing a search against the hav
 *Test query: [YOUR EMAIL]*
 * Password Search – Use this to see if your password has been found in any data breaches.
 *Test query: password*
+
+Please configure the API key in the config.json file, under "haveibeenpwned".
+
+    "haveibeenpwned": [
+        {
+            "api_key": ""
+        }
+    ],
 
 
 **Instagram Search**  
