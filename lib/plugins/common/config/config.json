@@ -66,6 +66,11 @@
             "developer_key": ""
         }
     ],
+    "haveibeenpwned": [
+        {
+            "api_key": ""
+        }
+    ],
     "JIRA": [
         {
             "project_key": "",
