@@ -960,6 +960,8 @@ text-align:center;
 
 .nonscreenshottab {
 	padding: 10px 0px 10px 10px;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
