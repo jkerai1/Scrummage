@@ -14,7 +14,7 @@ import os, re, datetime, plugin_caller, getpass, time, threading, html, plugins.
 File_Path = os.path.dirname(os.path.realpath('__file__'))
 app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
 app.permanent_session_lifetime = timedelta(minutes=5)
-Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "BSB Search", "Business Search - American Central Index Key", "Business Search - American Company Name", "Business Search - Australian Business Number", "Business Search - Australian Company Name", "Business Search - Canadian Business Number", "Business Search - Canadian Company Name", "Business Search - New Zealand Business Number", "Business Search - New Zealand Company Name", "Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Domain Fuzzer - All Extensions",
+Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "BSB Search", "Business Search - American Central Index Key", "Business Search - American Company Name", "Business Search - Australian Business Number", "Business Search - Australian Company Name", "Business Search - Canadian Business Number", "Business Search - Canadian Company Name", "Business Search - New Zealand Business Number", "Business Search - New Zealand Company Name", "Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Default Password Search", "Domain Fuzzer - All Extensions",
                  "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
                  "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Account Search", "Instagram Location Search", "Instagram Media Search", "Instagram Tag Search", "Instagram User Search", "iTunes Store Search", "Library Genesis Search", "PhishTank Search", "Google Play Store Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "RSS Feed Search", "Torrent Search", "Twitter Scraper", "Vehicle Registration Search", "Vulners Search", "Windows Store Search", "YouTube Search"]
 Plugins_without_Limit = ["BSB Search", "Business Search - American Central Index Key", "Business Search - Australian Business Number", "Business Search - Canadian Business Number", "Business Search - New Zealand Business Number", "Business Search - United Kingdom Business Number", "Certificate Transparency", "Domain Fuzzer - All Extensions", "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Password Search", "Instagram Media Search", "Pinterest Pin Search", "Vehicle Registration Search"]
@@ -282,7 +282,7 @@ def screenshot():
 
             if 'ss_id' in request.form:
 
-                def grab_screenshot(screenshot_id):
+                def grab_screenshot(screenshot_id, user):
 
                     try:
                         PSQL_Select_Query = 'SELECT link FROM results WHERE result_id = %s'
@@ -296,6 +296,9 @@ def screenshot():
                         SS_Req = Cursor.fetchone()
 
                         if not SS_URL[0] and not SS_Req[0]:
+                            Message = "Screenshot requested for result number " + str(screenshot_id) + " by " + user + "."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
                             PSQL_Update_Query = 'UPDATE results SET screenshot_requested = %s WHERE result_id = %s'
                             Cursor.execute(PSQL_Update_Query, (True, screenshot_id,))
                             Connection.commit()
@@ -352,7 +355,7 @@ def screenshot():
 
                 if not session.get('screenshot_in_progress') == ss_id:
                     session['screenshot_in_progress'] = ss_id
-                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id,))
+                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id, str(session.get('user'))))
                     Thread_1.start()
 
                 else:
@@ -444,22 +447,16 @@ def dashboard():
             Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
             most_common_tasks = Cursor.fetchall()
 
-            if most_common_tasks:
-              
-                for mc_task in most_common_tasks:
-                    most_common_tasks_labels.append(mc_task[0])
-                    most_common_tasks_values.append(mc_task[1])
+            for mc_task in most_common_tasks:
+                most_common_tasks_labels.append(mc_task[0])
+                most_common_tasks_values.append(mc_task[1])
 
             open_values = [open_domain_spoof_results[0][0], open_data_leakages[0][0], open_phishing_results[0][0], open_blockchain_transaction_results[0][0], open_blockchain_address_results[0][0], open_exploit_results[0][0]]
             closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
             mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
 
-            if most_common_tasks:
-                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+            return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
 
-            else:
-                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=0, bar_values=most_common_tasks_values)
-              
         except Exception as e:
             app.logger.error(e)
 
