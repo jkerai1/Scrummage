@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, re, logging, os, json, datetime, plugins.common.General as General
+import requests, re, logging, os, json, plugins.common.General as General
 from googleapiclient.discovery import build
 
 Plugin_Name = "Google"
@@ -8,7 +8,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
+    logging.info(General.Date() + " Loading configuration data.")
 
     try:
 
@@ -28,7 +28,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load location details.")
+        logging.warning(General.Date() + " Failed to load API details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -90,11 +90,13 @@ def Search(Query_List, Task_ID, **kwargs):
                             if Output_file:
                                 General.Connections(Output_file, Query, Plugin_Name, Google_Item_URL, "google.com", "Domain Spoof", Task_ID, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
 
+                        else:
+                            logging.warning(General.Date() + " Failed to match regular expression.")
+
                         Data_to_Cache.append(Google_Item_URL)
 
-
             except Exception as e:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(e))
+                logging.info(General.Date() + str(e))
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

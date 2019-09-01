@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re, logging, requests, datetime, plugins.common.General as General
+import os, re, logging, requests, plugins.common.General as General
 
 Plugin_Name = "Australian-Business"
 Concat_Plugin_Name = "australianbusiness"
@@ -31,63 +31,77 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
     for Query in Query_List:
 
-        if Type == "ABN":
-            Main_URL = 'https://abr.business.gov.au/ABN/View?id=' + Query
-            Response = requests.get(Main_URL).text
+        try:
 
-            try:
+            if Type == "ABN":
+                Main_URL = 'https://abr.business.gov.au/ABN/View?id=' + Query
+                Response = requests.get(Main_URL).text
 
-                if 'Error searching ABN Lookup' not in Response:
-                    Query = str(int(Query))
+                try:
 
-                    if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                    if 'Error searching ABN Lookup' not in Response:
+                        Query = str(int(Query))
 
-                        if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Main_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
-                            Data_to_Cache.append(Main_URL)
+                        if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
-            except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for ABN Search.")
+                            if Output_file:
+                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Data_to_Cache.append(Main_URL)
 
-        elif Type == "ACN":
-            Main_URL = 'https://abr.business.gov.au/Search/Run'
-            Data = {'SearchParameters.SearchText': Query, 'SearchParameters.AllNames': 'true', 'ctl00%24ContentPagePlaceholder%24SearchBox%24MainSearchButton': 'Search'}
-            Response = requests.post(Main_URL, data=Data).text
+                except:
+                    logging.warning(General.Date() + " Invalid query provided for ABN Search.")
 
-            if kwargs.get('Limit'):
+            elif Type == "ACN":
+                Main_URL = 'https://abr.business.gov.au/Search/Run'
+                Data = {'SearchParameters.SearchText': Query, 'SearchParameters.AllNames': 'true', 'ctl00%24ContentPagePlaceholder%24SearchBox%24MainSearchButton': 'Search'}
+                Response = requests.post(Main_URL, data=Data).text
 
-                if int(kwargs["Limit"]) > 0:
-                    Limit = kwargs["Limit"]
+                if kwargs.get('Limit'):
+
+                    if int(kwargs["Limit"]) > 0:
+                        Limit = kwargs["Limit"]
+
+                else:
+                    Limit = 10
+
+                try:
+                    ACN_Regex = re.search(r".*[a-zA-Z].*", Query)
+
+                    if ACN_Regex:
+                        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+                        Current_Step = 0
+                        ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
+
+                        if ABNs_Regex:
+
+                            for ABN_URL, ACN in ABNs_Regex:
+                                Full_ABN_URL = 'https://abr.business.gov.au/ABN/View?abn=' + ABN_URL
+
+                                if Full_ABN_URL not in Cached_Data and Full_ABN_URL not in Data_to_Cache and Current_Step < int(Limit):
+                                    ACN = ACN.rstrip()
+                                    Current_Response = requests.get(Full_ABN_URL).text
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
+
+                                    if Output_file:
+                                        General.Connections(Output_file, Query, Plugin_Name, Full_ABN_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Full_ABN_URL), Plugin_Name)
+                                        Data_to_Cache.append(Full_ABN_URL)
+                                        Current_Step += 1
+
+                        else:
+                            logging.warning(General.Date() + " Response did not match regular expression.")
+
+                    else:
+                        logging.warning(General.Date() + " Query did not match regular expression.")
+
+                except:
+                    logging.warning(General.Date() + " Invalid query provided for ACN Search.")
 
             else:
-                Limit = 10
+                logging.warning(General.Date() + " Invalid request type.")
 
-            try:
-                ACN_Regex = re.search(r".*[a-zA-Z].*", Query)
-
-                if ACN_Regex:
-                    General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
-                    Current_Step = 0
-                    ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
-
-                    if ABNs_Regex:
-
-                        for ABN_URL, ACN in ABNs_Regex:
-                            Full_ABN_URL = 'https://abr.business.gov.au/ABN/View?abn=' + ABN_URL
-
-                            if Full_ABN_URL not in Cached_Data and Full_ABN_URL not in Data_to_Cache and Current_Step < int(Limit):
-                                ACN = ACN.rstrip()
-                                Current_Response = requests.get(Full_ABN_URL).text
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
-
-                                if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, Full_ABN_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Full_ABN_URL), Plugin_Name)
-                                    Data_to_Cache.append(Full_ABN_URL)
-                                    Current_Step += 1
-
-            except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for ACN Search.")
+        except:
+            logging.warning(General.Date() + " Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import json, os, logging, tweepy, datetime, plugins.common.General as General
+import json, os, requests, logging, tweepy, plugins.common.General as General
 
 Plugin_Name = "Twitter"
 The_File_Extension = ".txt"
@@ -9,7 +9,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading configuration data.")
+    logging.info(General.Date() + " Loading configuration data.")
 
     try:
 
@@ -29,7 +29,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load Twitter details.")
+        logging.warning(General.Date() + " Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
     Data_to_Cache = []
@@ -46,8 +46,8 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
         Link = ""
 
         try:
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Tweet.entities['urls'][0])
             JSON_Response.append({
+                'id': Tweet.id,
                 'text': Tweet.text,
                 'author_name': Tweet.user.screen_name,
                 'url': Tweet.entities['urls'][0]["expanded_url"]
@@ -56,26 +56,35 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
 
         except:
             JSON_Response.append({
+                'id': Tweet.id,
                 'text': Tweet.text,
                 'author_name': Tweet.user.screen_name
             })
 
-        JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
+    JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
 
-        if Link not in Cached_Data and Link not in Data_to_Cache:
-            Output_file = General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, ".json")
+    for JSON_Item in JSON_Response:
 
-            if Output_file:
+        if 'text' in JSON_Item and 'url' in JSON_Item:
+            Link = JSON_Item['url']
 
-                for JSON_Tweet in JSON_Response:
-                    logging.info(JSON_Tweet)
+            if Link not in Cached_Data and Link not in Data_to_Cache:
+                logging.info(General.Date() + " " + Link)
+                Item_Response = requests.get(Link).text
+                Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), ".html")
 
-                    if 'url' in JSON_Tweet:
-                        Link = JSON_Tweet['url']
-                        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + Link)
-                        General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
+                if Output_file:
+                    General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
 
-            Data_to_Cache.append(Link)
+                else:
+                    logging.warning(General.Date() + " Output file not returned.")
+
+        else:
+            logging.warning(General.Date() + " Insufficient parameters provided.")
+
+        Data_to_Cache.append(Link)
+
+    General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, ".json")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
@@ -109,12 +118,13 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
+        print(Query)
 
-        try:
-            Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
-            Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
-            API = tweepy.API(Authentication)
-            General_Pull(Query, Limit, Directory, API, Task_ID)
+        # try:
+        Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
+        Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
+        API = tweepy.API(Authentication)
+        General_Pull(Query, Limit, Directory, API, Task_ID)
 
-        except:
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to get results. Are you connected to the internet?")
+        # except:
+        #     logging.info(General.Date() + " Failed to get results. Are you connected to the internet?")

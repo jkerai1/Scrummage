@@ -44,6 +44,9 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
         elif Type == "eth":
             Query_Regex = re.search(r"(0x[\d\w]{64})", Query)
 
+        else:
+            logging.warning(General.Date() + " Invalid type provided.")
+
         if Query_Regex:
             Main_URL = "https://www.blockchain.com/" + Type + "/tx/" + Query
             Main_Response = requests.get(Main_URL).text
@@ -56,6 +59,9 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
 
             elif Type == "eth":
                 Address_Regex = re.findall(r"(0x[\w\d]{40})", Main_Response)
+
+            else:
+                logging.warning(General.Date() + " Invalid type provided.")
 
             if Address_Regex:
                 Current_Step = 0
@@ -72,6 +78,12 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
 
                         Data_to_Cache.append(Query_URL)
                         Current_Step += 1
+
+            else:
+                logging.warning(General.Date() + " Failed to match regular expression.")
+
+        else:
+            logging.warning(General.Date() + " Failed to match regular expression.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -119,6 +131,9 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
         elif Type == "eth":
             Query_Regex = re.search(r"(0x[\w\d]{40})", Query)
 
+        else:
+            logging.warning(General.Date() + " Invalid type provided.")
+
         if Query_Regex:
             Main_URL = "https://www.blockchain.com/" + Type + "/address/" + Query
             Main_Response = requests.get(Main_URL).text
@@ -131,6 +146,9 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
 
             elif Type == "eth":
                 Transaction_Regex = re.findall(r"(0x[\d\w]{64})", Main_Response)
+
+            else:
+                logging.warning(General.Date() + " Invalid type provided.")
 
             if Transaction_Regex:
                 Current_Step = 0
@@ -147,6 +165,12 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
 
                         Data_to_Cache.append(Query_URL)
                         Current_Step += 1
+
+            else:
+                logging.warning(General.Date() + " Failed to match regular expression.")
+
+        else:
+            logging.warning(General.Date() + " Failed to match regular expression.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")

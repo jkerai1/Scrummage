@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, feedparser, datetime, logging, plugins.common.General as General
+import os, feedparser, logging, plugins.common.General as General
 
 The_File_Extension = ".html"
 Plugin_Name = "RSS"
@@ -36,7 +36,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(General.Date() + " Please provide a valid file, failed to open the file which contains the data to search for.")
 
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -71,6 +71,9 @@ def Search(Query_List, Task_ID, **kwargs):
 
                         Data_to_Cache.append(Feed.link)
                         Current_Step += 1
+
+                else:
+                    logging.info(General.Date() + " Query not found.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

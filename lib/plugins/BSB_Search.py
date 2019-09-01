@@ -41,6 +41,9 @@ def Search(Query_List, Task_ID):
 
                 Data_to_Cache.append(BSB_Search_URL)
 
+        else:
+            logging.warning(General.Date() + " Query returned error, probably does not exist.")
+
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 

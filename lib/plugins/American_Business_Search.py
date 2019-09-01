@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re, logging, requests, datetime, plugins.common.General as General
+import os, re, logging, requests, plugins.common.General as General
 
 Plugin_Name = "American-Business"
 Concat_Plugin_Name = "americanbusiness"
@@ -31,61 +31,75 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
     for Query in Query_List:
 
-        if Type == "CIK":
-            Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + Query + '&owner=exclude&count=40&hidefilings=0'
-            Response = requests.get(Main_URL).text
+        try:
 
-            try:
+            if Type == "CIK":
+                Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + Query + '&owner=exclude&count=40&hidefilings=0'
+                Response = requests.get(Main_URL).text
 
-                if 'No matching CIK.' not in Response:
-                    Query = str(int(Query))
+                try:
 
-                    if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                    if 'No matching CIK.' not in Response:
+                        Query = str(int(Query))
 
-                        if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Main_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
-                            Data_to_Cache.append(Main_URL)
+                        if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
-            except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for CIK Search.")
+                            if Output_file:
+                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Data_to_Cache.append(Main_URL)
 
-        elif Type == "ACN":
-            Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?company=' + Query + '&owner=exclude&action=getcompany'
-            Response = requests.get(Main_URL).text
+                except:
+                    logging.warning(General.Date() + " Invalid query provided for CIK Search.")
 
-            if kwargs.get('Limit'):
+            elif Type == "ACN":
+                Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?company=' + Query + '&owner=exclude&action=getcompany'
+                Response = requests.get(Main_URL).text
 
-                if int(kwargs["Limit"]) > 0:
-                    Limit = kwargs["Limit"]
+                if kwargs.get('Limit'):
+
+                    if int(kwargs["Limit"]) > 0:
+                        Limit = kwargs["Limit"]
+
+                else:
+                    Limit = 10
+
+                try:
+                    ACN = re.search(r".*[a-zA-Z].*", Query)
+
+                    if ACN:
+                        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+                        Current_Step = 0
+                        CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
+
+                        if CIKs_Regex:
+
+                            for CIK_URL, ACN in CIKs_Regex:
+                                Full_CIK_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + CIK_URL + '&owner=exclude&count=40&hidefilings=0'
+
+                                if Full_CIK_URL not in Cached_Data and Full_CIK_URL not in Data_to_Cache and Current_Step < int(Limit):
+                                    Current_Response = requests.get(Full_CIK_URL).text
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
+
+                                    if Output_file:
+                                        General.Connections(Output_file, Query, Plugin_Name, Full_CIK_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Full_CIK_URL), Plugin_Name)
+                                        Data_to_Cache.append(Full_CIK_URL)
+                                        Current_Step += 1
+
+                        else:
+                            logging.warning(General.Date() + " Response did not match regular expression.")
+
+                    else:
+                        logging.warning(General.Date() + " Query did not match regular expression.")
+
+                except:
+                    logging.warning(General.Date() + " Invalid query provided for ACN Search.")
 
             else:
-                Limit = 10
+                logging.warning(General.Date() + " Invalid request type.")
 
-            try:
-                ACN = re.search(r".*[a-zA-Z].*", Query)
-
-                if ACN:
-                    General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
-                    Current_Step = 0
-                    CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
-
-                    if CIKs_Regex:
-
-                        for CIK_URL, ACN in CIKs_Regex:
-                            Full_CIK_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + CIK_URL + '&owner=exclude&count=40&hidefilings=0'
-
-                            if Full_CIK_URL not in Cached_Data and Full_CIK_URL not in Data_to_Cache and Current_Step < int(Limit):
-                                Current_Response = requests.get(Full_CIK_URL).text
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
-
-                                if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, Full_CIK_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Full_CIK_URL), Plugin_Name)
-                                    Data_to_Cache.append(Full_CIK_URL)
-                                    Current_Step += 1
-
-            except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Invalid query provided for ACN Search.")
+        except:
+            logging.warning(General.Date() + " Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

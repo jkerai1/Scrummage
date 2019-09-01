@@ -135,6 +135,12 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                 Data_to_Cache.append(URL)
 
+            else:
+                logging.warning(General.Date() + " Invalid response.")
+
+        else:
+            logging.warning(General.Date() + " Invalid type provided.")
+
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 

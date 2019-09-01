@@ -62,10 +62,11 @@ def Search(Query_List, Task_ID, **kwargs):
                     Data_to_Cache.append(Item_URL)
                     Current_Step += 1
 
+        else:
+            logging.warning(General.Date() + " Failed to match regular expression.")
+
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
     else:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
-
-    logging.info('Windows Store Search Plugin Terminated.')

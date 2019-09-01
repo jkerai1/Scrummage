@@ -48,7 +48,6 @@ def Search(Query_List, Task_ID, **kwargs):
             for Search_Result in Response:
                 Result_Title = Search_Result["title"]
                 Result_URL = Search_Result["magnet"]
-                # Search_Result_Response = requests.get(Result_URL).text
 
                 if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
                     # Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)

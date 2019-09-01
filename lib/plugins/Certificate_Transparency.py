@@ -71,10 +71,19 @@ def Search(Query_List, Task_ID):
                             if Output_file:
                                 General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request), Plugin_Name.lower())
 
+                        else:
+                            logging.warning(General.Date() + " Failed to match regular expression.")
+
                     except:
-                        logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + "[-] Failed to create file.")
+                        logging.warning(General.Date() + " Failed to create file.")
 
                     Data_to_Cache.append(Request)
+
+            else:
+                logging.warning(General.Date() + " No response.")
+
+        else:
+            logging.warning(General.Date() + " Query does not exist.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
