@@ -7,10 +7,13 @@ from email.mime.multipart import MIMEMultipart
 from defectdojo_api import defectdojo
 
 File_Dir = os.path.dirname(os.path.realpath('__file__'))
-Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
+Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+
+def Date():
+    return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def Load_CSV_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading CSV configuration data.")
+    logging.info(Date() + " Loading CSV configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -26,10 +29,10 @@ def Load_CSV_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Defect_Dojo_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading DefectDojo configuration data.")
+    logging.info(Date() + " Loading DefectDojo configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -51,10 +54,10 @@ def Load_Defect_Dojo_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Email_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading email configuration data.")
+    logging.info(Date() + " Loading email configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -74,10 +77,10 @@ def Load_Email_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Elasticsearch_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading Elasticsearch configuration data.")
+    logging.info(Date() + " Loading Elasticsearch configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -95,10 +98,10 @@ def Load_Elasticsearch_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Main_Database():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading Scrummage's Main Database configuration data.")
+    logging.info(Date() + " Loading Scrummage's Main Database configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -112,7 +115,7 @@ def Load_Main_Database():
                 DB_Database = DB_Info['database']
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to load configuration file.")
+        logging.warning(Date() + " Failed to load configuration file.")
 
     try:
         DB_Connection = psycopg2.connect(user=DB_Username,
@@ -128,10 +131,10 @@ def Load_Main_Database():
             return None
 
     except:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to connect to database.")
+        logging.warning(Date() + " Failed to connect to database.")
 
 def Load_JIRA_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading JIRA configuration data.")
+    logging.info(Date() + " Loading JIRA configuration data.")
 
     try:
 
@@ -152,10 +155,10 @@ def Load_JIRA_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Slack_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading Slack configuration data.")
+    logging.info(Date() + " Loading Slack configuration data.")
 
     try:
 
@@ -173,10 +176,10 @@ def Load_Slack_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_Scumblr_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading Scumblr configuration data.")
+    logging.info(Date() + " Loading Scumblr configuration data.")
 
     try:
 
@@ -197,10 +200,10 @@ def Load_Scumblr_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Load_RTIR_Configuration():
-    logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Loading RTIR configuration data.")
+    logging.info(Date() + " Loading RTIR configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -221,7 +224,7 @@ def Load_RTIR_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
 
@@ -230,7 +233,7 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
 
         if Use_CSV:
             Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
-            Data = [Title, Plugin_Name, Domain, Link, str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), Output_File, Result_Type, str(Task_ID)]
+            Data = [Title, Plugin_Name, Domain, Link, Date(), Output_File, Result_Type, str(Task_ID)]
             File_Path = os.path.dirname(os.path.realpath('__file__'))
             File_Path = File_Path + "/static/protected/output/" + Plugin_Name
             Complete_File = File_Path + "Output.csv"
@@ -239,15 +242,15 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
                 CSV_Output = csv.writer(open(Complete_File, 'w'))
                 CSV_Output.writerow(Headings)
                 CSV_Output.writerow(Data)
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " CSV output file created.")
+                logging.info(Date() + " CSV output file created.")
 
             else:
                 CSV_Output = csv.writer(open(Complete_File, 'a'))
                 CSV_Output.writerow(Data)
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " CSV output file updated.")
+                logging.info(Date() + " CSV output file updated.")
 
     except Exception as e:
-        logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+        logging.warning(Date() + " " + str(e))
 
 def Defect_Dojo_Output(Title, Description):
     DD_Details = Load_Defect_Dojo_Configuration()
@@ -262,13 +265,13 @@ def Defect_Dojo_Output(Title, Description):
 
             try:
                 Finding = str(int(str(Finding)))
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " DefectDojo finding " + Finding + " created.")
+                logging.info(Date() + " DefectDojo finding " + Finding + " created.")
 
             except:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create DefectDojo finding.")
+                logging.info(Date() + " Failed to create DefectDojo finding.")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(Error))
+            logging.warning(Date() + str(Error))
 
 def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
     Connection = Load_Main_Database()
@@ -283,13 +286,13 @@ def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_F
 
             if Item_Already_in_Database is None:
                 # Execute statement.
-                Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), Output_File, Result_Type, Task_ID,))
+                Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, Date(), Date(), Output_File, Result_Type, Task_ID,))
 
             else:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Entry already exists in the database. Skipping...")
+                logging.info(Date() + " Entry already exists in the database. Skipping...")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + str(Error))
+            logging.warning(Date() + str(Error))
 
         finally:
 
@@ -314,21 +317,21 @@ def Scumblr_Main(Link, Domain, Title):
 
             if Item_Already_in_Database is None:
                 # Execute statement.
-                Cursor.execute("INSERT INTO results (title, url, created_at, updated_at, domain) VALUES(%s, %s, %s, %s, %s)", (Title, Link, str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), Domain))
+                Cursor.execute("INSERT INTO results (title, url, created_at, updated_at, domain) VALUES(%s, %s, %s, %s, %s)", (Title, Link, Date(), Date(), Domain))
 
             else:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Entry already exists in Scumblr database. Skipping...")
+                logging.info(Date() + " Entry already exists in Scumblr database. Skipping...")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + Error)
+            logging.warning(Date() + " " + Error)
 
         finally:
 
             if Connection is not None:
                 Connection.commit()
                 Connection.close()
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Result added to Scumblr database.")
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Database connection closed.")
+                logging.info(Date() + " Result added to Scumblr database.")
+                logging.info(Date() + " Database connection closed.")
 
 def RTIR_Main(Ticket_Subject, Ticket_Text):
     RTIR_Details = Load_RTIR_Configuration()
@@ -342,13 +345,13 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
             else:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " No Authenticator specified, using the default which is cookie-based authentication,")
+                logging.info(Date() + " No Authenticator specified, using the default which is cookie-based authentication,")
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " RTIR ticket created.")
+            logging.info(Date() + " RTIR ticket created.")
 
         except Exception as e:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+            logging.warning(Date() + " " + str(e))
 
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
@@ -359,10 +362,10 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             JIRA_Options={'server': JIRA_Details[1]}
             JIRA_Session=JIRA(options=JIRA_Options,basic_auth=(JIRA_Details[2], JIRA_Details[3]))
             JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " JIRA ticket created.")
+            logging.info(Date() + " JIRA ticket created.")
 
         except Exception as e:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+            logging.warning(Date() + " " + str(e))
 
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
@@ -372,10 +375,10 @@ def Slack_Main(Description):
         try:
             client = slack.WebClient(token=Slack_Details[0])
             client.chat_postMessage(channel=Slack_Details[1], text=Description)
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Slack Notification created.")
+            logging.info(Date() + " Slack Notification created.")
 
         except Exception as e:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " " + str(e))
+            logging.warning(Date() + " " + str(e))
 
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
@@ -385,18 +388,18 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
         try:
             URI = Elasticsearch_Details[0] + Elasticsearch_Details[1] + ":" + str(Elasticsearch_Details[2]) + "/scrummage/result/" + Concat_Plugin_Name
             headers = {"Content-Type": "application/json"}
-            data = {"title": Title, "plugin": Plugin_Name, "domain": Domain, "link": Link, "output_file": Output_File, "result_type": Result_Type, "created_at": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), "associated_task_id": str(Task_ID)}
+            data = {"title": Title, "plugin": Plugin_Name, "domain": Domain, "link": Link, "output_file": Output_File, "result_type": Result_Type, "created_at": Date(), "associated_task_id": str(Task_ID)}
             data = json.dumps(data)
             resp = requests.post(URI, data=data, headers=headers)
 
             if resp.status_code == 200:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Result created in Elasticsearch, using the URI " + URI + ".")
+                logging.info(Date() + " Result created in Elasticsearch, using the URI " + URI + ".")
 
             else:
-                logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
+                logging.info(Date() + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
 
         except:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to create result in Elasticsearch.")
+            logging.warning(Date() + " Failed to create result in Elasticsearch.")
 
 def Email_Main(Email_Subject, Email_Body):
     Email_Details = Load_Email_Configuration()
@@ -416,7 +419,7 @@ def Email_Main(Email_Subject, Email_Body):
             text = msg.as_string()
             server.sendmail(Email_Details[2], Email_Details[4], text)
             server.quit()
-            logging.info(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Email Sent.")
+            logging.info(Date() + " Email Sent.")
 
         except:
-            logging.warning(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Failed to send alert! Check email login settings.")
+            logging.warning(Date() + " Failed to send alert! Check email login settings.")
