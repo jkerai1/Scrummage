@@ -272,10 +272,6 @@ def apply_caching(response):
     except Exception as e:
         app.logger.error(e)
 
-@app.route('/about')
-def about():
-    return render_template('about.html', username=session.get('user'))
-
 @app.route('/screenshot', methods=['POST'])
 def screenshot():
     Bad_Link_Strings = ['.onion', 'general-insurance.coles.com.au', 'magnet:?xt=urn:btih:']
