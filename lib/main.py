@@ -1167,10 +1167,8 @@ def results():
                                         Hosts_List[Iterator])
 
                                     try:
-                                        PSQL_Insert_Query = 'INSERT INTO results (title, status, domain, link, created_at, result_type) VALUES (%s,%s,%s,%s,%s,%s)'
-                                        Cursor.execute(PSQL_Insert_Query, (
-                                        Query_List[Iterator], "Open", URL_Regex.group(2), Hosts_List[Iterator],
-                                        General.Date(), Type,))
+                                        PSQL_Insert_Query = 'INSERT INTO results (task_id, title, status, plugin, domain, link, created_at, updated_at, result_type) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+                                        Cursor.execute(PSQL_Insert_Query, (0, str(Query_List[Iterator]), "Open", "Manual Entry", str(URL_Regex.group(2)), str(Hosts_List[Iterator]), General.Date(), General.Date(), Type,))
                                         Connection.commit()
 
                                     except Exception as e:
