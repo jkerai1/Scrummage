@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from crontab import CronTab
 from logging.handlers import RotatingFileHandler
-import os, re, datetime, plugin_caller, getpass, time, threading, html, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
+import os, re, datetime, plugin_caller, getpass, time, sys, threading, html, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
 
 File_Path = os.path.dirname(os.path.realpath('__file__'))
 app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
@@ -23,8 +23,13 @@ Phishing_Sites = [["All", "All"], [139, "ABL"], [201, "ABN"], [92, "ABSA Bank"],
 Bad_Characters = ["|", "&", "?", "\\", "\"", "\'", "[", "]", ">", "<", "~", "`", ";", "{", "}", "%", "^", "--", "++", "+", "'", "(", ")", "*", "="]
 Finding_Types = ['Domain Spoof', 'Data Leakage', 'Phishing', 'Blockchain Transaction', 'Blockchain Address', 'Exploit']
 
-Connection = Connectors.Load_Main_Database()
-Cursor = Connection.cursor()
+try:
+    Connection = Connectors.Load_Main_Database()
+    Cursor = Connection.cursor()
+
+except:
+    app.logger.fatal(General.Date() + ' Failed to load main database, please make sure the database details are added correctly to the configuration.')
+    sys.exit()
 
 def API_Checker(Plugin_Name):
 
@@ -89,7 +94,7 @@ def API_Checker(Plugin_Name):
         app.logger.error(e)
 
 def Create_Event(Description):
-    Cursor.execute("INSERT INTO events (description, created_at) VALUES (%s,%s)", (Description, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    Cursor.execute("INSERT INTO events (description, created_at) VALUES (%s,%s)", (Description, General.Date()))
     Connection.commit()
 
 @app.errorhandler(404)
@@ -378,87 +383,87 @@ def dashboard():
 
     if session.get('user'):
 
-        try:
-            labels = Finding_Types
-            colors = ["#2471A3", "#8B008B", "#DC143C", "#FFA500", "#DAFF00", "#00FF7F"]
+        # try:
+        labels = Finding_Types
+        colors = ["#2471A3", "#8B008B", "#DC143C", "#FFA500", "#DAFF00", "#00FF7F"]
 
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
-            open_domain_spoof_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Data Leakage",))
-            open_data_leakages = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Phishing",))
-            open_phishing_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Transaction",))
-            open_blockchain_transaction_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Address",))
-            open_blockchain_address_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Open", "Exploit",))
-            open_exploit_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
+        open_domain_spoof_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Data Leakage",))
+        open_data_leakages = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Phishing",))
+        open_phishing_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Transaction",))
+        open_blockchain_transaction_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Address",))
+        open_blockchain_address_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Open", "Exploit",))
+        open_exploit_results = Cursor.fetchall()
 
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Domain Spoof",))
-            closed_domain_spoof_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Data Leakage",))
-            closed_data_leakages = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Phishing",))
-            closed_phishing_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Transaction",))
-            closed_blockchain_transaction_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Address",))
-            closed_blockchain_address_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
-            Cursor.execute(PSQL_Select_Query, ("Closed", "Exploit",))
-            closed_exploit_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Domain Spoof",))
+        closed_domain_spoof_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Data Leakage",))
+        closed_data_leakages = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Phishing",))
+        closed_phishing_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Transaction",))
+        closed_blockchain_transaction_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Address",))
+        closed_blockchain_address_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+        Cursor.execute(PSQL_Select_Query, ("Closed", "Exploit",))
+        closed_exploit_results = Cursor.fetchall()
 
-            Mixed_Options = ['Inspecting', 'Reviewing']
+        Mixed_Options = ['Inspecting', 'Reviewing']
 
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Domain Spoof", Mixed_Options,))
-            mixed_domain_spoof_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Data Leakage", Mixed_Options,))
-            mixed_data_leakages = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Phishing", Mixed_Options,))
-            mixed_phishing_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Blockchain Transaction", Mixed_Options,))
-            mixed_blockchain_transaction_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Blockchain Address", Mixed_Options,))
-            mixed_blockchain_address_results = Cursor.fetchall()
-            PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
-            Cursor.execute(PSQL_Select_Query, ("Exploit", Mixed_Options,))
-            mixed_exploit_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Domain Spoof", Mixed_Options,))
+        mixed_domain_spoof_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Data Leakage", Mixed_Options,))
+        mixed_data_leakages = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Phishing", Mixed_Options,))
+        mixed_phishing_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Blockchain Transaction", Mixed_Options,))
+        mixed_blockchain_transaction_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Blockchain Address", Mixed_Options,))
+        mixed_blockchain_address_results = Cursor.fetchall()
+        PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+        Cursor.execute(PSQL_Select_Query, ("Exploit", Mixed_Options,))
+        mixed_exploit_results = Cursor.fetchall()
 
-            most_common_tasks_labels = []
-            most_common_tasks_values = []
-            most_common_tasks_colors = ["#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA", "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1", "#C71585", "#FF4500"]
-            Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
-            most_common_tasks = Cursor.fetchall()
+        most_common_tasks_labels = []
+        most_common_tasks_values = []
+        most_common_tasks_colors = ["#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA", "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1", "#C71585", "#FF4500"]
+        Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
+        most_common_tasks = Cursor.fetchall()
 
-            for mc_task in most_common_tasks:
-                most_common_tasks_labels.append(mc_task[0])
-                most_common_tasks_values.append(mc_task[1])
+        for mc_task in most_common_tasks:
+            most_common_tasks_labels.append(mc_task[0])
+            most_common_tasks_values.append(mc_task[1])
 
-            open_values = [open_domain_spoof_results[0][0], open_data_leakages[0][0], open_phishing_results[0][0], open_blockchain_transaction_results[0][0], open_blockchain_address_results[0][0], open_exploit_results[0][0]]
-            closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
-            mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
+        open_values = [open_domain_spoof_results[0][0], open_data_leakages[0][0], open_phishing_results[0][0], open_blockchain_transaction_results[0][0], open_blockchain_address_results[0][0], open_exploit_results[0][0]]
+        closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
+        mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
 
-            return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+        return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
 
-        except Exception as e:
-            app.logger.error(e)
+        # except Exception as e:
+            # app.logger.error(e)
 
     else:
         return redirect(url_for('no_session'))
@@ -520,7 +525,7 @@ def tasks():
                             result = Cursor.fetchone()
 
                             if result:
-                                Current_Timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Variable set to create consistency in timestamps across two seperate database queries.
+                                Current_Timestamp = General.Date()  # Variable set to create consistency in timestamps across two seperate database queries.
                                 PSQL_Insert_Query = 'INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
                                 Cursor.execute(PSQL_Insert_Query, (result[1], result[2], result[3], result[4], str(result[5]), "Stopped", str(Current_Timestamp), str(Current_Timestamp)))
                                 Connection.commit()
@@ -769,7 +774,7 @@ def tasks():
                                                                        error="Failed to update cron job.")
 
                                     PSQL_Update_Query = 'UPDATE tasks SET query = %s, plugin = %s, description = %s, frequency = %s, task_limit = %s, updated_at = %s WHERE task_id = %s'
-                                    Cursor.execute(PSQL_Update_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), session.get('task_id'),))
+                                    Cursor.execute(PSQL_Update_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), General.Date(), session.get('task_id'),))
                                     Connection.commit()
                                     time.sleep(1)
 
@@ -985,7 +990,7 @@ def tasks():
                                                                        error="Invalid query selected, please choose a pre-defined query from the list.")
 
 
-                                    Current_Timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Variable set as it is needed for two different functions and needs to be consistent.
+                                    Current_Timestamp = General.Date()  # Variable set as it is needed for two different functions and needs to be consistent.
                                     PSQL_Insert_Query = 'INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
                                     Cursor.execute(PSQL_Insert_Query, (session.get('task_query'), session.get('form_type'), session.get('task_description'), session.get('task_frequency'), session.get('task_limit'), "Stopped",
                                     Current_Timestamp, Current_Timestamp,))
@@ -1165,7 +1170,7 @@ def results():
                                         PSQL_Insert_Query = 'INSERT INTO results (title, status, domain, link, created_at, result_type) VALUES (%s,%s,%s,%s,%s,%s)'
                                         Cursor.execute(PSQL_Insert_Query, (
                                         Query_List[Iterator], "Open", URL_Regex.group(2), Hosts_List[Iterator],
-                                        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), Type,))
+                                        General.Date(), Type,))
                                         Connection.commit()
 
                                     except Exception as e:
@@ -1227,7 +1232,7 @@ def results():
                         try:
                             result_id = int(request.form['close'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Closed", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Closed", str(General.Date()), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " closed by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1245,7 +1250,7 @@ def results():
                         try:
                             result_id = int(request.form['open'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Open", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Open", str(General.Date()), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " re-opened by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1263,7 +1268,7 @@ def results():
                         try:
                             result_id = int(request.form['inspect'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Inspecting", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Inspecting", str(General.Date()), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " now under inspection by " + session.get('user') + "."
                             app.logger.warning(Message)
@@ -1281,7 +1286,7 @@ def results():
                         try:
                             result_id = int(request.form['review'])
                             PSQL_Update_Query = 'UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s'
-                            Cursor.execute(PSQL_Update_Query, ("Reviewing", str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), result_id,))
+                            Cursor.execute(PSQL_Update_Query, ("Reviewing", str(General.Date()), result_id,))
                             Connection.commit()
                             Message = "Result ID " + str(result_id) + " now under review by " + session.get('user') + "."
                             app.logger.warning(Message)
