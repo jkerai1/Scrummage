@@ -65,7 +65,13 @@ def Character_Switch(Query_List, Task_ID):
 
 				try:
 					Query = Altered_URL + URL_Extension
-					Web_Host = URL_Prefix.replace("s", "") + Query
+					
+					if URL_Prefix:
+						Web_Host = URL_Prefix.replace("s", "") + Query
+						
+					else:
+						Web_Host = 'http://' + Query
+					
 					Response = socket.gethostbyname(Query)
 
 					if Response:
@@ -77,7 +83,7 @@ def Character_Switch(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(General.Date() + str(e))
+					logging.info(General.Date() + ' ' + str(e))
 
 		logging.info(General.Date() + Directory)
 		URL_Domain = URL_Body + URL_Extension
@@ -145,7 +151,13 @@ def Regular_Extensions(Query_List, Task_ID):
 
 				try:
 					Query = URL_Body + Extension
-					Web_Host = URL_Prefix.replace("s", "") + Query
+					
+					if URL_Prefix:
+						Web_Host = URL_Prefix.replace("s", "") + Query
+						
+					else:
+						Web_Host = 'http://' + Query
+					
 					Response = socket.gethostbyname(Query)
 
 					if Response:
@@ -155,9 +167,12 @@ def Regular_Extensions(Query_List, Task_ID):
 							Valid_Results.append(Query + "," + Response)
 							Data_to_Cache.append(Cache)
 							Valid_Hosts.append(Web_Host)
+							
+					else:
+						pass
 
 				except Exception as e:
-					logging.info(General.Date() + str(e))
+					logging.info(General.Date() + ' ' + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -224,7 +239,13 @@ def Global_Extensions(Query_List, Task_ID):
 
 				try:
 					Query = URL_Body + suffix
-					Web_Host = URL_Prefix.replace("s", "") + Query
+					
+					if URL_Prefix:
+						Web_Host = URL_Prefix.replace("s", "") + Query
+						
+					else:
+						Web_Host = 'http://' + Query
+					
 					Response = socket.gethostbyname(Query)
 
 					if Response:
@@ -236,7 +257,7 @@ def Global_Extensions(Query_List, Task_ID):
 							Valid_Hosts.append(Web_Host)
 
 				except Exception as e:
-					logging.info(General.Date() + str(e))
+					logging.info(General.Date() + ' ' + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
@@ -309,8 +330,13 @@ def All_Extensions(Query_List, Task_ID):
 
 					try:
 						Query = URL_Body + Extension + suffix
-						logging.info(General.Date() + Query)
-						Web_Host = URL_Prefix.replace("s://", "://") + Query
+					
+						if URL_Prefix:
+							Web_Host = URL_Prefix.replace("s", "") + Query
+
+						else:
+							Web_Host = 'http://' + Query
+
 						Response = socket.gethostbyname(Query)
 
 						if Response:
@@ -322,7 +348,7 @@ def All_Extensions(Query_List, Task_ID):
 								Valid_Hosts.append(Web_Host)
 
 					except Exception as e:
-						logging.info(General.Date() + str(e))
+						logging.info(General.Date() + ' ' + str(e))
 
 		URL_Domain = URL_Body + URL_Extension
 		Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
