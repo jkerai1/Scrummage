@@ -7,6 +7,7 @@ While at first glance the web application may not look that original when compar
 
 All feedback is welcome, as this is version 1 I'm sure there will be lots to improve on.
 
+**FOR INSTRUCTIONS REFER TO THE [WIKI](https://github.com/matamorphosis/Scrummage/wiki)**
 
 # An Overview of the Web Application
 
