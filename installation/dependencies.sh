@@ -8,7 +8,7 @@ fi
 
 if [ -f /etc/lsb-release ]; then
 	apt update
-	apt install -y python3 python3-pip python3-psycopg2 python3-werkzeug postgresql postgresql-contrib ruby rubygems build-essential wget unzip git
+	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems build-essential wget unzip git
 fi
 
 if [ -e /etc/os-release ]; then
@@ -42,7 +42,7 @@ pip3 uninstall requests
 pip3 install -r python_requirements.txt
 
 MODULELOC=`python3 -m site --user-site`
-cp site-packages/defectdojo.py $MODULELOC/defectdojo.py
+mv site-packages/defectdojo.py $MODULELOC/defectdojo.py
 
 gem install brakeman
 echo "[+] Installation Complete."
@@ -67,6 +67,8 @@ echo "            \"password\": \"$PASSWD\"" >> db.json
 echo "        }" >> db.json
 echo "    ]" >> db.json
 echo "}" >> db.json
+
+python3 Generate_JSON_Config.py -u $USER -p $PASSWD -d $DATABASE
 
 DATABASE="Database: $DATABASE"
 USER="Username: $USER"
