@@ -17,16 +17,16 @@ user@linux:~$ cd installation
 ```console
 user@linux:~$ sudo bash dependencies.sh
 ```
-4. As part of this script it will install all python dependencies in the python_requirements.txt file and run the Create_Tables.py script to create all necessary tables in the backend database. If you want to change the default username and database, which are both set to “Scrummage”, change the following lines in the script:  
+4. As part of this script it will install all python dependencies in the **"python_requirements.txt"** file and run the **"Create_Tables.py"** script to create all necessary tables in the back-end database. If you want to change the default username and database, which are both set to “scrummage”, change the following lines in the script:  
 ```console
 DATABASE="scrummage"  
 USER="scrummage"  
 ```
-5. When the script finishes, it should print out the username and database it has created; furthermore, a randomly generated password used. Please retain this information and update the config.json file located in the bin/plugins/common/configuration/ directory. Provide the details under "postgresql". If you would like to create a new user, use the "Create_User.py" script located in the installation directory. The command is as follows:
+5. When the script finishes, it should **print out the username and database it has created; furthermore, a randomly generated password will also be printed to the screen**. While the script creates a new config.json file, located in the lib/plugins/common/configuration/ directory, please retain this information. Provide the details under **"postgresql"**. If you would like to create a new user, use the **"Create_User.py"** script located in the installation directory. The command is as follows:
 ```console
 user@linux:~$ python3 Create_User.py --username/-u Username --password/-p Password --admin/-a [True | False] --blocked/-b [True | False]
 ```
-6. Next navigate to the parent directory and then to the bin directory and start the server.
+6. Next navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on http://127.0.0.1:5000
 ```console
 user@linux:~$ cd ../bin
 user@linux:~$ python3 main.py
