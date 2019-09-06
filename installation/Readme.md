@@ -355,6 +355,7 @@ By default, Scrummage plugins individually store their output data in 1 of 4 mai
 * .html
 * .json
 * .csv
+* .docx
 * .txt (Not used by current plugins)
 
 When Scrummage creates a result it creates refences to the result link, domain, and output file; furthermore, functionality is provided to create a screenshot for a result, through the link. So essentially you will most of the time end up with an output file and a screenshot which act as evidence.
@@ -381,6 +382,15 @@ This option is provided as a lightweight data store, for all results. Each resul
     "csv": [
         {
             "use-csv": true
+        }
+    ],
+
+**DOCX Output**  
+This option is provided as an easy way to export results into a document that can be used as part of a report. To enable this output mode, change the "use-docx" switch to true, under "docx-report" in the config.json file:
+
+    "docx-report": [
+        {
+            "use-docx": true
         }
     ],
 
