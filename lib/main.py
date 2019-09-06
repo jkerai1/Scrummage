@@ -375,7 +375,7 @@ def screenshot():
 
                                 driver = webdriver.Chrome(
                                     executable_path=CHROMEDRIVER_PATH,
-                                    chrome_options=chrome_options
+                                    options=chrome_options
                                 )
 
                                 driver.get(result[0])
@@ -412,6 +412,7 @@ def screenshot():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('results'))
 
 @app.route('/nomethod')
 def no_method():
@@ -529,7 +530,7 @@ def dropsession():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
 
 @app.route('/events', methods=['GET'])
 def events():
@@ -553,7 +554,7 @@ def events():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('events'))
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -1159,7 +1160,7 @@ def tasks():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('tasks'))
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
@@ -1399,7 +1400,7 @@ def results():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('results'))
 
 def check_security_requirements(Password):
 
@@ -1489,7 +1490,7 @@ def account():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('accounts'))
 
 if __name__ == '__main__':
     formatter = logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
@@ -1498,4 +1499,4 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
