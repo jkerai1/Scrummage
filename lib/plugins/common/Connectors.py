@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import psycopg2, json, os, datetime, requests, slack, smtplib, csv, logging
+from docx import Document
 from jira.client import JIRA
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -24,6 +25,25 @@ def Load_CSV_Configuration():
 
             if Use_CSV:
                 return Use_CSV
+
+            else:
+                return None
+
+    except Exception as e:
+        logging.warning(Date() + " " + str(e))
+
+def Load_DOCX_Configuration():
+    logging.info(Date() + " Loading CSV configuration data.")
+
+    try:
+        with open(Configuration_File) as JSON_File:
+            Configuration_Data = json.load(JSON_File)
+
+        for DOCX_Details in Configuration_Data['docx-report']:
+            Use_DOCX = DOCX_Details['use-docx']
+
+            if Use_DOCX:
+                return Use_DOCX
 
             else:
                 return None
@@ -234,9 +254,8 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
         if Use_CSV:
             Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
             Data = [Title, Plugin_Name, Domain, Link, Date(), Output_File, Result_Type, str(Task_ID)]
-            File_Path = os.path.dirname(os.path.realpath('__file__'))
-            File_Path = File_Path + "/static/protected/output/" + Plugin_Name
-            Complete_File = File_Path + "Output.csv"
+            File_Path = File_Dir + "/static/protected/output/" + Plugin_Name
+            Complete_File = File_Path + "-Output.csv"
 
             if not os.path.exists(Complete_File):
                 CSV_Output = csv.writer(open(Complete_File, 'w'))
@@ -251,6 +270,48 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
 
     except Exception as e:
         logging.warning(Date() + " " + str(e))
+
+def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
+
+    try:
+        Use_DOCX = Load_DOCX_Configuration()
+
+        if Use_DOCX:
+            File_Path = File_Dir + "/static/protected/output/" + Plugin_Name
+            Complete_File = File_Path + "-Output.docx"
+
+            if os.path.exists(Complete_File):
+                document = Document(Complete_File)
+
+            else:
+                document = Document()
+
+            Document_Data = (
+                ('Plugin', Plugin_Name),
+                ('Domain', Domain),
+                ('Link', Link),
+                ('Created At', str(Date())),
+                ('Result Type', Result_Type),
+                ('Output File', Output_File),
+                ('Associated Task ID', str(Task_ID))
+            )
+
+            table = document.add_table(rows=1, cols=2)
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = 'Title'
+            hdr_cells[1].text = Title
+
+            for name, data in Document_Data:
+                row_cells = table.add_row().cells
+                row_cells[0].text = name
+                row_cells[1].text = data
+
+            document.add_page_break()
+            document.save(Complete_File)
+
+    except Exception as e:
+        logging.warning(Date() + " " + str(e))
+
 
 def Defect_Dojo_Output(Title, Description):
     DD_Details = Load_Defect_Dojo_Configuration()
