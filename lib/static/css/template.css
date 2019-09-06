@@ -1088,14 +1088,14 @@ text-align:center;
     background-image: url(../images/pass.png);
     background-size: contain;
     background-repeat: no-repeat;
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
 }
 
 .fail {
     background-image: url(../images/fail.png);
     background-size: contain;
     background-repeat: no-repeat;
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
 }
