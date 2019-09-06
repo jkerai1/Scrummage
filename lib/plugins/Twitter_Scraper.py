@@ -8,7 +8,7 @@ The_File_Extension = ".txt"
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
-    Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+    Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
     logging.info(General.Date() + " Loading configuration data.")
 
     try:
@@ -118,13 +118,12 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        print(Query)
 
-        # try:
-        Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
-        Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
-        API = tweepy.API(Authentication)
-        General_Pull(Query, Limit, Directory, API, Task_ID)
+        try:
+            Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
+            Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
+            API = tweepy.API(Authentication)
+            General_Pull(Query, Limit, Directory, API, Task_ID)
 
-        # except:
-        #     logging.info(General.Date() + " Failed to get results. Are you connected to the internet?")
+        except:
+            logging.info(General.Date() + " Failed to get results. Are you connected to the internet?")

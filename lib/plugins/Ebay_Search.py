@@ -7,7 +7,7 @@ The_File_Extension = ".html"
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
-    Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+    Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
     logging.info(General.Date() + " Loading configuration data.")
 
     try:

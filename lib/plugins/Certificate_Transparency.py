@@ -6,7 +6,7 @@ The_File_Extension = ".json"
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
-    Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/config.json')
+    Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
 
     with open(Configuration_File) as JSON_File:  
         Configuration_Data = json.load(JSON_File)
