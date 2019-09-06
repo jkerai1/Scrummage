@@ -22,7 +22,7 @@
                 {% elif form_step == 1 %}
                 <div class="field-container">
                 <div style="text-align: center; padding-top: 10px;">
-                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <div class="form_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         <dd>
@@ -50,12 +50,18 @@
                 {% elif form_step == 2 %}
                 <div class="field-container">
                 {% if api_check == "Passed" %}
-                <div class="success"></div><p class="message">API Configuration Check Passed.</p>
+                <div><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+</svg></div><p class="message">API Configuration Check Passed.</p>
                 {% elif api_check == "Failed" %}
-                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+  <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
+  <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
+</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish editing this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
                 {% endif %}
                 <div style="text-align: center; padding-top: 10px;">
-                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <div class="form_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
                             {% if phish_sites %}
@@ -92,11 +98,14 @@
             {% endif %}
         {% endif %}
         {% if form_step == 0 %}
-            <div id="loader"></div>
+            <div id="loader">&nbsp;</div>
             <p id="loader-message" class="loaderabout">Loading Tasks...</p>
             <div style="display: none;" style="margin:0;" id="fc" class="field-container">
                 {% if api_check == "Failed" %}
-                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
+                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+  <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
+  <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
+</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
                 {% endif %}
                 <table id="paginate">
                     <thead>
@@ -175,7 +184,7 @@
                 {% if form_step == 0 %}
                 {% elif form_step == 1 %}
                 <div style="text-align: center; padding-top: 10px;">
-                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <div class="form_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         <dd>
@@ -212,12 +221,18 @@
                 </div>
                 {% elif form_step == 2%}
                 {% if api_check == "Passed" %}
-                <div class="success"></div><p class="message">API Configuration Check Passed.</p>
+                <div><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+</svg></div><p class="message">API Configuration Check Passed.</p>
                 {% elif api_check == "Failed" %}
-                <div class="fail"></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+  <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
+  <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
+</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
                 {% endif %}
                 <div style="text-align: center; padding-top: 10px;">
-                <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+                <div class="form_div" style="padding: 10px 0px 20px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         {% if phish_sites %}

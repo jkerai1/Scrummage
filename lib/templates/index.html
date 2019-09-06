@@ -19,7 +19,7 @@
       {% if loggedout %}
          <p id="logintitle">Logged out. Log in to continue.</p>
          <div style="text-align: center; padding-top: 10px;">
-         <div class="dashboard_div" style="padding: 10px 20px 20px 20px;">
+         <div class="login_div" style="padding: 10px 20px 20px 20px;">
          <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">
             <dl>
                <dd>
@@ -36,7 +36,7 @@
       {% else %}
          <p id="logintitle">Welcome to Scrummage! Please log in to continue.</p>
          <div style="text-align: center; padding-top: 10px;">
-         <div class="dashboard_div" style="padding: 10px 20px 20px 20px;">
+         <div class="login_div" style="padding: 10px 20px 20px 20px;">
          <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">
             <dl>
                <dd>

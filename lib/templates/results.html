@@ -37,33 +37,33 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td class="nonscreenshottab" id="resultid" style="border: 2px solid #FFFFFF;">{{results[3]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{results[11]}}</td>
+						<td class="nonscreenshottab" id="resultid">{{results[3]}}</td>
+						<td class="nonscreenshottab">{{results[11]}}</td>
 						{% if results[9] %}
-						<td style="border: 2px solid #FFFFFF;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
+						<td><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
 						{% else %}
 							{% if is_admin %}
 								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
-									<td class="buttons_in_table" style="border: 2px solid #FFFFFF;">
+									<td class="buttons_in_table">
 										<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
 											<input name="ss_id" value="{{results[0]}}" type=hidden>
 											<input class="button" type=submit value="Generate">
 										</form>
 									</td>
 								{% else %}
-									<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">Screenshot Disabled</td>
+									<td class="nonscreenshottab">Screenshot Disabled</td>
 								{% endif %}
 							{% else %}
-								<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">Not Available</td>
+								<td class="nonscreenshottab">Not Available</td>
 							{% endif %}
 						{% endif %}
 						{% if results[10] %}
-							<td style="border: 2px solid #FFFFFF;"><a href="{{results[10]}}"><div class="document"></div></a></td>
+							<td><a href="{{results[10]}}"><div class="document"></div></a></td>
 						{% else %}
-							<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">N/A</td>
+							<td class="nonscreenshottab">N/A</td>
 						{% endif %}
-						<td class="nonscreenshottab" id="link" style="border: 2px solid #FFFFFF;"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;"><a href="{{results[6]}}">Link</a></td>
+						<td class="nonscreenshottab" id="link"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
+						<td class="nonscreenshottab"><a href="{{results[6]}}">Link</a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -176,12 +176,12 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{task_results[0]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF; max-width: 200px; word-wrap: break-word">{{task_results[1]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{task_results[2]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{task_results[3]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{task_results[4]}}</td>
-						<td class="nonscreenshottab" style="border: 2px solid #FFFFFF;">{{task_results[5]}}</td>
+						<td class="nonscreenshottab">{{task_results[0]}}</td>
+						<td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{task_results[1]}}</td>
+						<td class="nonscreenshottab">{{task_results[2]}}</td>
+						<td class="nonscreenshottab">{{task_results[3]}}</td>
+						<td class="nonscreenshottab">{{task_results[4]}}</td>
+						<td class="nonscreenshottab">{{task_results[5]}}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -193,7 +193,7 @@
 			{% endif %}
 		</div>
 		{% else %}
-		<div id="loader"></div>
+		<div id="loader">&nbsp;</div>
 		<p id="loader-message" class="loaderabout">Loading Results...</p>
 		<div style="display: none;" id="fc" class="field-container">
 			<table style="display:none;" id="paginate">
@@ -268,7 +268,7 @@
 		{% if is_admin %}
     	<div class="field-container">
 		<div style="text-align: center; padding-top: 10px;">
-        <div class="dashboard_div" style="padding: 10px 0px 20px 0px; width: 80%;">
+        <div class="form_div" style="padding: 10px 0px 20px 0px; width: 80%;">
             <form class="form" action="" method=post autocomplete="off">
                 <dl>
                     <dd>

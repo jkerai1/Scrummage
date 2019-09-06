@@ -12,14 +12,14 @@
     {% extends "template.html" %}
     {% block content %}
     {% if is_admin %}
-    <div id="loader"></div>
+    <div id="loader">&nbsp;</div>
     <p id="loader-message" class="loaderabout">Verifying Output Options...</p>
     <div style="display: none;" id="fc" class="field-container">
         <table style="display:none;" id="paginate">
             <thead>
                 <tr>
                     <th>Output</th>
-                    <th>Result</th>
+                    <th>Verification Result</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,9 +27,15 @@
                 <tr>
                     <td style="padding: 0px 0px 0px 10px;" class="nonscreenshottab">{{Configuration[0]}}</td>
                     {% if Configuration[1] %}
-                    <td class="nonscreenshottab" style="padding: 2px 0px 2px 0px;"><div class="success"></div></td>
+                    <td style="padding: 5px 0px 5px 0px;"><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+</svg></td>
                     {% else %}
-                    <td class="nonscreenshottab" style="padding: 2px 0px 2px 0px;"><div class="fail"></div></td>
+                    <td style="padding: 5px 0px 5px 0px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+  <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
+  <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
+</svg></td>
                     {% endif %}
                 </tr>
                 {% endfor %}
