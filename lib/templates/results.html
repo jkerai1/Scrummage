@@ -141,6 +141,22 @@
 								<input class="close_button" type=submit value="Closed">
 							</form></td>
 							{% endif %}
+						{% else %}
+							{% if results[4] == "Open" %}
+							<p class="open_p" style="width: 100%">Open</p>
+							{% elif results[4] == "Inspecting" %}
+							<p class="open_p" style="width: 50%">Opened</p>
+							<p class="inspect_p" style="width: 50%">Inspecting</p>
+							{% elif results[4] == "Reviewing" %}
+							<p class="open_p" style="width: 33%">Opened</p>
+							<p class="inspect_p" style="width: 33%">Inspected</p>
+							<p class="review_p" style="width: 33%">Reviewing</p>
+							{% elif results[4] == "Closed" %}
+							<p class="open_p" style="width: 25%">Opened</p>
+							<p class="inspect_p" style="width: 25%">Inspected</p>
+							<p class="review_p" style="width: 25%">Reviewed</p>
+    						<p class="close_p" style="width: 25%">Closed</p>
+							{% endif %}
 						{% endif %}
 					</tr>
 				</tbody>
