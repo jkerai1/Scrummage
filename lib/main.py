@@ -98,6 +98,7 @@ def API_Checker(Plugin_Name):
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('tasks'))
 
 def Create_Event(Description):
 
@@ -107,6 +108,7 @@ def Create_Event(Description):
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -117,6 +119,7 @@ def page_not_found(e):
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('index'))
 
 app.register_error_handler(404, page_not_found)
 
@@ -133,6 +136,7 @@ def index():
 
     except Exception as e:
         app.logger.error(e)
+        return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -227,6 +231,7 @@ def login():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('index'))
 
 @app.route('/nosession')
 def no_session():
@@ -265,6 +270,7 @@ def verify_output():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('tasks'))
 
 def requirement(f):
 
@@ -282,6 +288,7 @@ def requirement(f):
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('login'))
 
 @app.route('/static/protected/<path:filename>')
 @requirement
@@ -291,7 +298,8 @@ def protected(filename):
         return send_from_directory(os.path.join(app.instance_path, ''), filename)
 
     except Exception as e:
-        app.logger.error(e)
+        app.logger.error('File not found. ' + str(e))
+        return redirect(url_for('results'))
 
 @app.after_request
 def apply_caching(response):
@@ -306,7 +314,8 @@ def apply_caching(response):
         return response
 
     except Exception as e:
-        app.logger.error(e)
+        app.logger.error('Failed to apply response headers. ' + str(e))
+        sys.exit()
 
 @app.route('/screenshot', methods=['POST'])
 def screenshot():
@@ -410,6 +419,7 @@ def screenshot():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('results'))
 
 @app.route('/nomethod')
 def no_method():
@@ -419,6 +429,7 @@ def no_method():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
@@ -509,6 +520,7 @@ def dashboard():
 
     except Exception as e:
         app.logger.error(e)
+        return redirect(url_for('index'))
 
 @app.route('/dropsession')
 def dropsession():
