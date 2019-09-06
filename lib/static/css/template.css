@@ -821,6 +821,54 @@ text-align:center;
     font-weight: bold;
 }
 
+.open_p {
+    background-color: #FF0000;
+    text-decoration: none;
+	padding: 5px 0px 5px 0px;
+	font-size: 12pt;
+	border-radius: 0px;
+	outline: none;
+	border: 0;
+	display: inline-block;
+	text-align: center;
+}
+
+.inspect_p {
+    background-color: #FFA500;
+    text-decoration: none;
+	padding: 5px 0px 5px 0px;
+	font-size: 12pt;
+	border-radius: 0px;
+	outline: none;
+	border: 0;
+	display: inline-block;
+	text-align: center;
+}
+
+.review_p {
+    background-color: #FFFF33;
+    text-decoration: none;
+	padding: 5px 0px 5px 0px;
+	font-size: 12pt;
+	border-radius: 0px;
+	outline: none;
+	border: 0;
+	display: inline-block;
+	text-align: center;
+}
+
+.close_p {
+    background-color: #00FF00;
+    text-decoration: none;
+	padding: 5px 0px 5px 0px;
+	font-size: 12pt;
+	border-radius: 0px;
+	outline: none;
+	border: 0;
+	display: inline-block;
+	text-align: center;
+}
+
 .button_bottom {
 	text-decoration: none;
 	color: #FFFFFF;
