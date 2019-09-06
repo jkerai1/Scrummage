@@ -31,6 +31,11 @@ if Arguments.database and Arguments.username and Arguments.password:
                     "use-csv": false
                 }
             ],
+            "docx-report": [
+                {
+                    "use-docx": false
+                }
+            ],
             "defectdojo": [
                 {
                     "api_key": "",
