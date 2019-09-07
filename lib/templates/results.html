@@ -40,7 +40,7 @@
 						<td class="nonscreenshottab" id="resultid">{{results[3]}}</td>
 						<td class="nonscreenshottab">{{results[11]}}</td>
 						{% if results[9] %}
-						<td><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
+						<td style="padding-left: 10px;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
 						{% else %}
 							{% if is_admin %}
 								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
@@ -58,7 +58,7 @@
 							{% endif %}
 						{% endif %}
 						{% if results[10] %}
-							<td><a href="{{results[10]}}"><div class="document"></div></a></td>
+							<td style="padding-left: 10px;"><a href="{{results[10]}}"><div class="document"></div></a></td>
 						{% else %}
 							<td class="nonscreenshottab">N/A</td>
 						{% endif %}
