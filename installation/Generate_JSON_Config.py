@@ -16,7 +16,7 @@ if Arguments.database and Arguments.username and Arguments.password:
             sys.exit("[-] Bad character, please remove any quotes from the provided arguments.")
 
     try:
-        Config_Directory = '../lib/plugins/common/configuration'
+        Config_Directory = '../lib/plugins/common/config'
         Configuration_File = os.path.join(Config_Directory, 'config.json')
         Open_File = open(Configuration_File,"w+")
 
