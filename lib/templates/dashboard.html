@@ -10,8 +10,8 @@
     {% extends "template.html" %}
     {% block content %}
         <div class="dashboard_field-container">
-            <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Open Findings</p><canvas id="chart1" width="425" height="300"></canvas>
+            <div class="dashboard_small_outer_div">
+                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Open Findings</p><canvas id="chart1" width="425" height="300"></canvas>
                 <script>
                   var pieData1 = [
                     {% for item, label, colors in open_set %}
@@ -30,8 +30,8 @@
                   new Chart(document.getElementById("chart1").getContext("2d")).Pie(pieData1);
                 </script></div>
             </div>
-            <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Closed Findings</p><canvas id="chart2" width="425" height="300"></canvas>
+            <div class="dashboard_small_outer_div">
+                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Closed Findings</p><canvas id="chart2" width="425" height="300"></canvas>
                 <script>
                   var pieData2 = [
                     {% for item, label, colors in closed_set %}
@@ -50,8 +50,8 @@
                   new Chart(document.getElementById("chart2").getContext("2d")).Pie(pieData2);
                 </script></div>
             </div>
-            <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Findings Under Inspection or Review</p><canvas id="chart3" width="425" height="300"></canvas>
+            <div class="dashboard_small_outer_div">
+                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Findings Under Inspection or Review</p><canvas id="chart3" width="425" height="300"></canvas>
                 <script>
                   var pieData3 = [
                     {% for item, label, colors in mixed_set %}
@@ -70,8 +70,8 @@
                   new Chart(document.getElementById("chart3").getContext("2d")).Pie(pieData3);
                 </script></div>
             </div>
-            <div class="dashboard_outer_div">
-                <div class="dashboard_div"><p style="font-weight: bold; padding-bottom: 20px;">Most Commonly used Plugins</p><canvas id="chart4" width="1312" height="400"></canvas>
+            <div class="dashboard_large_outer_div">
+                <div class="dashboard_large_div"><p style="font-weight: bold; padding-bottom: 20px;">Most Commonly used Plugins</p><canvas id="chart4" style="width:80%; height:450px"></canvas>
                 <script>
                   var barData = {
                     labels : [
