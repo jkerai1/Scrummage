@@ -22,7 +22,7 @@ user@linux:~$ sudo bash dependencies.sh
 DATABASE="scrummage"  
 USER="scrummage"  
 ```
-5. When the script finishes, it should **print out the username and database it has created; furthermore, a randomly generated password will also be printed to the screen**. While the script creates a new config.json file, located in the lib/plugins/common/configuration/ directory, please retain this information. Provide the details under **"postgresql"**. If you would like to create a new user, use the **"Create_User.py"** script located in the installation directory. The command is as follows:
+5. When the script finishes, it should **print out the username and database it has created; furthermore, a randomly generated password will also be printed to the screen**. While the script creates a new config.json file, located in the lib/plugins/common/config/ directory, please retain this information. Provide the details under **"postgresql"**. If you would like to create a new user, use the **"Create_User.py"** script located in the installation directory. The command is as follows:
 ```console
 user@linux:~$ python3 Create_User.py --username/-u Username --password/-p Password --admin/-a [True | False] --blocked/-b [True | False]
 ```
@@ -38,7 +38,7 @@ Note: All provided input is santised by the server-side code, please create an i
 Each task has been provided with a test query to verify the plugin is working. All test queries are case-sensitive, or reference something you can use to test. While the provided test queries may appear random, they are queries that will generate a bounty of results.
 Tasks are provided to allow users to search various corners of the web for a given query.
 Multiple queries can be provided when creating a task, simply use a comma to separate the values.
-Any files that need to be editted, can be found in the “bin/plugins/common/configuration” directory.
+Any files that need to be editted, can be found in the “bin/plugins/common/config” directory.
 
 **GENERAL:**  
 Several of the plugins use location to assist in providing more relevant results, please ensure you set this in the config.json file, under “general”:
