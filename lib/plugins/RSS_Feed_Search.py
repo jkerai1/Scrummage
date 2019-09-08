@@ -30,7 +30,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
     try:
         File_Dir = os.path.dirname(os.path.realpath('__file__'))
-        Configuration_File = os.path.join(File_Dir, 'plugins/common/configuration/RSS_Feeds.txt')
+        Configuration_File = os.path.join(File_Dir, 'plugins/common/config/RSS_Feeds.txt')
         Current_File = open(Configuration_File, "r") # Open the provided file and retrieve each client to test.
         URLs = Current_File.read().splitlines()
         Current_File.close()
