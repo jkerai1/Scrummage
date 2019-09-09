@@ -619,7 +619,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	font-family: arial;
 	font-size: 16pt;
-	font-weight: 800;
 	padding: 20px 0px 5px 10px;
 	text-align: center;
 }
@@ -632,16 +631,10 @@ table.dataTable,table.dataTable th,table.dataTable td
     min-width: 150px;
 }
 
-.aboutbox {
-	text-align: center;
-	padding-top: 250px;
-}
-
 .aboutinfo {
 	color: #303030;
 	font-family: arial;
 	font-size: 16pt;
-	font-weight: 800;
 	padding: 15px 0px 15px 0px;
 }
 
@@ -649,7 +642,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	font-family: arial;
 	font-size: 16pt;
-	font-weight: 800;
 	text-align: center;
     height: 90px;
     line-height: 90px;
@@ -889,7 +881,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .dashboard_p {
-    font-weight: bold;
     padding-bottom: 20px;
     color: #fff;
 }
@@ -972,13 +963,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	width: 100%;
 }
 
-.footer {
-	position: fixed;
-	bottom: 0;
-	height: 60px;
-	padding-left: 20px;
-}
-
 .message {
 	text-align: center;
 	color: #303030;
@@ -1027,15 +1011,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .document:hover {
 	background-image: url('../images/documenthov.png');
-}
-
-.non_progress {
-    width: 25%;
-    text-align: center;
-    padding: 5px 0px 5px 0px;
-    font-weight: bold;
-    color: #909090;
-    background-color: #D0D0D0;
 }
 
 .task_buttons {
