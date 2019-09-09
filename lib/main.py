@@ -112,7 +112,6 @@ def Create_Event(Description):
 def page_not_found(e):
 
     try:
-        # note that we set the 404 status explicitly
         return render_template('404.html', username=session.get('user')), 404
 
     except Exception as e:
@@ -126,7 +125,7 @@ def index():
     try:
 
         if session.get('user'):
-            return render_template('dashboard.html', username=session.get('user'))
+            return redirect(url_for('dashboard'))
 
         else:
             return render_template('index.html')
@@ -1499,4 +1498,4 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
