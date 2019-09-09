@@ -33,7 +33,7 @@ def Load_CSV_Configuration():
         logging.warning(Date() + " " + str(e))
 
 def Load_DOCX_Configuration():
-    logging.info(Date() + " Loading CSV configuration data.")
+    logging.info(Date() + " Loading DOCX configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -261,12 +261,12 @@ def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_
                 CSV_Output = csv.writer(open(Complete_File, 'w'))
                 CSV_Output.writerow(Headings)
                 CSV_Output.writerow(Data)
-                logging.info(Date() + " CSV output file created.")
+                logging.info(Date() + " Created new CSV file located at " + str(Complete_File) + ".")
 
             else:
                 CSV_Output = csv.writer(open(Complete_File, 'a'))
                 CSV_Output.writerow(Data)
-                logging.info(Date() + " CSV output file updated.")
+                logging.info(Date() + " Updated existing CSV file located at " + str(Complete_File) + ".")
 
     except Exception as e:
         logging.warning(Date() + " " + str(e))
@@ -308,6 +308,7 @@ def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task
 
             document.add_page_break()
             document.save(Complete_File)
+            logging.info(Date() + " Exported to DOCX file located at " + str(Complete_File) + ".")
 
     except Exception as e:
         logging.warning(Date() + " " + str(e))
@@ -409,7 +410,7 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
                 logging.info(Date() + " No Authenticator specified, using the default which is cookie-based authentication,")
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
-            logging.info(Date() + " RTIR ticket created.")
+            logging.info(Date() + " New RTIR ticket created.")
 
         except Exception as e:
             logging.warning(Date() + " " + str(e))
@@ -423,7 +424,7 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             JIRA_Options={'server': JIRA_Details[1]}
             JIRA_Session=JIRA(options=JIRA_Options,basic_auth=(JIRA_Details[2], JIRA_Details[3]))
             JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
-            logging.info(Date() + " JIRA ticket created.")
+            logging.info(Date() + " New JIRA ticket created.")
 
         except Exception as e:
             logging.warning(Date() + " " + str(e))
@@ -436,7 +437,7 @@ def Slack_Main(Description):
         try:
             client = slack.WebClient(token=Slack_Details[0])
             client.chat_postMessage(channel=Slack_Details[1], text=Description)
-            logging.info(Date() + " Slack Notification created.")
+            logging.info(Date() + " New Slack Notification created.")
 
         except Exception as e:
             logging.warning(Date() + " " + str(e))
@@ -454,7 +455,7 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
             resp = requests.post(URI, data=data, headers=headers)
 
             if resp.status_code == 200:
-                logging.info(Date() + " Result created in Elasticsearch, using the URI " + URI + ".")
+                logging.info(Date() + " New result created in Elasticsearch, using the URI " + URI + ".")
 
             else:
                 logging.info(Date() + " Failed to create result in Elasticsearch, using the URI " + URI + ".")
