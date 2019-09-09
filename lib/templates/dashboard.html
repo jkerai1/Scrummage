@@ -11,7 +11,7 @@
     {% block content %}
         <div class="dashboard_field-container">
             <div class="dashboard_small_outer_div">
-                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Open Findings</p><canvas id="chart1" width="425" height="300"></canvas>
+                <div class="dashboard_small_div"><p class="dashboard_p">Overview of Open Findings</p><canvas id="chart1" style="width: 425px; height: 300px"></canvas>
                 <script>
                   var pieData1 = [
                     {% for item, label, colors in open_set %}
@@ -31,7 +31,7 @@
                 </script></div>
             </div>
             <div class="dashboard_small_outer_div">
-                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Closed Findings</p><canvas id="chart2" width="425" height="300"></canvas>
+                <div class="dashboard_small_div"><p class="dashboard_p">Overview of Closed Findings</p><canvas id="chart2" style="width: 425px; height: 300px"></canvas>
                 <script>
                   var pieData2 = [
                     {% for item, label, colors in closed_set %}
@@ -50,8 +50,8 @@
                   new Chart(document.getElementById("chart2").getContext("2d")).Pie(pieData2);
                 </script></div>
             </div>
-            <div class="dashboard_small_outer_div">
-                <div class="dashboard_small_div"><p style="font-weight: bold; padding-bottom: 20px;">Overview of Findings Under Inspection or Review</p><canvas id="chart3" width="425" height="300"></canvas>
+            <div class="dashboard_small_outer_right_div">
+                <div class="dashboard_small_div"><p class="dashboard_p">Overview of Findings Under Inspection or Review</p><canvas id="chart3" style="width: 425px; height: 300px"></canvas>
                 <script>
                   var pieData3 = [
                     {% for item, label, colors in mixed_set %}
@@ -71,7 +71,7 @@
                 </script></div>
             </div>
             <div class="dashboard_large_outer_div">
-                <div class="dashboard_large_div"><p style="font-weight: bold; padding-bottom: 20px;">Most Commonly used Plugins</p><canvas id="chart4" style="width:80%; height:450px"></canvas>
+                <div class="dashboard_large_div"><p class="dashboard_p">Most Common Plugin Types</p><canvas id="chart4" style="width: 80%; height: 450px"></canvas>
                 <script>
                   var barData = {
                     labels : [
@@ -80,9 +80,9 @@
                       {% endfor %}
                 ],
                     datasets : [{
-                      fillColor: "rgba(151,187,205,0.2)",
-                      strokeColor: "rgba(151,187,205,1)",
-                      pointColor: "rgba(151,187,205,1)",
+                      fillColor: "rgba(255,255,255,0.75)",
+                      strokeColor: "rgba(220, 20, 60, 1)",
+                      pointColor: "rgba(220, 20, 60, 1)",
                       data : [
                         {% for item in bar_values %}
                            "{{ item }}",
