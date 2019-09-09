@@ -31,7 +31,7 @@ nav ul li a {
   	color: #FFFFFF;
 	font-family: arial;
 	font-size: 10pt;
-	padding: 4px 10px 18px 20px;
+	padding: 15px 15px 15px 15px;
 }
 
 nav ul li a:hover {
@@ -624,19 +624,6 @@ text-align:center;
 	text-align: center;
 }
 
-#logo {
-	width: 25px;
-	height: 25px;
-	float: left;
-	background-image: url('../images/magnifyer.png');
-	background-size: contain;
-	background-repeat: no-repeat;
-}
-
-#logocontainer {
-	padding: 12px 20px 3px 20px;
-}
-
 #resultid {
 	min-width: 40px;
 }
@@ -700,7 +687,8 @@ text-align:center;
     padding: 20px 0px 20px 0px;
     border: 5px solid transparent;
     display: inline-block;
-    background-color: rgba(220, 20, 60, 0.20);
+    background-color: #303030;
+    box-shadow: 0 4px 10px -2px grey;
 }
 
 .dashboard_large_div {
@@ -708,8 +696,9 @@ text-align:center;
     padding: 20px 0px 20px 0px;
     border: 5px solid transparent;
     display: inline-block;
-    background-color: rgba(220, 20, 60, 0.20);
+    background-color: #303030;
     width: 100%;
+    box-shadow: 0 4px 10px -2px grey;
 }
 
 .form_div {
@@ -899,22 +888,16 @@ text-align:center;
 	color: #DC143C;
 }
 
+.dashboard_p {
+    font-weight: bold;
+    padding-bottom: 20px;
+    color: #fff;
+}
+
 .error {
 	text-align: center;
 	list-style-type: none;
 	padding: 15px 0px 0px 0px;
-}
-
-.exit {
-	background-image: url('../images/exit.png');
-	background-size: contain;
-	background-repeat: no-repeat;
-	height: 15px;
-	width: 16px;
-}
-
-.exit:hover {
-	background-image: url('../images/exithov.png');
 }
 
 .field-container {
@@ -924,7 +907,6 @@ text-align:center;
 }
 
 .dashboard_field-container {
-
 	text-align: center;
 	width: 99%;
 }
@@ -934,10 +916,15 @@ text-align:center;
     display: inline-block;
 }
 
-.dashboard_large_outer_div {
-    padding: 10px 5px 0px 0px;
+.dashboard_small_outer_right_div {
+    padding: 10px 0px 0px 0px;
     display: inline-block;
-    width: 100%
+}
+
+.dashboard_large_outer_div {
+    padding: 10px 0px 0px 0px;
+    display: inline-block;
+    width: 99%
 }
 
 .field_textarea {
@@ -956,7 +943,7 @@ text-align:center;
 	float: right;
 	display: inline;
 	font-size: 10pt;
-    padding: 3px 20px 12px 40px;
+    padding: 14px 20px 0px 40px;
 }
 
 .follow a{
@@ -1069,7 +1056,7 @@ text-align:center;
 	color: #DC143C;
 	font-family: arial;
 	font-size: 20pt;
-	padding: 10px 15px 0px 10px;
+	padding: 6px 15px 0px 10px;
 	float: left;
 }
 
@@ -1219,4 +1206,8 @@ select:focus {
   100% {
     box-shadow: inset 0px 0px 0px 30px #DC143C;
   }
+}
+
+body code.styled {
+    color: #fff;
 }
