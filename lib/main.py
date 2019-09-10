@@ -301,9 +301,9 @@ def apply_caching(response):
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["X-Content-Type"] = "nosniff"
-        # response.headers["Content-Security-Policy"] = "script-src 'self'"
         response.headers["Server"] = ""
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0, s-maxage=0"
+        response.headers["Pragma"] = "no-cache"
         return response
 
     except Exception as e:
