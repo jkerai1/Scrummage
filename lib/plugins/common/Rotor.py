@@ -1,8 +1,11 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import itertools
+import itertools, datetime, logging
 Altered_URLs = []
+
+def Date():
+    return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives):
     A_List = []
@@ -179,6 +182,7 @@ def Rotor_Word_Appender(List_to_Append):
     Altered_URLs.append(URL_Body)
 
 def Rotor_Combinations(Rotor_Word):
+
     if (len(Rotor_Word) == 1):
         for a in list(itertools.product(*Rotor_Word)):
             Newer_List = [a]
@@ -255,4 +259,4 @@ def Rotor_Combinations(Rotor_Word):
             Rotor_Word_Appender(Newer_List)
 
     else:
-        return ("[-] The word entered was either over 20 characters in length or had no characters, this function only permits words with lengths between 1 and 20.")
+        logging.warning(Date() + " [-] The word entered was either over 15 characters in length or had no characters, this function only permits words with character lengths between 1 and 15.")
