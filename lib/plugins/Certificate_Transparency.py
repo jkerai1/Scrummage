@@ -15,7 +15,7 @@ def Load_Configuration():
             SSLMate_API = SSLMate_Details['api_key']
             SSLMate_Subdomains = SSLMate_Details['search_subdomain']
 
-            if SSLMate_API and SSLMate_Subdomains:
+            if SSLMate_API:
                 return [SSLMate_API, SSLMate_Subdomains]
 
             else:
