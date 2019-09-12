@@ -180,6 +180,13 @@ if Arguments.database and Arguments.username and Arguments.password:
                     "api_key": ""
                 }
             ],
+            "web-app": [
+                {
+                    "debug": false,
+                    "host": "127.0.0.1",
+                    "port": 5000
+                }
+            ],
             "youtube": [
                 {
                     "developer_key": "",
