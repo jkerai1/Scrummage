@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
@@ -11,18 +12,18 @@
     <body onload="myFunction()">
 	    {% extends "template.html" %}
         {% block content %}
-        {% if error %}
-            <p class="message"><strong>Error:</strong> {{ error }}</p>
-        {% elif message %}
-            <p class="message"><strong>Message:</strong> {{ message }}</p>
-        {% endif %}
         {% if edit_task %}
             {% if is_admin == True %}
                 {% if form_step == 0 %}
                 {% elif form_step == 1 %}
                 <div class="field-container">
-                <div style="text-align: center; padding-top: 10px;">
-                <div class="form_div" style="padding: 10px 0px 0px 0px; width: 80%;">
+                {% if error %}
+                    <p class="message"><strong>Error:</strong> {{ error }}</p>
+                {% elif message %}
+                    <p class="message"><strong>Message:</strong> {{ message }}</p>
+                {% endif %}
+                <div style="text-align: center;">
+                <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         <dd>
@@ -49,19 +50,24 @@
                 </div>
                 {% elif form_step == 2 %}
                 <div class="field-container">
+                {% if error %}
+                    <p class="message"><strong>Error:</strong> {{ error }}</p>
+                {% elif message %}
+                    <p class="message"><strong>Message:</strong> {{ message }}</p>
+                {% endif %}
                 {% if api_check == "Passed" %}
-                <div><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <div style="padding-top: 10px;"><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
     <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-</svg></div><p class="message">API Configuration Check Passed.</p>
+</svg></div><p class="api_message">API Configuration Check Passed.</p>
                 {% elif api_check == "Failed" %}
-                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <div style="padding-top: 10px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
   <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
   <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
-</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish editing this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+</svg></div><p class="api_message">API Configuration Check Failed.</p><p class="api_message">You can finish editing this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
                 {% endif %}
-                <div style="text-align: center; padding-top: 10px;">
-                <div class="form_div" style="padding: 10px 0px 0px 0px; width: 80%;">
+                <div style="text-align: center;">
+                <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
                     <form class="form" action="" method=post autocomplete="off">
                         <dl>
                             {% if phish_sites %}
@@ -101,37 +107,42 @@
             <div id="loader">&nbsp;</div>
             <p id="loader-message" class="loaderabout">Loading Tasks...</p>
             <div style="display: none;" style="margin:0;" id="fc" class="field-container">
+                {% if error %}
+                    <p class="message"><strong>Error:</strong> {{ error }}</p>
+                {% elif message %}
+                    <p class="message"><strong>Message:</strong> {{ message }}</p>
+                {% endif %}
                 {% if api_check == "Failed" %}
-                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <div style="padding-top: 10px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
   <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
   <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
-</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
+</svg></div><p class="api_message">API Configuration Check Failed.</p><p class="api_message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
                 {% endif %}
                 <table id="paginate">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th style="min-width: 40px;">ID</th>
                             <th>Query</th>
                             <th>Plugin</th>
-                            <th>Description</th>
-                            <th>Frequency</th>
-                            <th>Limit</th>
+                            <th style="min-width: 105px;">Description</th>
+                            <th style="min-width: 100px;">Frequency</th>
+                            <th style="min-width: 60px;">Limit</th>
                             {% if is_admin %}
-                            <th>Functions</th>
+                            <th style="min-width: 95px;">Functions</th>
                             {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for result in results %}
                         <tr>
-                            <td class="nonscreenshottab">{{result[0]}}</td>
+                            <td class="nonscreenshottab" style="min-width: 40px;">{{result[0]}}</td>
                             <td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{result[1]}}</td>
                             <td class="nonscreenshottab">{{result[2]}}</td>
                             <td class="nonscreenshottab">{{result[3]}}</td>
                             <td class="nonscreenshottab">{{result[4]}}</td>
                             <td class="nonscreenshottab">{{result[5]}}</td>
                             {% if is_admin %}
-                                <td class="buttons_in_tasks_table">
+                                <td class="buttons_in_tasks_table" id="task_table_buttons">
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="runtask" value="{{result[0]}}" type=hidden>
                                         <input class="button" type=submit value="Run">
@@ -158,7 +169,7 @@
                 <form style="display: inline-block;" action="" method=post autocomplete="off">
                     <input name="newtask" class="button" type=submit value="New Task">
                 </form>
-                <form class="form_left" style="display: inline-block;"  action="/verify_output" method=post autocomplete="off">
+                <form class="form_vo" style="display: inline-block;"  action="/verify_output" method=post autocomplete="off">
                     <input name="verify" class="button" type=submit value="Verify Output">
                 </form>
                 {% endif %}
@@ -175,16 +186,22 @@
                 document.getElementById("loader-message").style.display = "none";
                 document.getElementById("paginate").style.display = null;
                 document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[0].placeholder='Search';
             }
             </script>
         {% endif %}
         {% if new_task %}
             {% if is_admin %}
                 <div class="field-container">
+                {% if error %}
+                    <p class="message"><strong>Error:</strong> {{ error }}</p>
+                {% elif message %}
+                    <p class="message"><strong>Message:</strong> {{ message }}</p>
+                {% endif %}
                 {% if form_step == 0 %}
                 {% elif form_step == 1 %}
-                <div style="text-align: center; padding-top: 10px;">
-                <div class="form_div" style="padding: 10px 0px 0px 0px; width: 80%;">
+                <div style="text-align: center;">
+                <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         <dd>
@@ -221,18 +238,18 @@
                 </div>
                 {% elif form_step == 2%}
                 {% if api_check == "Passed" %}
-                <div><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <div style="padding-top: 10px;"><svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
     <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-</svg></div><p class="message">API Configuration Check Passed.</p>
+</svg></div><p class="api_message">API Configuration Check Passed.</p>
                 {% elif api_check == "Failed" %}
-                <div><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <div style="padding-top: 10px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
   <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
   <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
-</svg></div><p class="message">API Configuration Check Failed.</p><p class="message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
+</svg></div><p class="api_message">API Configuration Check Failed.</p><p class="api_message">You can finish creating this task, but please add the appropriate details to the Scrummage configuration file before running it.</p>
                 {% endif %}
-                <div style="text-align: center; padding-top: 10px;">
-                <div class="form_div" style="padding: 10px 0px 0px 0px; width: 80%;">
+                <div style="text-align: center;">
+                <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
                 <form class="form" action="" method=post autocomplete="off">
                     <dl>
                         {% if phish_sites %}

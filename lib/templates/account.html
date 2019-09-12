@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
@@ -16,9 +17,9 @@
 		{% elif message %}
 			<p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p>
 		{% endif %}
-		<div class="field-container">
-        <div style="text-align: center; padding-top: 10px;">
-        <div class="form_div" style="padding: 10px 0px 0px 0px; width: 80%;">
+		<div class="field-container-acc">
+        <div style="text-align: center;">
+        <div class="form_div" style="width: 80%;">
             <form class="form" action="" method=post autocomplete="off">
                 <dl>
                     <dd>

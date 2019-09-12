@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
@@ -17,7 +18,7 @@
     		<table style="display:none;" id="paginate">
     			<thead>
 	    			<tr>
-	    				<th>ID</th>
+	    				<th style="min-width: 40px;">ID</th>
 	    				<th>Description</th>
 	    				<th>Timestamp</th>
 	    			</tr>
@@ -32,7 +33,6 @@
 	    			{% endfor %}
     			</tbody>
     		</table>
-			<p class="message">This page only loads the latest 1000 entries.</p>
     	</div>
 		<script>
 		var myVar;
@@ -46,6 +46,7 @@
 			document.getElementById("loader-message").style.display = "none";
 			document.getElementById("paginate").style.display = null;
 			document.getElementById("fc").style.display = null;
+			document.getElementsByTagName("INPUT")[0].placeholder='Search';
 		}
 		</script>
     	{% endblock %}

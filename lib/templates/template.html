@@ -2,38 +2,56 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Scrummage</title>
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}"/>
     </head>
     <body>
-        <header>
-            <div class="container">
-                <p class="title">Scrummage</p>
-<!--                <div id="logocontainer"><div class="logo_outer"><div id="logo"></div></div></div>-->
-                {% if session.get('user') == username %}
-                    <p class="follow">Logged in as {{ username }}  |  <a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
-                {% else %}
-                    <p class="follow"><a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
-                {% endif %}
-                <nav>
-                    <ul>
-                        {% if not username %}
-                            <li><a href="{{ url_for('login') }}">LOGIN</a></li>
-                        {% else %}
-                            {% if session.get('user') == username %}
-                            <li><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
-                            <li><a href="{{ url_for('tasks') }}">TASKS</a></li>
-                            <li><a href="{{ url_for('results') }}">RESULTS</a></li>
-                            <li><a href="{{ url_for('events') }}">EVENTS</a></li>
-                            <li><a href="{{ url_for('account') }}">ACCOUNT</a></li>
-                            <li><a href="{{ url_for('dropsession') }}">LOGOUT</a></li>
-                            {% endif %}
-                        {% endif %}
-                    </ul>
-                </nav>
+        <nav class="navbar">
+            <p class="title">Scrummage</p>
+            {% if session.get('user') == username %}
+                <p class="follow">Logged in as {{ username }}  |  <a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
+            {% else %}
+                <p class="follow"><a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
+            {% endif %}
+            <div class="navbar-toggle" id="hamburger">
+                <div class="hamburger_slice_outer_top">
+                    <div class="hamburger_slice"></div>
+                </div>
+                <div class="hamburger_slice_outer">
+                    <div class="hamburger_slice"></div>
+                </div>
+                <div class="hamburger_slice_outer">
+                    <div class="hamburger_slice"></div>
+                </div>
             </div>
-        </header>
+            <div class="container">
+                <ul class="main-nav" id="js-menu">
+                    <li><a id="mobile-a"></a></li>
+                {% if not username %}
+                    <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+                {% else %}
+                    {% if session.get('user') == username %}
+                    <li><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
+                    <li><a href="{{ url_for('tasks') }}">TASKS</a></li>
+                    <li><a href="{{ url_for('results') }}">RESULTS</a></li>
+                    <li><a href="{{ url_for('events') }}">EVENTS</a></li>
+                    <li><a href="{{ url_for('account') }}">ACCOUNT</a></li>
+                    <li><a href="{{ url_for('dropsession') }}">LOGOUT</a></li>
+                    {% endif %}
+                {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <script>
+            let mainNav = document.getElementById('js-menu');
+            let navBarToggle = document.getElementById('hamburger');
+
+            navBarToggle.addEventListener('click', function () {
+                mainNav.classList.toggle('active');
+            });
+        </script>
     {% block content %}
     {% endblock %}
     </body>
