@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, flash, request, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, json, flash, request, redirect, url_for, session, send_from_directory
 from functools import wraps
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,6 +36,31 @@ try:
 except:
     app.logger.fatal(General.Date() + ' Failed to load main database, please make sure the database details are added correctly to the configuration.')
     sys.exit()
+
+def Load_Web_App_Configuration():
+
+    try:
+        File_Dir = os.path.dirname(os.path.realpath('__file__'))
+        Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
+        logging.info(General.Date() + " Loading web application's configuration data.")
+
+        with open(Configuration_File) as JSON_File:
+            Configuration_Data = json.load(JSON_File)
+
+        for WA_Details in Configuration_Data['web-app']:
+            WA_Debug = WA_Details['debug']
+            WA_Host = WA_Details['host']
+            WA_Port = WA_Details['port']
+
+            if WA_Host and WA_Port:
+                return [WA_Debug, WA_Host, WA_Port]
+
+            else:
+                return None
+
+    except Exception as e:
+        logging.warning(General.Date() + " " + str(e))
+        sys.exit()
 
 def API_Checker(Plugin_Name):
 
@@ -302,8 +327,8 @@ def apply_caching(response):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["X-Content-Type"] = "nosniff"
         response.headers["Server"] = ""
-        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0, s-maxage=0"
         response.headers["Pragma"] = "no-cache"
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0, s-maxage=0"
         return response
 
     except Exception as e:
@@ -719,18 +744,18 @@ def tasks():
                                         session['form_step'] += 1
 
                                         if session.get('form_type') not in Plugins_without_Limit:
-                                            return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
+
+                                            if session.get('form_type') == "PhishTank Search":
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), edit_task=True, use_limit=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites, api_check=API_Checker(session.get('form_type')))
+                                            
+                                            else:
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
                                                                    use_limit=True, edit_task=True,
                                                                    Valid_Plugins=Valid_Plugins,
                                                                    is_admin=session.get('is_admin'), results=results, api_check=API_Checker(session.get('form_type')))
 
                                         else:
-
-                                            if session.get('form_type') == "PhishTank Search":
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), edit_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites, api_check=API_Checker(session.get('form_type')))
-
-                                            else:
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), edit_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, api_check=API_Checker(session.get('form_type')))
+                                            return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), edit_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, api_check=API_Checker(session.get('form_type')))
 
                                     else:
                                         return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
@@ -755,7 +780,7 @@ def tasks():
                                         Frequency_Error = ""
                                         session['task_query'] = request.form['query']
 
-                                        if 'limit' in request.form:
+                                        if request.form.get('limit'):
 
                                             for char in session.get('task_query'):
 
@@ -783,7 +808,7 @@ def tasks():
                                                     return render_template('tasks.html', username=session.get('user'),
                                                                            form_step=session.get('form_step'), edit_task=True,
                                                                            Valid_Plugins=Valid_Plugins, results=results,
-                                                                           error="Invalid query specified, please provide a valid query with no special characters.")
+                                                                           error="Invalid limit specified, please provide a valid query with no special characters.")
 
 
                                             if session.get("form_type") == "PhishTank Search":
@@ -792,7 +817,7 @@ def tasks():
                                                     return render_template('tasks.html', username=session.get('user'),
                                                                            form_type=session.get('form_type'), form_step=session.get('form_step'),
                                                                            is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, edit_task=True,
-                                                                           error="Invalid query selected, please choose a pre-defined query from the list.")
+                                                                           error="Invalid limit selected, please choose a pre-defined query from the list.")
 
                                         Update_Cron = False
                                         original_frequency = ""
@@ -865,14 +890,38 @@ def tasks():
                                                                error=Frequency_Error)
 
                                     else:
-                                        return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                               results=results, is_admin=session.get('is_admin'),
-                                                               error="The Query field cannot be left blank.")
+
+                                        if session.get('form_type') not in Plugins_without_Limit:
+
+                                            if session.get('form_type') == "PhishTank Search":
+                                                return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                                   new_task=True, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites,
+                                                                   form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                            else:
+                                                return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                                   new_task=True, is_admin=session.get('is_admin'), results=results, 
+                                                                   form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                        else:
+                                            return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, error="Empty query, please provide a valid term to search for.")
 
                                 else:
-                                    return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                           results=results, is_admin=session.get('is_admin'),
-                                                           error="Empty query, please provide a valid term to search for.")
+
+                                    if session.get('form_type') not in Plugins_without_Limit:
+
+                                        if session.get('form_type') == "PhishTank Search":
+                                            return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                               new_task=True, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites,
+                                                               form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                        else:
+                                            return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                               new_task=True, is_admin=session.get('is_admin'), results=results, 
+                                                               form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                    else:
+                                        return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, error="Empty query, please provide a valid term to search for.")
 
                             else:
                                 session['form_type'] = 0
@@ -959,7 +1008,7 @@ def tasks():
                                             if not task_frequency_regex and not session.get('task_frequency') == "":
                                                 return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
                                                                        form_type=session.get('form_type'),
-                                                                       is_admin=session.get('is_admin'), new_task=True,
+                                                                       is_admin=session.get('is_admin'), new_task=True, Valid_Plugins=Valid_Plugins,
                                                                        error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* */5 * * *\"")
 
                                         if 'description' in request.form:
@@ -969,18 +1018,17 @@ def tasks():
                                         session['form_step'] += 1
 
                                         if session.get('form_type') not in Plugins_without_Limit:
-                                            return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+
+                                            if session.get('form_type') == "PhishTank Search":
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites, use_limit=True, api_check=API_Checker(session.get('form_type')))
+
+                                            else:
+                                                return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
                                                                    new_task=True, is_admin=session.get('is_admin'),
                                                                    form_step=session.get('form_step'), use_limit=True, api_check=API_Checker(session.get('form_type')))
 
                                         else:
-
-                                            if session.get('form_type') == "PhishTank Search":
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, phish_sites=Phishing_Sites, api_check=API_Checker(session.get('form_type')))
-
-                                            else:
-                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, api_check=API_Checker(session.get('form_type')))
-
+                                            return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, Valid_Plugins=Valid_Plugins, is_admin=session.get('is_admin'), results=results, api_check=API_Checker(session.get('form_type')))
 
                                     else:
                                         return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
@@ -1002,7 +1050,7 @@ def tasks():
                                         Frequency_Error = ""
                                         session['task_query'] = request.form['query']
 
-                                        if 'limit' in request.form:
+                                        if request.form.get('limit'):
 
                                             for char in session.get('task_query'):
 
@@ -1080,16 +1128,38 @@ def tasks():
                                                                    results=results, error=Frequency_Error)
 
                                     else:
-                                        return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
-                                                               form_step=session.get('form_step'), new_task=True,
-                                                               is_admin=session.get('is_admin'),
-                                                               error="The Query field cannot be left blank.")
+
+                                        if session.get('form_type') not in Plugins_without_Limit:
+
+                                            if session.get('form_type') == "PhishTank Search":
+                                                return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, error="Empty query, please provide a valid term to search for.")
+                                            
+                                            else:
+                                                return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                                   new_task=True, is_admin=session.get('is_admin'),
+                                                                   form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                        else:
+                                            return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                                   new_task=True, is_admin=session.get('is_admin'),
+                                                                   form_step=session.get('form_step'), error="Empty query, please provide a valid term to search for.")
 
                                 else:
-                                    return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
-                                                           form_step=session.get('form_step'), new_task=True,
-                                                           is_admin=session.get('is_admin'),
-                                                           error="Empty query, please provide a valid term to search for.")
+
+                                    if session.get('form_type') not in Plugins_without_Limit:
+
+                                        if session.get('form_type') == "PhishTank Search":
+                                            return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'), new_task=True, is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, error="Empty query, please provide a valid term to search for.")
+                                        
+                                        else:
+                                            return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                               new_task=True, is_admin=session.get('is_admin'),
+                                                               form_step=session.get('form_step'), use_limit=True, error="Empty query, please provide a valid term to search for.")
+
+                                    else:
+                                        return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                               new_task=True, is_admin=session.get('is_admin'),
+                                                               form_step=session.get('form_step'), error="Empty query, please provide a valid term to search for.")
 
                             else:
                                 session['form_type'] = 0
@@ -1498,4 +1568,5 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    Application_Details = Load_Web_App_Configuration()
+    app.run(debug=Application_Details[0], host=Application_Details[1], port=Application_Details[2], threaded=True)
