@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Scrummage Template.">
         <title>Scrummage</title>
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}"/>
@@ -17,23 +18,23 @@
             {% endif %}
             <div class="navbar-toggle" id="hamburger">
                 <div class="hamburger_slice_outer_top">
-                    <div class="hamburger_slice"></div>
+                    <div id="hb1"></div>
                 </div>
                 <div class="hamburger_slice_outer">
-                    <div class="hamburger_slice"></div>
+                    <div id="hb2"></div>
                 </div>
                 <div class="hamburger_slice_outer">
-                    <div class="hamburger_slice"></div>
+                    <div id="hb3"></div>
                 </div>
             </div>
             <div class="container">
                 <ul class="main-nav" id="js-menu">
                     <li><a id="mobile-a"></a></li>
                 {% if not username %}
-                    <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+                    <li id="firstli"><a href="{{ url_for('login') }}">LOGIN</a></li>
                 {% else %}
                     {% if session.get('user') == username %}
-                    <li><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
+                    <li id="firstli"><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
                     <li><a href="{{ url_for('tasks') }}">TASKS</a></li>
                     <li><a href="{{ url_for('results') }}">RESULTS</a></li>
                     <li><a href="{{ url_for('events') }}">EVENTS</a></li>

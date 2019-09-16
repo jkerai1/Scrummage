@@ -3,16 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
+        <meta name="description" content="Scrummage Session Dropped.">
+        <link rel="shortcut icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
-        <link rel="shortcut icon" href="static/icons/main.ico" />
         <title>Scrummage No Session</title>
     </head>
     <body>
 	    {% extends "template.html" %}
 	    {% block content %}
-		<p id="logintitle">Please log in to see data.</p>
+		<p id="logintitle" class="loginscreentitle">Please log in to see data.</p>
         <div style="text-align: center;">
         <div class="login_div" style="padding: 0px 20px 0px 20px;">
         <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">

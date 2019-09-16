@@ -3,10 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
+        <meta name="description" content="Scrummage Tasks.">
+        <link rel="shortcut icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
-        <link rel="shortcut icon" href="static/icons/main.ico" />
         <title>Scrummage Tasks</title>
     </head>
     <body onload="myFunction()">
@@ -143,10 +144,16 @@
                             <td class="nonscreenshottab">{{result[5]}}</td>
                             {% if is_admin %}
                                 <td class="buttons_in_tasks_table" id="task_table_buttons">
+                                    {% if result[6] == "Running" %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input class="button" type=submit value="Run" disabled>
+                                    </form>
+                                    {% else %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="runtask" value="{{result[0]}}" type=hidden>
                                         <input class="button" type=submit value="Run">
                                     </form>
+                                    {% endif %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="edittask" value="{{result[0]}}" type=hidden>
                                         <input class="button" type=submit value="Edit">

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Scrummage Dashboard.">
         <link rel="shortcut icon" href="static/icons/main.ico" />
         <script type="text/javascript" src='static/js/Chart.min.js'></script>
         <title>Scrummage Dashboard</title>
@@ -75,6 +76,7 @@
                     </div>
                 </div>
             </div>
+            {% if bar_labels and bar_max and bar_values %}
             <div class="dashboard_large_outer_bottom_div">
                 <div class="dashboard_large_bottom_div"><p class="dashboard_p">Most Common Plugin Types</p><canvas id="chart4" style="width: 80%; height: 450px"></canvas>
                 <script>
@@ -112,6 +114,7 @@
                 });
                 </script></div>
             </div>
+            {% endif %}
             <p class="aboutinfo">Scrummage v1.1</p>
         </div>
     {% endblock %}

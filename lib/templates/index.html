@@ -3,6 +3,7 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Scrummage Index.">
       <link rel="shortcut icon" href="static/icons/main.ico" />
       <title>Scrummage Welcome</title>
    </head>
@@ -10,7 +11,7 @@
       {% extends "template.html" %}
       {% block content %}
       {% if loggedout %}
-         <p id="logintitle">Logged out. Log in to continue.</p>
+         <p id="logintitle" class="loginscreentitle">Logged out. Log in to continue.</p>
          <div style="text-align: center;">
          <div class="login_div" style="padding: 0px 20px 0px 20px;">
          <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">
@@ -27,7 +28,7 @@
       </div>
       </div>
       {% else %}
-         <p id="logintitle">Welcome to Scrummage! Please log in to continue.</p>
+         <p id="logintitle" class="loginscreentitle">Welcome to Scrummage! Please log in to continue.</p>
          <div style="text-align: center;">
          <div class="login_div" style="padding: 0px 20px 0px 20px;">
          <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">

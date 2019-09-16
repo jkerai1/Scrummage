@@ -4,7 +4,7 @@
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
+        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Results</title>
@@ -200,7 +200,7 @@
             {% if error %}
                 <p class="message"><strong>Error:</strong> {{error}}</p>
             {% endif %}
-			<table style="display:none;" id="paginate">
+			<table style="width: 100%" id="paginate">
 				<thead>
 					<tr>
 						<th style="min-width: 40px;">ID</th>
@@ -276,7 +276,7 @@
             <p class="message"><strong>Error:</strong> {{error}}</p>
         {% endif %}
 		<div style="text-align: center;">
-        <div class="form_div" style="padding: 00px 0px 0px 0px; width: 80%;">
+        <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
             <form class="form" action="" method=post autocomplete="off">
                 <dl>
                     <dd>
