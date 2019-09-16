@@ -728,14 +728,6 @@ table.dataTable,table.dataTable th,table.dataTable td
     background-color: #303030;
 }
 
-.navbar-toggle {
-    top: 10px;
-    right: 20px;
-    cursor: pointer;
-    color: rgba(255,255,255,0.8);
-    font-size: 24px;
-}
-
 .main-nav {
     background-color: #303030;
 }
@@ -1118,6 +1110,10 @@ table.dataTable,table.dataTable th,table.dataTable td
   100% { background-position: -200% 0; }
 }
 
+#hamburger {
+    display: none;
+}
+
 input, textarea {
   -webkit-transition: all 0.30s ease-in-out;
   -moz-transition: all 0.30s ease-in-out;
@@ -1254,6 +1250,10 @@ body code.styled {
    height: 300px;
 }
 
+.unpredicted_page {
+    padding-top: 30px;
+}
+
 @media only screen and (max-width: 500px) {
 
     #chart1 {
@@ -1273,6 +1273,11 @@ body code.styled {
 }
 
 @media only screen and (max-width: 1050px) {
+
+    .dashboard_field-container {
+        padding-top: 50px;
+    }
+
     nav ul li {
         display: block;
         text-align: center;
@@ -1286,8 +1291,21 @@ body code.styled {
 
     .container {
         height: 45px;
-        position: relative;
+        position: fixed;
         z-index: 50000;
+        width: 100%;
+    }
+
+    .field-container {
+        padding-top: 50px;
+    }
+
+    .field-container-acc {
+        padding-top: 50px;
+    }
+
+    #firstli {
+        padding-top: 10px
     }
 
     .follow {
@@ -1300,7 +1318,8 @@ body code.styled {
 
     #hamburger {
         float: right;
-        padding: 7px 10px 0px 0px;
+        display: block;
+        position: fixed;
     }
 
     .hamburger_slice_outer {
@@ -1311,12 +1330,35 @@ body code.styled {
         padding-top: 2px;
     }
 
-    .hamburger_slice {
+    #hb1, #hb2, #hb3 {
         width: 30px;
         height: 5px;
-        color: #fff;
-        background-color: #fff;
         border-radius: 2px;
+        background-color: #fff;
+    }
+
+    div:hover #hb1  {
+        background-color: #DC143C;
+    }
+
+    div:hover #hb2 {
+        background-color: #DC143C;
+    }
+
+    div:hover #hb3 {
+        background-color: #DC143C;
+    }
+
+    .loginscreentitle {
+        padding-top: 70px !important;
+    }
+
+    .unpredicted_page {
+        padding-top: 80px;
+    }
+
+    #loader {
+        padding-top: 45px;
     }
 
     .main-nav {
@@ -1336,7 +1378,7 @@ body code.styled {
     }
 
     .title {
-        position: relative;
+        position: fixed;
         z-index: 60000;
     }
 
@@ -1362,6 +1404,11 @@ body code.styled {
     .navbar-toggle {
         position: relative;
         z-index: 60000;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        color: rgba(255,255,255,0.8);
+        font-size: 24px;
     }
 
     #created_at {
@@ -1370,10 +1417,6 @@ body code.styled {
 
     #updated_at {
         display: none;
-    }
-
-    #hamburger {
-        padding: 0px 0px 0px 0px;
     }
 }
 
@@ -1395,14 +1438,6 @@ body code.styled {
     font-size: 22px;
     margin-top: 10px;
     margin-left: 20px;
-}
-
-.navbar-toggle {
-    top: 10px;
-    right: 20px;
-    cursor: pointer;
-    color: rgba(255,255,255,0.8);
-    font-size: 24px;
 }
 
 .active {
