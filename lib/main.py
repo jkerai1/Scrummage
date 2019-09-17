@@ -529,7 +529,11 @@ def dashboard():
             closed_values = [closed_domain_spoof_results[0][0], closed_data_leakages[0][0], closed_phishing_results[0][0], closed_blockchain_transaction_results[0][0], closed_blockchain_address_results[0][0], closed_exploit_results[0][0]]
             mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
 
-            return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+            if most_common_tasks:
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+
+            else:
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors))
 
         else:
             return redirect(url_for('no_session'))
@@ -1569,4 +1573,14 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
     Application_Details = Load_Web_App_Configuration()
+
+    try:
+        PSQL_Update_Query = 'UPDATE tasks SET status = %s'
+        Cursor.execute(PSQL_Update_Query, ("Stopped",))
+        Connection.commit()
+
+    except:
+        app.logger.fatal(General.Date() + ' Startup error - database issue.')
+        sys.exit()
+
     app.run(debug=Application_Details[0], host=Application_Details[1], port=Application_Details[2], threaded=True)
