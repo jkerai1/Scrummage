@@ -16,3 +16,4 @@ instagram_explore
 slackclient==2.0.0
 vulners
 python-docx
+defectdojo_api
