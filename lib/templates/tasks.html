@@ -173,12 +173,14 @@
                     </tbody>
                 </table>
                 {% if is_admin %}
-                <form style="display: inline-block;" action="" method=post autocomplete="off">
-                    <input name="newtask" class="button" type=submit value="New Task">
-                </form>
-                <form class="form_vo" style="display: inline-block;"  action="/verify_output" method=post autocomplete="off">
-                    <input name="verify" class="button" type=submit value="Verify Output">
-                </form>
+                <div class="buttons-bottom">
+                    <form action="" method=post autocomplete="off">
+                        <input name="newtask" class="button" type=submit value="New Task">
+                    </form>
+                    <form class="form_vo"  action="/verify_output" method=post autocomplete="off">
+                        <input name="verify" class="button" type=submit value="Verify Output">
+                    </form>
+                </div>
                 {% endif %}
             </div>
             <script>
@@ -238,8 +240,8 @@
                             {% endif %}
                         </dd>
                     </dl>
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newreturn" type=submit value="Return">
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newtask" type=submit value="Next">
+                    <input style="display: inline-block;" class="button" name="newreturn" type=submit value="Return">
+                    <input style="display: inline-block;" class="button" name="newtask" type=submit value="Next">
                 </form>
                 </div>
                 </div>
@@ -279,8 +281,8 @@
                         </dd>
                         {% endif %}
                     </dl>
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newreturn" type=submit value="Return">
-                    <input style="padding-top: 10px; display: inline-block;" class="button" name="newtask" type=submit value="Finish">
+                    <input style="display: inline-block;" class="button" name="newreturn" type=submit value="Return">
+                    <input style="display: inline-block;" class="button" name="newtask" type=submit value="Finish">
                 </form>
                 </div>
                 </div>
