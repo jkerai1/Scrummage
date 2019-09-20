@@ -3,16 +3,12 @@
   	font-family: arial;
 }
 
-body {
-	/*background-color: #ffffff;*/
-}
-
 form dl dd {
 	padding: 15px 0px 15px 0px;
 }
 
 input[type="search" i] {
-	padding: 5px 5px 5px 5px;
+	padding: 7px;
 	border: 1px solid #303030;
 }
 
@@ -67,12 +63,12 @@ table thead tr th {
 }
 
 table tr td {
-	background-color: #D0D0D0;
+	background-color: #DCDCDC;
 	color: #303030;
 }
 
 table tbody tr td {
-	background-color: #D0D0D0;
+	background-color: #DCDCDC;
 	color: #303030;
 }
 
@@ -446,7 +442,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     box-sizing:border-box;
     display:inline-block;
     min-width:1.5em;
-    padding:0.5em 1em;
+    padding: 7px;
     margin-left:2px;
     text-align:center;
     text-decoration:none !important;
@@ -664,7 +660,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	text-decoration: none;
 	color: #ffffff;
 	background-color: #303030;
-	padding: 10px 10px 10px 10px;
+	padding: 7px;
 	font-size: 12pt;
 	border-radius: 3px;
 	box-shadow: none;
@@ -744,6 +740,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
+	color: #303030;
 }
 
 .open_button:hover {
@@ -762,6 +759,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
+	color: #303030;
 }
 
 .inspect_button:hover {
@@ -780,6 +778,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
+	color: #303030;
 }
 
 .review_button:hover {
@@ -798,6 +797,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
+	color: #303030;
 }
 
 .close_button:hover {
@@ -805,7 +805,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .non_progressed_button {
-    background-color: #D0D0D0;
+    background-color: #DCDCDC;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -871,32 +871,12 @@ table.dataTable,table.dataTable th,table.dataTable td
 	text-align: center;
 }
 
-.button_bottom {
-	text-decoration: none;
-	color: #ffffff;
-	background-color: #303030;
-	padding: 10px 10px 10px 10px;
-	font-size: 12pt;
-	border-radius: 0px;
-	box-shadow: none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	outline: none;
-	border: 0;
-	position: fixed;
-	bottom: 0;
-}
-
-.button_bottom:hover {
-	color: #DC143C;
-}
-
 .buttons_in_tasks_table {
 	text-align: center;
 }
 
 .buttons_in_table {
-	text-align: center;
+	padding-left: 10px;
 }
 
 .container {
@@ -1013,7 +993,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 .message {
 	text-align: center;
 	color: #303030;
-	padding: 30px 0px 0px 0px;
+	padding: 15px 0px 0px 0px;
 	width: 99%;
 }
 
@@ -1022,6 +1002,10 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	padding: 20px 0px 0px 0px;
 	width: 99%;
+}
+
+.buttons-bottom form {
+    display: inline-block;
 }
 
 .non_paginated {
@@ -1045,7 +1029,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	background-size: contain;
 	background-repeat: no-repeat;
 	padding: 10px 0px 0px 0px;
-	height: 20px;
+	height: 15px;
     width: 40px;
     float: left;
 }
@@ -1059,7 +1043,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	background-size: contain;
 	background-repeat: no-repeat;
 	padding: 10px 0px 0px 0px;
-	height: 20px;
+	height: 15px;
     width: 30px;
     float: left;
 }
@@ -1120,15 +1104,25 @@ input, textarea {
   -ms-transition: all 0.30s ease-in-out;
   -o-transition: all 0.30s ease-in-out;
   outline: none;
-  padding: 10px 10px 10px 10px;
-  margin: 5px 1px 3px 0px;
+  padding: 7px;
   border: 1px solid #303030;
 }
 
-input:focus, textarea:focus {
+.textarea:focus {
   box-shadow: 0 0 5px rgba(255, 0, 0, 1);
-  padding: 10px 10px 10px 10px;
-  margin: 5px 1px 3px 0px;
+  padding: 10px;
+  /*margin: 5px 1px 3px 0px;*/
+  border: 1px solid rgba(220, 20, 60, 1);
+}
+
+.field_textarea:focus {
+  box-shadow: 0 0 5px rgba(255, 0, 0, 1);
+  padding: 10px;
+  border: 1px solid rgba(220, 20, 60, 1);
+}
+
+input[type="search"]:focus {
+  box-shadow: 0 0 5px rgba(255, 0, 0, 1);
   border: 1px solid rgba(220, 20, 60, 1);
 }
 
@@ -1138,15 +1132,12 @@ select {
   -ms-transition: all 0.30s ease-in-out;
   -o-transition: all 0.30s ease-in-out;
   outline: none;
-  padding: 5px 5px 5px 5px;
-  margin: 5px 1px 3px 0px;
+  padding: 6px;
   border: 1px solid #303030;
 }
 
 select:focus {
   box-shadow: 0 0 5px rgba(255, 0, 0, 1);
-  padding: 5px 5px 5px 5px;
-  margin: 5px 1px 3px 0px;
   border: 1px solid rgba(220, 20, 60, 1);
 }
 
@@ -1287,6 +1278,24 @@ body code.styled {
         padding: 0px 0px 0px 0px;
         position: relative;
         z-index: 50000;
+    }
+
+    .buttons-bottom {
+        padding-top: 10px;
+        text-align: center;
+    }
+
+    .buttons_in_tasks_table form {
+        padding: 3px 0px 3px 0px;
+    }
+
+    #newresult {
+        padding-top: 10px;
+        text-align: center;
+    }
+
+    #deleteresult {
+        text-align: center;
     }
 
     .container {
