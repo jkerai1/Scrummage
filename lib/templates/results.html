@@ -22,26 +22,24 @@
             {% if error %}
                 <p class="message"><strong>Error:</strong> {{error}}</p>
             {% endif %}
-			<p id="logintitle">Details for Result ID {{results[0]}} - {{results[2]}}</p>
-			<p class="message"><strong>Created at:</strong> {{results[7]}}  |  <strong>Last updated at:</strong> {{results[8]}}</p>
+			<p id="resultdetailedtitle">Details for Result ID {{results[0]}} - {{results[2]}}</p>
+			<p class="message"><strong>Created At:</strong> {{results[7]}} | <strong>Last Updated At:</strong> {{results[8]}}</p>
 			<br />
 			<table>
 				<thead>
 					<tr>
-						<th class="non_paginated" id="result_task_mob">Plugin</th>
-						<th class="non_paginated">Result Type</th>
 						<th class="non_paginated">Screenshot</th>
 						<th class="non_paginated">File</th>
+						<th class="non_paginated" id="result_task_mob">Plugin</th>
+						<th class="non_paginated">Result Type</th>
 						<th class="non_paginated">Domain</th>
 						<th class="non_paginated">Link</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td class="nonscreenshottab" id="resultid2">{{results[3]}}</td>
-						<td class="nonscreenshottab">{{results[11]}}</td>
 						{% if results[9] %}
-						<td style="padding-left: 10px;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"></div></a></td>
+						<td style="padding-left: 10px;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><div class="arrow-up"></div><img src="../static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
 						{% else %}
 							{% if is_admin %}
 								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
@@ -63,6 +61,8 @@
 						{% else %}
 							<td class="nonscreenshottab">N/A</td>
 						{% endif %}
+						<td class="nonscreenshottab" id="resultid2">{{results[3]}}</td>
+						<td class="nonscreenshottab">{{results[11]}}</td>
 						<td class="nonscreenshottab" id="link"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
 						<td class="nonscreenshottab"><a href="{{results[6]}}">Link</a></td>
 					</tr>
@@ -162,6 +162,7 @@
 					</tr>
 				</tbody>
 			</table>
+			{% if task_results %}
 			<p class="message">The table below shows the task that generated the result. If the task has been altered since the result was created the query may no longer match the result. Refer to events for more information.</p>
 			<br />
 			<table>
@@ -186,6 +187,9 @@
 					</tr>
 				</tbody>
 			</table>
+			{% else %}
+			<p class="message">The task associated with this result couldn't be found, it was probably deleted.</p>
+			{% endif %}
 			{% if is_admin %}
 			<form style="padding: 10px 0px 0px 0px" id="deleteresult" class="form_left" action="" method=post autocomplete="off">
 				<input name="delete" value="{{results[0]}}" type=hidden>
@@ -216,12 +220,12 @@
 					{% for result in results %}
 					<tr>
 						<td class="nonscreenshottab" id="resultid" style="min-width: 40px;">{{result[0]}}</td>
-						<td class="nonscreenshottab" style="max-width: 250px;">{{result[2]}}</td>
-						<td class="nonscreenshottab" style="min-width: 70px;">{{result[4]}}</td>
+						<td class="nonscreenshottab" id="resultplugin">{{result[2]}}</td>
+						<td class="nonscreenshottab" style="min-width: 60px;">{{result[4]}}</td>
 						<td class="nonscreenshottab" style="min-width: 50px;"><a href="{{result[6]}}">Link</a></td>
 						<td class="nonscreenshottab" id="created_at">{{result[7]}}</td>
 						<td class="nonscreenshottab" id="updated_at">{{result[8]}}</td>
-						<td class="buttons_in_table" id="resultsbuttons" style="min-width: 80px;">
+						<td class="buttons_in_table" id="resultsbuttons">
 							<form class="task_buttons" action="" method=post autocomplete="off">
 								<input name="details" value="{{result[0]}}" type=hidden>
 								<input class="button" type=submit value="Show">
