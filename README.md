@@ -25,9 +25,7 @@ All feedback is welcome.
 * Many more... Refer to the installation Readme.md file for the full list.
 
 **What's on the Horizon for Scrummage?**  
-* Support for more crypto-currencies for the blockchain plugin
-* Public record search plugins
-* More social media site plugins
+* More plugins for other Cryptocurrencies, as well as DNS-related plugins
 * Ongoing support for the web application
 
 ---
