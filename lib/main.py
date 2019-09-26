@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Scrummage Version 1.1
+# Author: matamorphosis
+# License: GPL-3.0
 
 from flask import Flask, render_template, json, flash, request, redirect, url_for, session, send_from_directory
+from signal import signal, SIGINT
+from flask_compress import Compress
 from functools import wraps
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,6 +28,7 @@ Finding_Types = ['Domain Spoof', 'Data Leakage', 'Phishing', 'Blockchain Transac
 try:
     File_Path = os.path.dirname(os.path.realpath('__file__'))
     app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
+    Compress(app)
     app.permanent_session_lifetime = timedelta(minutes=5)
 
 except:
@@ -35,6 +41,11 @@ try:
 
 except:
     app.logger.fatal(General.Date() + ' Failed to load main database, please make sure the database details are added correctly to the configuration.')
+    sys.exit()
+
+def handler(signal_received, frame):
+    print('[i] CTRL-C detected. Shutting program down.')
+    Connection.close()
     sys.exit()
 
 def Load_Web_App_Configuration():
@@ -51,9 +62,11 @@ def Load_Web_App_Configuration():
             WA_Debug = WA_Details['debug']
             WA_Host = WA_Details['host']
             WA_Port = WA_Details['port']
+            WA_Cert_File = WA_Details['certificate-file']
+            WA_Key_File = WA_Details['key-file']
 
-            if WA_Host and WA_Port:
-                return [WA_Debug, WA_Host, WA_Port]
+            if WA_Host and WA_Port and WA_Cert_File and WA_Key_File:
+                return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File]
 
             else:
                 return None
@@ -1566,6 +1579,7 @@ def account():
         return redirect(url_for('accounts'))
 
 if __name__ == '__main__':
+    signal(SIGINT, handler)
     formatter = logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
     handler = RotatingFileHandler('Scrummage.log', maxBytes=10000, backupCount=5)
     handler.setLevel(logging.INFO)
@@ -1583,4 +1597,13 @@ if __name__ == '__main__':
         app.logger.fatal(General.Date() + ' Startup error - database issue.')
         sys.exit()
 
-    app.run(debug=Application_Details[0], host=Application_Details[1], port=Application_Details[2], threaded=True)
+    try:
+        import ssl
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.load_cert_chain(certfile=Application_Details[3], keyfile=Application_Details[4])
+
+    except:
+        app.logger.fatal(General.Date() + ' Error initiating SSL.')
+        sys.exit()
+
+    app.run(debug=Application_Details[0], host=Application_Details[1], port=Application_Details[2], threaded=True, ssl_context=context)
