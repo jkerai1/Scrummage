@@ -4,6 +4,7 @@
 **NEW VERSION 1.1**
 - UI/UX Enhancements  
 - Bug Fixes  
+- SSL Added
 - Improved Functionality  
 
 Scrummage is an OSINT tool that centralises your OSINT scans, leveraging powerful yet simple OSINT sites, drawing inspiration from the https://github.com/Netflix-Skunkworks/Scumblr project as well as the the OSINT framework, a high-level overview of a range of sites that can be used to search for a variety of things, which can be found at https://osintframework.com/ or https://github.com/lockfale/OSINT-Framework.
