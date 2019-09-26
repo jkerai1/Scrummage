@@ -184,7 +184,9 @@ if Arguments.database and Arguments.username and Arguments.password:
                 {
                     "debug": false,
                     "host": "127.0.0.1",
-                    "port": 5000
+                    "port": 5000,
+                    "certificate-file": "../certs/certificate.crt",
+                    "key-file": "../certs/privateKey.key"
                 }
             ],
             "youtube": [
