@@ -50,21 +50,11 @@ table {
 	width: 100%;
 }
 
-table tr th {
-	background-color: #303030;
-	color: #ffffff;
-}
-
 table thead tr th {
 	background-color: #303030;
 	color: #ffffff;
 	padding: 10px 0px 10px 10px;
 	font-weight: normal;
-}
-
-table tr td {
-	background-color: #DCDCDC;
-	color: #303030;
 }
 
 table tbody tr td {
@@ -617,7 +607,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	word-wrap: break-word;
 }
 
-#task_table_buttons {
+#tsk_in_tbl_btns {
     min-width: 220px;
 }
 
@@ -1027,6 +1017,12 @@ table.dataTable,table.dataTable th,table.dataTable td
 	width: 99%;
 }
 
+req_message {
+	text-align: center;
+	color: #303030;
+	width: 99%;
+}
+
 .api_message {
 	text-align: center;
 	color: #303030;
@@ -1036,10 +1032,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .buttons-bottom form {
     display: inline-block;
-}
-
-.non_paginated {
-    padding: 10px 10px;
 }
 
 .nonscreenshottab {
