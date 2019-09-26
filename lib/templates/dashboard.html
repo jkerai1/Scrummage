@@ -4,14 +4,20 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Dashboard.">
-        <link rel="shortcut icon" href="static/icons/main.ico" />
+        <link rel="icon" href="static/icons/main.ico" />
+        <link rel="apple-touch-icon" href="static/icons/main.ico" />
         <script type="text/javascript" src='static/js/Chart.min.js'></script>
         <title>Scrummage Dashboard</title>
     </head>
     <body>
     {% extends "template.html" %}
     {% block content %}
+    <noscript>
+        <p class="message">Please enable JavaScript to render this page. Otherwise the graphs won't load.</p>
+    </noscript>
+    <main>
         <div class="dashboard_field-container">
+            <section>
             <div class="dashboard_large_outer_div" style="box-shadow: 0 4px 10px -2px grey;">
                 <div class="dashboard_large_div">
                     <div class="dashboard_small_outer_div">
@@ -76,7 +82,9 @@
                     </div>
                 </div>
             </div>
+            </section>
             {% if bar_labels and bar_max and bar_values %}
+            <section>
             <div class="dashboard_large_outer_bottom_div">
                 <div class="dashboard_large_bottom_div"><p class="dashboard_p">Most Common Plugin Types</p><canvas id="chart4" style="width: 80%; height: 450px"></canvas>
                 <script>
@@ -114,9 +122,11 @@
                 });
                 </script></div>
             </div>
+            </section>
             {% endif %}
-            <p class="aboutinfo">Scrummage v1.1</p>
+            <footer><p class="aboutinfo">Scrummage v1.1</p></footer>
         </div>
+    </main>
     {% endblock %}
     </body>
 </html>

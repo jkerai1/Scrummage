@@ -4,8 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Output Method Option Verification.">
-        <link rel="shortcut icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
+        <link rel="icon" href="static/icons/main.ico" />
+        <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Verify Output</title>
@@ -15,6 +16,9 @@
     {% block content %}
     {% if is_admin %}
     <div id="loader">&nbsp;</div>
+    <noscript>
+        <p class="message">Please enable JavaScript to render this page. Otherwise it won't load.</p>
+    </noscript>
     <p id="loader-message" class="loaderabout">Verifying Output Options...</p>
     <div style="display: none;" id="fc" class="field-container">
         <table style="display:none;" id="paginate">

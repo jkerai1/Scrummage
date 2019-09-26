@@ -4,8 +4,9 @@
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="Scrummage Events.">
-        <link rel="shortcut icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>	
+        <link rel="icon" href="static/icons/main.ico" />
+        <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Events</title>
@@ -13,43 +14,50 @@
     <body onload="myFunction()" style="margin:0;">
 	    {% extends "template.html" %}
 	    {% block content %}
-		<div id="loader">&nbsp;</div>
-		<p id="loader-message" class="loaderabout">Loading Events...</p>
-    	<div style="display: none;" id="fc" class="field-container">
-    		<table style="display:none;" id="paginate">
-    			<thead>
-	    			<tr>
-	    				<th style="min-width: 40px;">ID</th>
-	    				<th>Description</th>
-	    				<th>Timestamp</th>
-	    			</tr>
-    			</thead>
-    			<tbody>
-					{% for event in events %}
-		    			<tr>
-		    				<td class="nonscreenshottab">{{event[0]}}</td>
-		    				<td class="nonscreenshottab">{{event[1]}}</td>
-		    				<td class="nonscreenshottab">{{event[2]}}</td>
-		    			</tr>
-	    			{% endfor %}
-    			</tbody>
-    		</table>
-    	</div>
-		<script>
-		var myVar;
+		<main>
+			<section>
+				<div id="loader">&nbsp;</div>
+				<noscript>
+					<p class="message">Please enable JavaScript to render this page. Otherwise it won't load.</p>
+				</noscript>
+				<p id="loader-message" class="loaderabout">Loading Events...</p>
+				<div style="display: none;" id="fc" class="field-container">
+					<table style="display:none;" id="paginate">
+						<thead>
+							<tr>
+								<th style="min-width: 40px;">ID</th>
+								<th>Description</th>
+								<th>Timestamp</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for event in events %}
+								<tr>
+									<td class="nonscreenshottab">{{event[0]}}</td>
+									<td class="nonscreenshottab">{{event[1]}}</td>
+									<td class="nonscreenshottab">{{event[2]}}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				<script>
+				var myVar;
 
-		function myFunction() {
-		  myVar = setTimeout(showPage, 1000);
-		}
+				function myFunction() {
+				  myVar = setTimeout(showPage, 1000);
+				}
 
-		function showPage() {
-			document.getElementById("loader").style.display = "none";
-			document.getElementById("loader-message").style.display = "none";
-			document.getElementById("paginate").style.display = null;
-			document.getElementById("fc").style.display = null;
-			document.getElementsByTagName("INPUT")[0].placeholder='Search';
-		}
-		</script>
+				function showPage() {
+					document.getElementById("loader").style.display = "none";
+					document.getElementById("loader-message").style.display = "none";
+					document.getElementById("paginate").style.display = null;
+					document.getElementById("fc").style.display = null;
+					document.getElementsByTagName("INPUT")[0].placeholder='Search';
+				}
+				</script>
+			</section>
+		</main>
     	{% endblock %}
     </body>
 </html>

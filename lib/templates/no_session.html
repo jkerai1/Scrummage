@@ -4,33 +4,35 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Session Dropped.">
-        <link rel="shortcut icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-		<script type="text/javascript" src="static/js/datatables.min.js"></script>
-		<script type="text/javascript" src="static/js/main.js"></script>
+        <link rel="icon" href="static/icons/main.ico" />
+        <link rel="apple-touch-icon" href="static/icons/main.ico" />
         <title>Scrummage No Session</title>
     </head>
     <body>
 	    {% extends "template.html" %}
 	    {% block content %}
-		<p id="logintitle" class="loginscreentitle">Please log in to see data.</p>
-        <div style="text-align: center;">
-        <div class="login_div" style="padding: 0px 20px 0px 20px;">
-        <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">
-            <dl>
-                <dd>
-                   <input class="textarea" type=text name=username placeholder="Username">
-                </dd>
-                <dd>
-                   <input class="textarea" type=password name=password placeholder="Password">
-                </dd>
-            </dl>
-            <p style="padding-top: 10px;"><input class="button" type=submit value=Login></p>
-        </form>
-        </div>
-        </div>
+        <main>
+            <p id="logintitle" class="loginscreentitle">Please log in to see data.</p>
+            <div style="text-align: center;">
+                <div class="login_div" style="padding: 0px 20px 0px 20px;">
+                    <form class="form" action="{{url_for('login')}}" method=post autocomplete="off">
+                        <dl>
+                            <dt>
+                                <dd>
+                                   <input class="textarea" type=text name=username placeholder="Username">
+                                </dd>
+                                <dd>
+                                   <input class="textarea" type=password name=password placeholder="Password">
+                                </dd>
+                            </dt>
+                        </dl>
+                        <p style="padding-top: 10px;"><input class="button" type=submit value=Login></p>
+                    </form>
+                </div>
+            </div>
+        </main>
         {% if error %}
-            <p class="message"><strong>Error:</strong> {{ error }}</p>
+            <footer><p class="message"><strong>Error:</strong> {{ error }}</p></footer>
         {% endif %}
     	{% endblock %}
     </body>

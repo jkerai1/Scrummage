@@ -3,8 +3,10 @@
     <head>
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
+		<meta name="description" content="Scrummage Results.">
+        <link rel="icon" href="static/icons/main.ico" />
+        <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
 		<script type="text/javascript" src="static/js/datatables.min.js"></script>
 		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Results</title>
@@ -18,295 +20,304 @@
     {% block content %}
     {% if form_step == 0 %}
 		{% if details %}
-		<div class="field-container">
-            {% if error %}
-                <p class="message"><strong>Error:</strong> {{error}}</p>
-            {% endif %}
-			<p id="resultdetailedtitle">Details for Result ID {{results[0]}} - {{results[2]}}</p>
-			<p class="message"><strong>Created At:</strong> {{results[7]}} | <strong>Last Updated At:</strong> {{results[8]}}</p>
-			<br />
-			<table>
-				<thead>
-					<tr>
-						<th class="non_paginated">Screenshot</th>
-						<th class="non_paginated">File</th>
-						<th class="non_paginated" id="result_task_mob">Plugin</th>
-						<th class="non_paginated">Result Type</th>
-						<th class="non_paginated">Domain</th>
-						<th class="non_paginated">Link</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						{% if results[9] %}
-						<td style="padding-left: 10px;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><div class="arrow-up"></div><img src="../static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
-						{% else %}
-							{% if is_admin %}
-								{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
-									<td class="buttons_in_table">
-										<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
-											<input name="ss_id" value="{{results[0]}}" type=hidden>
-											<input class="button" type=submit value="Generate">
-										</form>
-									</td>
+		<main>
+			<div class="field-container">
+				{% if error %}
+					<p class="message"><strong>Error:</strong> {{error}}</p>
+				{% endif %}
+				<p id="resultdetailedtitle">Details for Result ID {{results[0]}} - {{results[2]}}</p>
+				<p class="message"><strong>Created At:</strong> {{results[7]}} | <strong>Last Updated At:</strong> {{results[8]}}</p>
+				<br />
+				<table>
+					<thead>
+						<tr>
+							<th>Screenshot</th>
+							<th>File</th>
+							<th id="result_task_mob">Plugin</th>
+							<th>Result Type</th>
+							<th>Domain</th>
+							<th>Link</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{% if results[9] %}
+							<td style="padding-left: 10px;"><a href="../static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><div class="arrow-up"></div><img src="../static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
+							{% else %}
+								{% if is_admin %}
+									{% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
+										<td class="buttons_in_table">
+											<form class="task_buttons" action="{{ url_for('screenshot') }}" method=post autocomplete="off">
+												<input name="ss_id" value="{{results[0]}}" type=hidden>
+												<input class="button" type=submit value="Generate">
+											</form>
+										</td>
+									{% else %}
+										<td class="nonscreenshottab">Screenshot Disabled</td>
+									{% endif %}
 								{% else %}
-									<td class="nonscreenshottab">Screenshot Disabled</td>
+									<td class="nonscreenshottab">Not Available</td>
+								{% endif %}
+							{% endif %}
+							{% if results[10] %}
+								<td style="padding-left: 10px;"><a href="{{results[10]}}"><div class="document"></div></a></td>
+							{% else %}
+								<td class="nonscreenshottab">N/A</td>
+							{% endif %}
+							<td class="nonscreenshottab" id="resultid2">{{results[3]}}</td>
+							<td class="nonscreenshottab">{{results[11]}}</td>
+							<td class="nonscreenshottab" id="link"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
+							<td class="nonscreenshottab"><a href="{{results[6]}}">Link</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<br />
+				<table>
+					<tbody>
+						<tr>
+							{% if is_admin %}
+								{% if results[4] == "Open" %}
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="open" value="{{results[0]}}" type=hidden>
+									<input class="open_button" type=submit value="Open">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="inspect" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Inspect">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="review" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Review">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="close" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Close">
+								</form></td>
+								{% elif results[4] == "Inspecting" %}
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="open" value="{{results[0]}}" type=hidden>
+									<input class="open_button" type=submit value="Opened">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="inspect" value="{{results[0]}}" type=hidden>
+									<input class="inspect_button" type=submit value="Inspecting">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="review" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Review">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="close" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Close">
+								</form></td>
+								{% elif results[4] == "Reviewing" %}
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="open" value="{{results[0]}}" type=hidden>
+									<input class="open_button" type=submit value="Opened">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="inspect" value="{{results[0]}}" type=hidden>
+									<input class="inspect_button" type=submit value="Inspected">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="review" value="{{results[0]}}" type=hidden>
+									<input class="review_button" type=submit value="Reviewing">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="close" value="{{results[0]}}" type=hidden>
+									<input class="non_progressed_button" type=submit value="Close">
+								</form></td>
+								{% elif results[4] == "Closed" %}
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="open" value="{{results[0]}}" type=hidden>
+									<input class="open_button" type=submit value="Opened">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="inspect" value="{{results[0]}}" type=hidden>
+									<input class="inspect_button" type=submit value="Inspected">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="review" value="{{results[0]}}" type=hidden>
+									<input class="review_button" type=submit value="Reviewed">
+								</form></td>
+								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+									<input name="close" value="{{results[0]}}" type=hidden>
+									<input class="close_button" type=submit value="Closed">
+								</form></td>
 								{% endif %}
 							{% else %}
-								<td class="nonscreenshottab">Not Available</td>
+								{% if results[4] == "Open" %}
+								<p class="open_p" style="width: 100%">Open</p>
+								{% elif results[4] == "Inspecting" %}
+								<p class="open_p" style="width: 50%">Opened</p>
+								<p class="inspect_p" style="width: 50%">Inspecting</p>
+								{% elif results[4] == "Reviewing" %}
+								<p class="open_p" style="width: 33%">Opened</p>
+								<p class="inspect_p" style="width: 33%">Inspected</p>
+								<p class="review_p" style="width: 33%">Reviewing</p>
+								{% elif results[4] == "Closed" %}
+								<p class="open_p" style="width: 25%">Opened</p>
+								<p class="inspect_p" style="width: 25%">Inspected</p>
+								<p class="review_p" style="width: 25%">Reviewed</p>
+								<p class="close_p" style="width: 25%">Closed</p>
+								{% endif %}
 							{% endif %}
-						{% endif %}
-						{% if results[10] %}
-							<td style="padding-left: 10px;"><a href="{{results[10]}}"><div class="document"></div></a></td>
-						{% else %}
-							<td class="nonscreenshottab">N/A</td>
-						{% endif %}
-						<td class="nonscreenshottab" id="resultid2">{{results[3]}}</td>
-						<td class="nonscreenshottab">{{results[11]}}</td>
-						<td class="nonscreenshottab" id="link"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
-						<td class="nonscreenshottab"><a href="{{results[6]}}">Link</a></td>
-					</tr>
-				</tbody>
-			</table>
-			<br />
-			<table>
-				<tbody>
-					<tr>
-						{% if is_admin %}
-							{% if results[4] == "Open" %}
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="open" value="{{results[0]}}" type=hidden>
-								<input class="open_button" type=submit value="Open">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="inspect" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Inspect">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="review" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Review">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="close" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Close">
-							</form></td>
-							{% elif results[4] == "Inspecting" %}
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="open" value="{{results[0]}}" type=hidden>
-								<input class="open_button" type=submit value="Opened">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="inspect" value="{{results[0]}}" type=hidden>
-								<input class="inspect_button" type=submit value="Inspecting">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="review" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Review">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="close" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Close">
-							</form></td>
-							{% elif results[4] == "Reviewing" %}
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="open" value="{{results[0]}}" type=hidden>
-								<input class="open_button" type=submit value="Opened">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="inspect" value="{{results[0]}}" type=hidden>
-								<input class="inspect_button" type=submit value="Inspected">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="review" value="{{results[0]}}" type=hidden>
-								<input class="review_button" type=submit value="Reviewing">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="close" value="{{results[0]}}" type=hidden>
-								<input class="non_progressed_button" type=submit value="Close">
-							</form></td>
-							{% elif results[4] == "Closed" %}
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="open" value="{{results[0]}}" type=hidden>
-								<input class="open_button" type=submit value="Opened">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="inspect" value="{{results[0]}}" type=hidden>
-								<input class="inspect_button" type=submit value="Inspected">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="review" value="{{results[0]}}" type=hidden>
-								<input class="review_button" type=submit value="Reviewed">
-							</form></td>
-							<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
-								<input name="close" value="{{results[0]}}" type=hidden>
-								<input class="close_button" type=submit value="Closed">
-							</form></td>
-							{% endif %}
-						{% else %}
-							{% if results[4] == "Open" %}
-							<p class="open_p" style="width: 100%">Open</p>
-							{% elif results[4] == "Inspecting" %}
-							<p class="open_p" style="width: 50%">Opened</p>
-							<p class="inspect_p" style="width: 50%">Inspecting</p>
-							{% elif results[4] == "Reviewing" %}
-							<p class="open_p" style="width: 33%">Opened</p>
-							<p class="inspect_p" style="width: 33%">Inspected</p>
-							<p class="review_p" style="width: 33%">Reviewing</p>
-							{% elif results[4] == "Closed" %}
-							<p class="open_p" style="width: 25%">Opened</p>
-							<p class="inspect_p" style="width: 25%">Inspected</p>
-							<p class="review_p" style="width: 25%">Reviewed</p>
-    						<p class="close_p" style="width: 25%">Closed</p>
-							{% endif %}
-						{% endif %}
-					</tr>
-				</tbody>
-			</table>
-			{% if task_results %}
-			<p class="message">The table below shows the task that generated the result. If the task has been altered since the result was created the query may no longer match the result. Refer to events for more information.</p>
-			<br />
-			<table>
-				<thead>
-					<tr>
-						<th class="non_paginated" style="min-width: 54px;">Task ID</th>
-						<th class="non_paginated">Query</th>
-						<th class="non_paginated">Plugin</th>
-						<th class="non_paginated" id="result_task_mob">Description</th>
-						<th class="non_paginated" id="result_task_mob">Frequency</th>
-						<th class="non_paginated" id="result_task_mob">Limit</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="nonscreenshottab">{{task_results[0]}}</td>
-						<td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{task_results[1]}}</td>
-						<td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{task_results[2]}}</td>
-						<td class="nonscreenshottab" id="result_task_mob">{{task_results[3]}}</td>
-						<td class="nonscreenshottab" id="result_task_mob">{{task_results[4]}}</td>
-						<td class="nonscreenshottab" id="result_task_mob">{{task_results[5]}}</td>
-					</tr>
-				</tbody>
-			</table>
-			{% else %}
-			<p class="message">The task associated with this result couldn't be found, it was probably deleted.</p>
+						</tr>
+					</tbody>
+				</table>
+				{% if task_results %}
+				<p class="message">The table below shows the task that generated the result. If the task has been altered since the result was created the query may no longer match the result. Refer to events for more information.</p>
+				<br />
+				<table>
+					<thead>
+						<tr>
+							<th class="non_paginated" style="min-width: 54px;">Task ID</th>
+							<th class="non_paginated">Query</th>
+							<th class="non_paginated">Plugin</th>
+							<th class="non_paginated" id="result_task_mob">Description</th>
+							<th class="non_paginated" id="result_task_mob">Frequency</th>
+							<th class="non_paginated" id="result_task_mob">Limit</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="nonscreenshottab">{{task_results[0]}}</td>
+							<td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{task_results[1]}}</td>
+							<td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{task_results[2]}}</td>
+							<td class="nonscreenshottab" id="result_task_mob">{{task_results[3]}}</td>
+							<td class="nonscreenshottab" id="result_task_mob">{{task_results[4]}}</td>
+							<td class="nonscreenshottab" id="result_task_mob">{{task_results[5]}}</td>
+						</tr>
+					</tbody>
+				</table>
+				{% else %}
+				<p class="message">The task associated with this result couldn't be found, it was probably deleted.</p>
+				{% endif %}
+				{% if is_admin %}
+				<form style="padding: 10px 0px 0px 0px" id="deleteresult" class="form_left" action="" method=post autocomplete="off">
+					<input name="delete" value="{{results[0]}}" type=hidden>
+					<input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button" type=submit value="Delete Result">
+				</form>
+				{% endif %}
+			</div>
+		</main>
+		{% else %}
+		<main>
+			<div id="loader">&nbsp;</div>
+			<noscript>
+				<p class="message">Please enable JavaScript to render this page. Otherwise it won't load.</p>
+			</noscript>
+			<p id="loader-message" class="loaderabout">Loading Results...</p>
+			<div style="display: none;" id="fc" class="field-container">
+				{% if error %}
+					<p class="message"><strong>Error:</strong> {{error}}</p>
+				{% endif %}
+				<table style="width: 100%" id="paginate">
+					<thead>
+						<tr>
+							<th style="min-width: 40px;">ID</th>
+							<th>Title</th>
+							<th>Status</th>
+							<th>Link</th>
+							<th id="updated_at">Created At</th>
+							<th id="updated_at">Updated At</th>
+							<th>Details</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for result in results %}
+						<tr>
+							<td class="nonscreenshottab" id="resultid" style="min-width: 40px;">{{result[0]}}</td>
+							<td class="nonscreenshottab" id="resultplugin">{{result[2]}}</td>
+							<td class="nonscreenshottab" style="min-width: 60px;">{{result[4]}}</td>
+							<td class="nonscreenshottab" style="min-width: 50px;"><a href="{{result[6]}}">Link</a></td>
+							<td class="nonscreenshottab" id="created_at">{{result[7]}}</td>
+							<td class="nonscreenshottab" id="updated_at">{{result[8]}}</td>
+							<td class="buttons_in_table" id="resultsbuttons">
+								<form class="task_buttons" action="" method=post autocomplete="off">
+									<input name="details" value="{{result[0]}}" type=hidden>
+									<input class="button" type=submit value="Show">
+								</form>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
 			{% endif %}
 			{% if is_admin %}
-			<form style="padding: 10px 0px 0px 0px" id="deleteresult" class="form_left" action="" method=post autocomplete="off">
-				<input name="delete" value="{{results[0]}}" type=hidden>
-				<input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button" type=submit value="Delete Result">
+			<form style="display: none;" id="newresult" class="form_left" action="" method=post autocomplete="off">
+				<input class="button" name="newresult" type=submit value="New Result">
 			</form>
-			{% endif %}
-		</div>
-		{% else %}
-		<div id="loader">&nbsp;</div>
-		<p id="loader-message" class="loaderabout">Loading Results...</p>
-		<div style="display: none;" id="fc" class="field-container">
-            {% if error %}
-                <p class="message"><strong>Error:</strong> {{error}}</p>
-            {% endif %}
-			<table style="width: 100%" id="paginate">
-				<thead>
-					<tr>
-						<th style="min-width: 40px;">ID</th>
-						<th>Title</th>
-						<th>Status</th>
-						<th>Link</th>
-						<th id="updated_at">Created At</th>
-						<th id="updated_at">Updated At</th>
-						<th>Details</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for result in results %}
-					<tr>
-						<td class="nonscreenshottab" id="resultid" style="min-width: 40px;">{{result[0]}}</td>
-						<td class="nonscreenshottab" id="resultplugin">{{result[2]}}</td>
-						<td class="nonscreenshottab" style="min-width: 60px;">{{result[4]}}</td>
-						<td class="nonscreenshottab" style="min-width: 50px;"><a href="{{result[6]}}">Link</a></td>
-						<td class="nonscreenshottab" id="created_at">{{result[7]}}</td>
-						<td class="nonscreenshottab" id="updated_at">{{result[8]}}</td>
-						<td class="buttons_in_table" id="resultsbuttons">
-							<form class="task_buttons" action="" method=post autocomplete="off">
-								<input name="details" value="{{result[0]}}" type=hidden>
-								<input class="button" type=submit value="Show">
-							</form>
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-		{% endif %}
-		{% if is_admin %}
-		<form style="display: none;" id="newresult" class="form_left" action="" method=post autocomplete="off">
-			<input class="button" name="newresult" type=submit value="New Result">
-		</form>
-		<script>
-		var myVar;
+			<script>
+			var myVar;
 
-		function myFunction() {
-		  myVar = setTimeout(showPage, 1000);
-		}
+			function myFunction() {
+			  myVar = setTimeout(showPage, 1000);
+			}
 
-		function showPage() {
-			document.getElementById("loader").style.display = "none";
-			document.getElementById("loader-message").style.display = "none";
-			document.getElementById("paginate").style.display = null;
-			document.getElementById("newresult").style.display = null;
-			document.getElementById("fc").style.display = null;
-			document.getElementsByTagName("INPUT")[0].placeholder='Search';
-		}
-		</script>
-		{% else %}
-		<script>
-		var myVar;
+			function showPage() {
+				document.getElementById("loader").style.display = "none";
+				document.getElementById("loader-message").style.display = "none";
+				document.getElementById("paginate").style.display = null;
+				document.getElementById("newresult").style.display = null;
+				document.getElementById("fc").style.display = null;
+				document.getElementsByTagName("INPUT")[0].placeholder='Search';
+			}
+			</script>
+			{% else %}
+			<script>
+			var myVar;
 
-		function myFunction() {
-		  myVar = setTimeout(showPage, 1000);
-		}
+			function myFunction() {
+			  myVar = setTimeout(showPage, 1000);
+			}
 
-		function showPage() {
-			document.getElementById("loader").style.display = "none";
-			document.getElementById("loader-message").style.display = "none";
-			document.getElementById("paginate").style.display = null;
-			document.getElementById("fc").style.display = null;
-		}
-		</script>
+			function showPage() {
+				document.getElementById("loader").style.display = "none";
+				document.getElementById("loader-message").style.display = "none";
+				document.getElementById("paginate").style.display = null;
+				document.getElementById("fc").style.display = null;
+			}
+			</script>
+		</main> 
 		{% endif %}
 	{% elif form_step == 1 %}
 		{% if is_admin %}
-    	<div class="field-container">
-        {% if error %}
-            <p class="message"><strong>Error:</strong> {{error}}</p>
-        {% endif %}
-		<div style="text-align: center;">
-        <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-            <form class="form" action="" method=post autocomplete="off">
-                <dl>
-                    <dd>
-                        <input class="field_textarea" type=text name=name placeholder="Name(s) - Comma Separated Values Allowed">
-                    </dd>
-                    <dd>
-                        <input class="field_textarea" type=text name=url placeholder="URL(s) - Comma Separated Values Allowed">
-                    </dd>
-                    <dd>
-                        <input class="field_textarea" list="browsers" name=type onkeypress="return false;" placeholder="Result(s) Type">
-                        <datalist id="browsers">
-                            <option value="Data Leakage">
-                        	<option value="Domain Spoof">
-							<option value="Exploit">
-							<option value="Phishing">
-							<option value="Blockchain Address">
-							<option value="Blockchain Transaction">
-                        </datalist>
-                    </dd>
-                </dl>
-				<input style="display: inline-block;" class="button" name="return" type=submit value="Return">
-                <input style="display: inline-block;" class="button" name="newresult" type=submit value="Create Result">
-            </form>
-    	</div>
-		</div>
-		</div>
+		<main>
+			<div class="field-container">
+				{% if error %}
+				<p class="message"><strong>Error:</strong> {{error}}</p>
+				{% endif %}
+				<div style="text-align: center;">
+					<div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
+						<form class="form" action="" method=post autocomplete="off">
+							<dl>
+								<dd>
+									<input class="field_textarea" type=text name=name placeholder="Name(s) - Comma Separated Values Allowed">
+								</dd>
+								<dd>
+									<input class="field_textarea" type=text name=url placeholder="URL(s) - Comma Separated Values Allowed">
+								</dd>
+								<dd>
+									<input class="field_textarea" list="browsers" name=type onkeypress="return false;" placeholder="Result(s) Type">
+									<datalist id="browsers">
+										<option value="Data Leakage">
+										<option value="Domain Spoof">
+										<option value="Exploit">
+										<option value="Phishing">
+										<option value="Blockchain Address">
+										<option value="Blockchain Transaction">
+									</datalist>
+								</dd>
+							</dl>
+							<input style="display: inline-block;" class="button" name="return" type=submit value="Return">
+							<input style="display: inline-block;" class="button" name="newresult" type=submit value="Create Result">
+						</form>
+					</div>
+				</div>
+			</div>
+		</main>
 		{% endif %}
 	{% endif %}
     {% endblock %}

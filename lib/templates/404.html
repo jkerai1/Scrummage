@@ -1,23 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="Scrummage 404 Not Found Page.">
-      <link rel="shortcut icon" href="static/icons/main.ico" />
+      <link rel="icon" href="static/icons/main.ico" />
+      <link rel="apple-touch-icon" href="static/icons/main.ico" />
       <title>Scrummage Page Not Found</title>
    </head>
    <body>
       {% extends "template.html" %}
       {% block content %}
-      <div class="unpredicted_page">
-         <td style="padding-bottom: 5px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-           <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
-           <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
-         </svg></td>
-      </div>
-      <p id="logintitle">404 Page Not Found.</p>
-      <p class="error">The page you were looking for does not exist.</p>
+      <main>
+         <div class="unpredicted_page">
+            <td style="padding-bottom: 5px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" />
+              <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" />
+            </svg></td>
+         </div>
+         <p id="logintitle">404 Page Not Found.</p>
+         <p class="error">The page you were looking for does not exist.</p>
+      </main>
       {% endblock %}
    </body>
 </html>
