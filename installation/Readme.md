@@ -32,7 +32,27 @@ user@linux:~$ sudo bash dependencies.sh
 ```console
 user@linux:~$ python3 Create_User.py --username/-u Username --password/-p Password --admin/-a [True | False] --blocked/-b [True | False]
 ```
-7. Next navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on http://127.0.0.1:5000
+7. Next you will either need to provide certificates **or** generate a self-signed certificate to use. In either case you will need to create a directory called "certs" in the root Scrummage directory:
+```console
+user@linux:~$ mkdir certs && cd certs
+```
+After which, you will then need to either provide a .key and .crt file to that directory **or** create the certificates with the command below:
+```console
+user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+```
+8. Next, navigate to "/lib/plugins/common/config", and verify the web application details are correct under "web-app". Ensure the certificates are set correctly. Using the path "../certs/*FILE*":
+```
+"web-app": [
+    {
+        "debug": false,
+        "host": "127.0.0.1",
+        "port": 5000,
+        "certificate-file": "../certs/certificate.crt",
+        "key-file": "../certs/privateKey.key"
+    }
+],
+```
+9. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
 ```console
 user@linux:~$ cd ../bin
 user@linux:~$ python3 main.py
