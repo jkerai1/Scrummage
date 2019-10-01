@@ -32,6 +32,10 @@ nav ul li a {
 	font-family: arial;
 	font-size: 10pt;
 	padding: 15px 15px 15px 15px;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
 nav ul li a:hover {
