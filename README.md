@@ -23,7 +23,7 @@ All feedback is welcome.
 * Twitter Scraper
 * Instagram Search
 * Have I Been Pwned Search
-* Many more... Refer to the installation Readme.md file for the full list.
+* Many more... Refer to the "Long List of Tasks" Wiki file for the full list.
 
 ---
 
