@@ -201,6 +201,18 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
+        elif self.plugin_name == "DNS Reconnaissance Search":
+            import plugins.DNS_Recon_Search as DNS_Recon_Search
+            Thread_1 = threading.Thread(target= DNS_Recon_Search.Search, args=(self.query, self.task_id,))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Default Password Search":
+            import plugins.Default_Password_Search as Default_Password_Search
+            Thread_1 = threading.Thread(target= Default_Password_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1.start()
+            Thread_1.join()
+
         elif self.plugin_name == "Ahmia Darkweb Search":
             import plugins.Ahmia_Darkweb_Search as Ahmia_Darkweb_Search
             Thread_1 = threading.Thread(target= Ahmia_Darkweb_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
@@ -279,15 +291,21 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
-        elif self.plugin_name == "Blockchain Ethereum Transaction Search":
-            import plugins.Blockchain_Search as Blockchain_Search
-            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "eth",))
-            Thread_1.start()
-            Thread_1.join()
-
         elif self.plugin_name == "BSB Search":
             import plugins.BSB_Search as BSB_Search
             Thread_1 = threading.Thread(target=BSB_Search.Search, args=(self.query, self.task_id))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Blockchain Monero Transaction Search":
+            import plugins.Blockchain_Search as Blockchain_Search
+            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "monero",))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Blockchain Ethereum Transaction Search":
+            import plugins.Blockchain_Search as Blockchain_Search
+            Thread_1 = threading.Thread(target=Blockchain_Search.Transaction_Search, args=(self.query, self.task_id, "eth",))
             Thread_1.start()
             Thread_1.join()
 
