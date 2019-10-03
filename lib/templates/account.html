@@ -107,7 +107,7 @@
                 <main>
                     <div class="field-container">
                         <div style="text-align: center;">
-                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
+                            <div class="form_div" style="padding: 0px; width: 80%;">
                                 <form class="form" action="" method=post autocomplete="off">
                                     <dl>
                                         <dd>
@@ -117,7 +117,7 @@
                                             <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
                                         </dd>
                                     </dl>
-                                    <p style="padding-top: 10px;"><input class="button" name="changeotheruserspassword" type=submit value="Change Password"></p>
+                                    <p style="padding: 10px 0px 20px 0px;"><input class="button" name="changeotheruserspassword" type=submit value="Change Password"></p>
                                 </form>
                             </div>
                         </div>
@@ -127,7 +127,7 @@
                 <main>
                     <div class="field-container">
                         <div style="text-align: center;">
-                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
+                            <div class="form_div" style="padding: 0px; width: 80%;">
                                 <form class="form" action="" method=post autocomplete="off">
                                     <dl>
                                         <dd>
@@ -144,7 +144,7 @@
                                             <input type=checkbox id="admin-box" name=is_new_user_admin>
                                         </dd>
                                     </dl>
-                                    <p style="padding-top: 10px;"><input class="button" name="createuser" type=submit value="Create User"></p>
+                                    <p style="padding: 10px 0px 20px 0px;"><input class="button" name="createuser" type=submit value="Create User"></p>
                                 </form>
                             </div>
                         </div>
@@ -177,10 +177,11 @@
                 </div>
             </div>
         </section>
+        {% endif %}
         {% if error %}
-        <section><p class="message"><strong>Error:</strong> {{error}}</p></section>
+        <section><p class="acc_message"><strong>Error:</strong> {{error}}</p></section>
         {% elif message %}
-        <section><p class="message"><strong>Message:</strong> {{message}}</p></section>
+        <section><p class="acc_message"><strong>Message:</strong> {{message}}</p></section>
         {% endif %}
         {% if requirement_error %}
         <footer>
@@ -190,7 +191,6 @@
             {% endfor %}
             </div>
         </footer>
-        {% endif %}
         {% endif %}
     	{% endblock %}
     </body>
