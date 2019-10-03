@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Version 2 - Added Monero Blockchain Support
+
 import requests, re, os, logging, plugins.common.General as General
 
 Plugin_Name = "Blockchain"
@@ -38,52 +40,67 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
 
     for Query in Query_List:
 
-        if Type == "btc" or Type == "bch":
-            Query_Regex = re.search(r"[\d\w]{64}", Query)
+        if Type != "monero":
 
-        elif Type == "eth":
-            Query_Regex = re.search(r"(0x[\d\w]{64})", Query)
-
-        else:
-            logging.warning(General.Date() + " Invalid type provided.")
-
-        if Query_Regex:
-            Main_URL = "https://www.blockchain.com/" + Type + "/tx/" + Query
-            Main_Response = requests.get(Main_URL).text
-
-            if Type == "btc":
-                Address_Regex = re.findall(r"\/btc\/address\/([\d\w]{26,34})", Main_Response)
-
-            elif Type == "bch":
-                Address_Regex = re.findall(r"([\d\w]{42})", Main_Response)
+            if Type == "btc" or Type == "bch":
+                Query_Regex = re.search(r"[\d\w]{64}", Query)
 
             elif Type == "eth":
-                Address_Regex = re.findall(r"(0x[\w\d]{40})", Main_Response)
+                Query_Regex = re.search(r"(0x[\d\w]{64})", Query)
 
             else:
                 logging.warning(General.Date() + " Invalid type provided.")
 
-            if Address_Regex:
-                Current_Step = 0
+            if Query_Regex:
+                Main_URL = "https://www.blockchain.com/" + Type + "/tx/" + Query
+                Main_Response = requests.get(Main_URL).text
 
-                for Transaction in Address_Regex:
-                    Query_URL = "https://www.blockchain.com/" + Type + "/address/" + Transaction
+                if Type == "btc":
+                    Address_Regex = re.findall(r"\/btc\/address\/([\d\w]{26,34})", Main_Response)
 
-                    if Query_URL not in Cached_Data and Query_URL not in Data_to_Cache and Current_Step < int(Limit):
-                        Transaction_Response = requests.get(Query_URL).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Transaction, The_File_Extension)
+                elif Type == "bch":
+                    Address_Regex = re.findall(r"([\d\w]{42})", Main_Response)
 
-                        if Output_file:
-                            General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "blockchain.com", "Blockchain Address", Task_ID, General.Get_Title(Query_URL), Plugin_Name.lower())
+                elif Type == "eth":
+                    Address_Regex = re.findall(r"(0x[\w\d]{40})", Main_Response)
 
-                        Data_to_Cache.append(Query_URL)
-                        Current_Step += 1
+                else:
+                    logging.warning(General.Date() + " Invalid type provided.")
+
+                if Address_Regex:
+                    Current_Step = 0
+
+                    for Transaction in Address_Regex:
+                        Query_URL = "https://www.blockchain.com/" + Type + "/address/" + Transaction
+
+                        if Query_URL not in Cached_Data and Query_URL not in Data_to_Cache and Current_Step < int(Limit):
+                            Transaction_Response = requests.get(Query_URL).text
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Transaction, The_File_Extension)
+
+                            if Output_file:
+                                General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "blockchain.com", "Blockchain Address", Task_ID, General.Get_Title(Query_URL), Plugin_Name.lower())
+
+                            Data_to_Cache.append(Query_URL)
+                            Current_Step += 1
+
+                else:
+                    logging.warning(General.Date() + " Failed to match regular expression.")
 
             else:
                 logging.warning(General.Date() + " Failed to match regular expression.")
 
-        else:
-            logging.warning(General.Date() + " Failed to match regular expression.")
+    else:
+        Query_URL = "https://moneroblocks.info/search/" + Query
+        Transaction_Response = requests.get(Query_URL).text
+
+        if "Whoops, looks like something went wrong." not in Transaction_Response and Query_URL not in Cached_Data and Query_URL not in Data_to_Cache:
+            Transaction_Response = requests.get(Query_URL).text
+            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Query, The_File_Extension)
+
+            if Output_file:
+                General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "moneroblocks.info", "Blockchain Transaction", Task_ID, General.Get_Title(Query_URL), Plugin_Name.lower())
+
+            Data_to_Cache.append(Query_URL)
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
