@@ -196,60 +196,65 @@ def login():
 
                 if User:
 
-                    if User[1] == Username:
-                        User_Check = True
-
-                    Password_Check = check_password_hash(User[2], Password)
-
-                    if User_Check != True or Password_Check != True:
-
-                        for char in Username:
-
-                            if char in Bad_Characters:
-                                User_Bad_Chars = 1
-
-                        for char in Password:
-
-                            if char in Bad_Characters:
-                                Password_Bad_Chars = 1
-
-                        if User_Bad_Chars == 1 and Password_Bad_Chars == 1:
-                            Message = "Failed login attempt for a provided username and password, both with potentially dangerous characters."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-
-                        elif User_Bad_Chars == 0 and Password_Bad_Chars == 1:
-                            Message = "Failed login attempt for the provided username: " + Username + " with a password that contains potentially dangerous characters."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-
-                        elif User_Bad_Chars == 1 and Password_Bad_Chars == 0:
-                            Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-
-                        else:
-                            Message = "Failed login attempt for the user: " + Username + "."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-
-                        return render_template('login.html', error='Login Unsuccessful')
+                    if User[3] == True:
+                        return render_template('login.html', error='Please enter a valid username and password.')
 
                     else:
-                        session['user'] = Username
-                        session['is_admin'] = User[4]
-                        session['form_step'] = 0
-                        session['form_type'] = ""
-                        session['task_frequency'] = ""
-                        session['task_description'] = ""
-                        session['task_limit'] = 0
-                        session['task_query'] = ""
-                        session['task_id'] = ""
-                        Message = "Successful login from " + Username + "."
-                        app.logger.warning(Message)
-                        Create_Event(Message)
 
-                        return redirect(url_for('dashboard'))
+                        if User[1] == Username:
+                            User_Check = True
+
+                        Password_Check = check_password_hash(User[2], Password)
+
+                        if User_Check != True or Password_Check != True:
+
+                            for char in Username:
+
+                                if char in Bad_Characters:
+                                    User_Bad_Chars = 1
+
+                            for char in Password:
+
+                                if char in Bad_Characters:
+                                    Password_Bad_Chars = 1
+
+                            if User_Bad_Chars == 1 and Password_Bad_Chars == 1:
+                                Message = "Failed login attempt for a provided username and password, both with potentially dangerous characters."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
+                            elif User_Bad_Chars == 0 and Password_Bad_Chars == 1:
+                                Message = "Failed login attempt for the provided username: " + Username + " with a password that contains potentially dangerous characters."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
+                            elif User_Bad_Chars == 1 and Password_Bad_Chars == 0:
+                                Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
+                            else:
+                                Message = "Failed login attempt for the user: " + Username + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
+                            return render_template('login.html', error='Login Unsuccessful')
+
+                        else:
+                            session['user'] = Username
+                            session['is_admin'] = User[4]
+                            session['form_step'] = 0
+                            session['form_type'] = ""
+                            session['task_frequency'] = ""
+                            session['task_description'] = ""
+                            session['task_limit'] = 0
+                            session['task_query'] = ""
+                            session['task_id'] = ""
+                            Message = "Successful login from " + Username + "."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+
+                            return redirect(url_for('dashboard'))
 
                 else:
                     return render_template('login.html')
@@ -1527,46 +1532,190 @@ def account():
 
                 if request.method == 'POST':
 
-                    try:
-                        Current_Password = request.form['Current_Password']
-                        PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
-                        Cursor.execute(PSQL_Select_Query, (session.get('user'),))
-                        User = Cursor.fetchone()
+                    if "change_password" in request.form:
 
-                        Current_Password_Check = check_password_hash(User[2], Current_Password)
+                        try:
+                            Current_Password = request.form['Current_Password']
+                            PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
+                            Cursor.execute(PSQL_Select_Query, (session.get('user'),))
+                            User = Cursor.fetchone()
 
-                        if Current_Password_Check != True:
-                            return render_template('account.html', username=session.get('user'),
-                                                   error="Current Password is incorrect.")
+                            Current_Password_Check = check_password_hash(User[2], Current_Password)
 
-                        else:
-
-                            if request.form['New_Password'] != request.form['New_Password_Retype']:
-                                return render_template('account.html', username=session.get('user'),
-                                                       error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+                            if Current_Password_Check != True:
+                                return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
+                                                       error="Current Password is incorrect.")
 
                             else:
-                                Password_Security_Requirements_Check = check_security_requirements(
-                                    request.form['New_Password'])
 
-                                if Password_Security_Requirements_Check == False:
-                                    return render_template('account.html', username=session.get('user'), requirement_error=[
-                                        "The supplied password does not meet security requirements. Please make sure the following is met:",
-                                        "- The password is longer that 8 characters.",
-                                        "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
-                                        "- The password contains 1 or more number.",
-                                        "- The password contains one or more special character. Ex. @."])
+                                if request.form['New_Password'] != request.form['New_Password_Retype']:
+                                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
+                                                           error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
 
-                                password = generate_password_hash(request.form['New_Password'])
-                                PSQL_Update_Query = 'UPDATE users SET password = %s WHERE user_id = %s'
-                                Cursor.execute(PSQL_Update_Query, (password, User[0],))
+                                else:
+                                    Password_Security_Requirements_Check = check_security_requirements(
+                                        request.form['New_Password'])
+
+                                    if Password_Security_Requirements_Check == False:
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), requirement_error=[
+                                            "The supplied password does not meet security requirements. Please make sure the following is met:",
+                                            "- The password is longer that 8 characters.",
+                                            "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
+                                            "- The password contains 1 or more number.",
+                                            "- The password contains one or more special character. Ex. @."])
+
+                                    else:
+                                        password = generate_password_hash(request.form['New_Password'])
+                                        PSQL_Update_Query = 'UPDATE users SET password = %s WHERE user_id = %s'
+                                        Cursor.execute(PSQL_Update_Query, (password, User[0],))
+                                        Connection.commit()
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.")
+
+                        except:
+                            return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.")
+
+                    else:
+
+                        if session.get('is_admin'):
+                            Cursor.execute('SELECT * FROM users')
+
+                            if "createuser" in request.form:
+
+                                if session.get('form_step') == 0:
+                                    session['form_step'] += 1
+                                    session['form_type'] = "CreateUser"
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+
+                                elif session.get('form_step') == 1:
+
+                                    for char in Bad_Characters:
+
+                                        if char in request.form['Username']:
+                                            return render_template('results.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.")
+
+                                    if request.form['New_Password'] != request.form['New_Password_Retype']:
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+
+                                    else:
+                                        Password_Security_Requirements_Check = check_security_requirements(
+                                            request.form['New_Password'])
+
+                                        if Password_Security_Requirements_Check == False:
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), requirement_error=[
+                                                "The supplied password does not meet security requirements. Please make sure the following is met:",
+                                                "- The password is longer that 8 characters.",
+                                                "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
+                                                "- The password contains 1 or more number.",
+                                                "- The password contains one or more special character. Ex. @."])
+
+                                        else:
+
+                                            if 'is_new_user_admin' in request.form:
+                                                New_User_Is_Admin = "True"
+
+                                            else:
+                                                New_User_Is_Admin = "False"
+
+                                            password = generate_password_hash(request.form['New_Password'])
+                                            Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (request.form['Username'], password, "False", New_User_Is_Admin,))
+                                            Connection.commit()
+
+                                            if New_User_Is_Admin == "True":
+                                                Message = "New administrative user created by " + session.get('user') + "."
+
+                                            else:
+                                                Message = "New low-privileged user created by " + session.get('user') + "."
+
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Message)
+                                            Create_Event(Message)
+
+                                else:
+                                    session['form_step'] = 0
+                                    session['form_type'] = ""
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+
+                            elif "changeotheruserspassword" in request.form:
+
+                                if session.get('form_step') == 0:
+                                    session['other_user_id'] = int(request.form['changeotheruserspassword'])
+                                    session['form_step'] += 1
+                                    session['form_type'] = "ChangePassword"
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+
+                                elif session.get('form_step') == 1:
+
+                                    try:
+                                        PSQL_Select_Query = 'SELECT * FROM users WHERE user_id = %s'
+                                        Cursor.execute(PSQL_Select_Query, (session.get('other_user_id'),))
+                                        User = Cursor.fetchone()
+
+                                        if request.form['New_Password'] != request.form['New_Password_Retype']:
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
+                                                                   error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+
+                                        else:
+                                            Password_Security_Requirements_Check = check_security_requirements(request.form['New_Password'])
+
+                                            if Password_Security_Requirements_Check == False:
+                                                return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), requirement_error=[
+                                                    "The supplied password does not meet security requirements. Please make sure the following is met:",
+                                                    "- The password is longer that 8 characters.",
+                                                    "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
+                                                    "- The password contains 1 or more number.",
+                                                    "- The password contains one or more special character. Ex. @."])
+
+                                            else:
+                                                password = generate_password_hash(request.form['New_Password'])
+                                                PSQL_Update_Query = 'UPDATE users SET password = %s WHERE user_id = %s'
+                                                Cursor.execute(PSQL_Update_Query, (password, User[0],))
+                                                Connection.commit()
+                                                return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.")
+
+                                    except:
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.")
+
+                                else:
+                                    session['form_step'] = 0
+                                    session['form_type'] = ""
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+
+                            elif 'deleteuser' in request.form:
+                                user_id = int(request.form['deleteuser'])
+                                Cursor.execute("DELETE FROM users WHERE user_id = %s;", (user_id,))
                                 Connection.commit()
-                                return render_template('account.html', username=session.get('user'), message="Password changed.")
+                                Message = "User ID " + str(user_id) + " deleted by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
 
-                    except:
-                        return render_template('account.html', username=session.get('user'), error="Password not updated due to bad request.")
+                            elif 'disableuser' in request.form:
+                                user_id = int(request.form['disableuser'])
+                                PSQL_Update_Query = 'UPDATE users SET blocked = %s WHERE user_id = %s'
+                                Cursor.execute(PSQL_Update_Query, ("True", user_id,))
+                                Connection.commit()
+                                Message = "User ID " + str(user_id) + " blocked by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
 
-                return render_template('account.html', username=session.get('user'))
+                            elif 'enableuser' in request.form:
+                                user_id = int(request.form['enableuser'])
+                                PSQL_Update_Query = 'UPDATE users SET blocked = %s WHERE user_id = %s'
+                                Cursor.execute(PSQL_Update_Query, ("False", user_id,))
+                                Connection.commit()
+                                Message = "User ID " + str(user_id) + " unblocked by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+                        else:
+                            pass
+
+                if session.get('is_admin'):
+                    session['form_step'] = 0
+                    session['form_type'] = ""
+                    session['other_user_id'] = 0
+                    Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall())
+    
+                else:
+                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
 
             else:
                 return redirect(url_for('no_method'))
@@ -1576,7 +1725,7 @@ def account():
 
     except Exception as e:
         app.logger.error(e)
-        return redirect(url_for('accounts'))
+        return redirect(url_for('account'))
 
 if __name__ == '__main__':
     signal(SIGINT, handler)
