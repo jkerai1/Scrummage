@@ -1588,10 +1588,13 @@ def account():
 
                                 elif session.get('form_step') == 1:
 
+                                    if not request.form['Username']:
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please provide a valid username.")
+
                                     for char in Bad_Characters:
 
                                         if char in request.form['Username']:
-                                            return render_template('results.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.")
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.")
 
                                     if request.form['New_Password'] != request.form['New_Password_Retype']:
                                         return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
