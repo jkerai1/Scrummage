@@ -1070,6 +1070,10 @@ table.dataTable,table.dataTable th,table.dataTable td
 	height: 15px;
     width: 40px;
     float: left;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
 .screenshot:hover {
@@ -1090,6 +1094,10 @@ table.dataTable,table.dataTable th,table.dataTable td
 	height: 15px;
     width: 30px;
     float: left;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
 .document:hover {
