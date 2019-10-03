@@ -1107,6 +1107,7 @@ req_message {
 	color: #DC143C;
 	font-family: arial;
 	font-size: 20pt;
+	font-weight: normal;
 	padding: 5px 15px 0px 10px;
 	float: left;
 }
