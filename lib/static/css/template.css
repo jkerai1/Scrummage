@@ -1033,6 +1033,12 @@ table.dataTable,table.dataTable th,table.dataTable td
 	width: 99%;
 }
 
+.acc_message {
+	text-align: center;
+	color: #303030;
+	width: 99%;
+}
+
 .req_message {
 	color: #303030;
 	width: 99%;
