@@ -62,8 +62,8 @@ table thead tr th {
 }
 
 table tbody tr td {
-	background-color: #DCDCDC;
-	color: #303030;
+	background-color: grey;
+	color: #fff;
 }
 
 table.dataTable tbody td .nonscreenshottab {
@@ -808,7 +808,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .non_progressed_button {
-    background-color: #DCDCDC;
+    background-color: grey;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -819,7 +819,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #909090;
+	color: #fff;
 }
 
 .non_progressed_button:hover {
@@ -908,11 +908,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	width: 99%;
 }
 
-.field-container-acc {
-	text-align: left;
-	width: 99%;
-}
-
 .dashboard_field-container {
 	text-align: center;
 	width: 99%;
@@ -960,12 +955,16 @@ table.dataTable,table.dataTable th,table.dataTable td
     padding: 14px 20px 0px 40px;
 }
 
-.follow a{
+.follow a {
 	text-decoration: none;
 	color: #ffffff;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
-.follow a:hover{
+.follow a:hover {
 	text-decoration: none;
 	color: #DC143C;
 }
@@ -1010,6 +1009,19 @@ table.dataTable,table.dataTable th,table.dataTable td
   border-bottom: 17px solid #303030;
 }
 
+#acc-label {
+    color: #303030;
+}
+
+#admin-box {
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+  transform: scale(1.5);
+  padding: 10px;
+}
+
 #mobile-a {
     display: none;
 }
@@ -1021,10 +1033,10 @@ table.dataTable,table.dataTable th,table.dataTable td
 	width: 99%;
 }
 
-req_message {
-	text-align: center;
+.req_message {
 	color: #303030;
 	width: 99%;
+	text-align: left;
 }
 
 .api_message {
@@ -1143,13 +1155,11 @@ input, textarea {
 
 .textarea:focus {
   box-shadow: 0 0 5px rgba(255, 0, 0, 1);
-  padding: 10px;
   border: 1px solid rgba(220, 20, 60, 1);
 }
 
 .field_textarea:focus {
   box-shadow: 0 0 5px rgba(255, 0, 0, 1);
-  padding: 10px;
   border: 1px solid rgba(220, 20, 60, 1);
 }
 
@@ -1330,6 +1340,11 @@ body code.styled {
         text-align: center;
     }
 
+    #createuser {
+        padding-top: 10px;
+        text-align: center;
+    }
+
     #deleteresult {
         text-align: center;
     }
@@ -1346,10 +1361,6 @@ body code.styled {
     }
 
     .field-container {
-        padding-top: 50px;
-    }
-
-    .field-container-acc {
         padding-top: 50px;
     }
 
