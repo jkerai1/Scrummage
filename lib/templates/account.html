@@ -6,49 +6,192 @@
         <meta name="description" content="Scrummage Change Account Password.">
         <link rel="icon" href="static/icons/main.ico" />
         <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="static/js/datatables.min.js"></script>
+		<script type="text/javascript" src="static/js/main.js"></script>
         <title>Scrummage Accounts</title>
     </head>
-    <body>
+    <body onload="myFunction()">
 	    {% extends "template.html" %}
 	    {% block content %}
+        {% if is_admin %}
+        {% if form_step == 0 %}
         <main>
-            {% if error %}
-			<section><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
-		    {% elif message %}
-			<section><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
-		    {% endif %}
-            <section>
-                <div class="field-container-acc">
-                    <div style="text-align: center;">
-                        <div class="form_div" style="width: 80%;">
-                            <form class="form" action="" method=post autocomplete="off">
-                                <dl>
-                                    <dd>
-                                        <input class="field_textarea" type=password name=Current_Password placeholder="Current Password">
-                                    </dd>
-                                    <dd>
-                                        <input class="field_textarea" type=password name=New_Password placeholder="New Password">
-                                    </dd>
-                                    <dd>
-                                        <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
-                                    </dd>
-                                </dl>
-                                <p style="padding-top: 10px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
-                            </form>
+            <div id="loader">&nbsp;</div>
+            <noscript>
+                <p class="message">Please enable JavaScript to render this page. Otherwise it won't completely load.</p>
+            </noscript>
+            <p id="loader-message" class="loaderabout">Loading Users...</p>
+            <div style="display: none;" style="margin:0;" id="fc" class="field-container">
+                <table id="paginate">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 40px;">ID</th>
+                            <th style="min-width: 95px;">Username</th>
+                            <th style="min-width: 80px;">Blocked</th>
+                            <th style="min-width: 65px;">Admin</th>
+                            <th style="min-width: 280px;">Functions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td class="nonscreenshottab">{{result[0]}}</td>
+                            <td class="nonscreenshottab">{{result[1]}}</td>
+                            <td class="nonscreenshottab">{{result[3]}}</td>
+                            <td class="nonscreenshottab">{{result[4]}}</td>
+                            {% if is_admin %}
+                                <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
+                                    {% if result[3] == True %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="enableuser" value="{{result[0]}}" type=hidden>
+                                        <input class="button" type=submit value="Unblock">
+                                    </form>
+                                    {% else %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="disableuser" value="{{result[0]}}" type=hidden>
+                                        <input class="button" type=submit value="Block">
+                                    </form>
+                                    {% endif %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="changeotheruserspassword" value="{{result[0]}}" type=hidden>
+                                        <input class="button" type=submit value="Change Password">
+                                    </form>
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="deleteuser" value="{{result[0]}}" type=hidden>
+                                        <input onclick="return confirm('Are you sure you want to delete user number {{result[0]}}?');" class="button" type=submit value="Delete">
+                                    </form>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <form style="display: none;" id="createuser" class="form_left" action="" method=post autocomplete="off">
+                <input class="button" name="createuser" type=submit value="Create User">
+            </form>
+            <script>
+            var myVar;
+
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("paginate").style.display = null;
+                document.getElementById("createuser").style.display = null;
+                document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[0].placeholder='Search';
+            }
+            </script>
+        </main>
+        {% if error %}
+        <section><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
+        {% elif message %}
+        <section><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
+        {% endif %}
+        {% if requirement_error %}
+        <footer>
+            <div style="text-align: center; width: 51%; padding-top: 15px;">
+            {% for error in requirement_error %}
+                <p class="req_message">{{error}}</p>
+            {% endfor %}
+            </div>
+        </footer>
+        {% endif %}
+        {% elif form_step == 1 %}
+            {% if form_type == "ChangePassword" %}
+                <main>
+                    <div class="field-container">
+                        <div style="text-align: center;">
+                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
+                                <form class="form" action="" method=post autocomplete="off">
+                                    <dl>
+                                        <dd>
+                                            <input class="field_textarea" type=password name=New_Password placeholder="New Password">
+                                        </dd>
+                                        <dd>
+                                            <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
+                                        </dd>
+                                    </dl>
+                                    <p style="padding-top: 10px;"><input class="button" name="changeotheruserspassword" type=submit value="Change Password"></p>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-            {% if requirement_error %}
-            <footer>
-                <div style="text-align: center; width: 51%;">
-                {% for error in requirement_error %}
-                    <p class="req_message" style="text-align: left;">{{error}}</p>
-                {% endfor %}
-                </div>
-            </footer>
+                </main>
+            {% elif form_type == "CreateUser" %}
+                <main>
+                    <div class="field-container">
+                        <div style="text-align: center;">
+                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
+                                <form class="form" action="" method=post autocomplete="off">
+                                    <dl>
+                                        <dd>
+                                            <input class="field_textarea" type=text name=Username placeholder="Username">
+                                        </dd>
+                                        <dd>
+                                            <input class="field_textarea" type=password name=New_Password placeholder="New Password">
+                                        </dd>
+                                        <dd>
+                                            <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
+                                        </dd>
+                                        <dd>
+                                            <label id="acc-label" for="admin-box">Grant Administrator Rights:&nbsp;&nbsp;</label>
+                                            <input type=checkbox id="admin-box" name=is_new_user_admin>
+                                        </dd>
+                                    </dl>
+                                    <p style="padding-top: 10px;"><input class="button" name="createuser" type=submit value="Create User"></p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            {% else %}
             {% endif %}
-        </main>
+        {% else %}
+        {% endif %}
+        {% else %}
+        <section>
+            <div class="field-container" style="text-align: center;">
+                <div>
+                    <div class="form_div">
+                        <form class="form" action="" method=post autocomplete="off">
+                            <dl>
+                                <dd>
+                                    <input class="field_textarea" type=password name=Current_Password placeholder="Current Password">
+                                </dd>
+                                <dd>
+                                    <input class="field_textarea" type=password name=New_Password placeholder="New Password">
+                                </dd>
+                                <dd>
+                                    <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
+                                </dd>
+                            </dl>
+                            <p style="padding-top: 10px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% if error %}
+        <section><p class="message"><strong>Error:</strong> {{error}}</p></section>
+        {% elif message %}
+        <section><p class="message"><strong>Message:</strong> {{message}}</p></section>
+        {% endif %}
+        {% if requirement_error %}
+        <footer>
+            <div style="text-align: center; width: 51%;">
+            {% for error in requirement_error %}
+                <p class="req_message">{{error}}</p>
+            {% endfor %}
+            </div>
+        </footer>
+        {% endif %}
+        {% endif %}
     	{% endblock %}
     </body>
 </html>
