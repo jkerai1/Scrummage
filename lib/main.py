@@ -1707,6 +1707,25 @@ def account():
                                 Message = "User ID " + str(user_id) + " unblocked by " + session.get('user') + "."
                                 app.logger.warning(Message)
                                 Create_Event(Message)
+
+                            elif 'demote' in request.form:
+                                user_id = int(request.form['demote'])
+                                PSQL_Update_Query = 'UPDATE users SET is_admin = %s WHERE user_id = %s'
+                                Cursor.execute(PSQL_Update_Query, ("False", user_id,))
+                                Connection.commit()
+                                Message = "Privileges for user ID " + str(user_id) + " demoted by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
+                            elif 'promote' in request.form:
+                                user_id = int(request.form['promote'])
+                                PSQL_Update_Query = 'UPDATE users SET is_admin = %s WHERE user_id = %s'
+                                Cursor.execute(PSQL_Update_Query, ("True", user_id,))
+                                Connection.commit()
+                                Message = "Privileges for user ID " + str(user_id) + " promoted by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+
                         else:
                             pass
 
