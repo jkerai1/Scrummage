@@ -73,6 +73,15 @@ Tasks have caching and logging for each which can be found in the “protected/o
 
 All the plugins are open-source, free to individuals, just like the rest of the code. Furthermore, feel free to use the pre-existing libraries used in other plugins. If you are creating or editting a plugin, make sure to understand that when you run it for the first time, the web app may reload to reload the python cache. This is normal.
 
+**Account**
+This page changes according to the user's privileges, if a user is an admin, they have the ability to change their password as well as other user's passwords, they can block/unblock users, demote/promote users' privileges. They can also create new users and delete existing users. The account page looks as per below for administrative users:
+
+![Account](/installation/Account.png)
+
+The account page looks as per below for non-administrative users:
+
+![AccountLP](/installation/Account_Low_Priv.png)
+
 **Developer Information**  
 Knock yourself out, create any plugins you like, and feel free to leverage existing libraries to help you.
 Please remember that the first time you run a plugin from the web app after changing the code, or creating a new plugin, you will need to click run and then restart the web app to allow for it to generate the pycache for the plugin.
