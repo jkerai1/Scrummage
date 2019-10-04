@@ -50,7 +50,18 @@
                                     {% else %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="disableuser" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Block">
+                                        <input onclick="return confirm('Are you sure you want to block user number {{result[0]}}?');" class="button" type=submit value="Block">
+                                    </form>
+                                    {% endif %}
+                                    {% if result[4] == True %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="demote" value="{{result[0]}}" type=hidden>
+                                        <input onclick="return confirm('Are you sure you want to demote user number {{result[0]}}?');" class="button" type=submit value="Demote">
+                                    </form>
+                                    {% else %}
+                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                        <input name="promote" value="{{result[0]}}" type=hidden>
+                                        <input onclick="return confirm('Are you sure you want to promote user number {{result[0]}}?');" class="button" type=submit value="Promote">
                                     </form>
                                     {% endif %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
