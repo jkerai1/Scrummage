@@ -29,6 +29,11 @@ try:
     File_Path = os.path.dirname(os.path.realpath('__file__'))
     app = Flask(__name__, instance_path=os.path.join(File_Path, 'static/protected'))
     Compress(app)
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Strict',
+    )
     app.permanent_session_lifetime = timedelta(minutes=5)
 
 except:
