@@ -18,3 +18,4 @@ vulners
 python-docx
 defectdojo_api
 pyinstaller
+flask_compress
