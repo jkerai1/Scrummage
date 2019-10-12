@@ -13,7 +13,7 @@ input[type="search" i] {
 }
 
 input[type="search"] {
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 nav {
@@ -39,14 +39,14 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-  	color: #DC143C;
+    color: #DC143C;
 }
 
 select {
 	padding: 5px 5px 5px 5px;
 	border: 1px solid #303030;
 	background-color: #fff;
-	border-radius: 3px;
+	border-radius: 5px;
 }
 
 table {
@@ -57,13 +57,13 @@ table {
 table thead tr th {
 	background-color: #303030;
 	color: #ffffff;
-	padding: 10px 0px 10px 10px;
+	padding: 8px 0px 8px 10px;
 	font-weight: normal;
 }
 
 table tbody tr td {
-	background-color: grey;
-	color: #fff;
+	background-color: lightgrey;
+	color: #303030;
 }
 
 table.dataTable tbody td .nonscreenshottab {
@@ -445,15 +445,16 @@ table.dataTable,table.dataTable th,table.dataTable td
     *cursor:hand;
     color:#ffffff !important;
     border:1px solid transparent;
-    border-radius: 3px;
+    border-radius: 5px;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover
 {
-	color:#ffffff;
-     !important;
-    border:1px solid #303030;
-    background-color:#303030;
+    background-color: #DC143C;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active
@@ -468,9 +469,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover
 {
-	color:#DC143C !important;
-    border:1px solid #111;
-    background-color:#303030;
+    background-color:#DC143C;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:active
@@ -594,7 +593,23 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current
 {
-	background-color: #303030 !important;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+}
+
+.js_search {
+    background-image: url('../images/search_blk.png');
+    background-repeat: no-repeat;
+    background-size: 29px;
+    background-position: left;
+    padding-left: 30px !important;
+    text-align: center;
+}
+
+.js_search:focus {
+    background-image: url('../images/search.png');
 }
 
 #createresult {
@@ -619,7 +634,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	font-family: arial;
 	font-size: 16pt;
-	padding: 30px 0px 5px 10px;
+	padding: 30px 0px 5px 0px;
 	text-align: center;
 }
 
@@ -665,7 +680,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	background-color: #303030;
 	padding: 7px;
 	font-size: 12pt;
-	border-radius: 3px;
+	border-radius: 5px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
@@ -674,7 +689,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .button:hover {
-	color: #DC143C;
+	background-color: #DC143C;
 }
 
 .login_div {
@@ -699,8 +714,8 @@ table.dataTable,table.dataTable th,table.dataTable td
     display: inline-block;
     background-color: #303030;
     width: 100%;
-    box-shadow: 0 4px 10px -2px grey;
-    border-radius: 3px;
+    box-shadow: 0 4px 10px -2px lightgrey;
+    border-radius: 5px;
 }
 
 .dashboard_large_bottom_div {
@@ -710,8 +725,8 @@ table.dataTable,table.dataTable th,table.dataTable td
     display: inline-block;
     background-color: #303030;
     width: 100%;
-    box-shadow: 0 4px 10px -2px grey;
-    border-radius: 3px;
+    box-shadow: 0 4px 10px -2px lightgrey;
+    border-radius: 5px;
 }
 
 .form_div {
@@ -808,7 +823,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .non_progressed_button {
-    background-color: grey;
+    background-color: lightgrey;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -819,7 +834,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #fff;
+	color: #303030;
 }
 
 .non_progressed_button:hover {
@@ -943,7 +958,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	width: 80%;
-	border-radius: 3px;
+	border-radius: 5px;
 }
 
 .follow {
@@ -952,7 +967,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	float: right;
 	display: inline;
 	font-size: 10pt;
-    padding: 14px 20px 0px 40px;
+    padding: 15px 15px 0px 0px;
 }
 
 .follow a {
@@ -1063,9 +1078,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-	border: 1px solid #303030;
-	background-color: #fff;
-	border-radius: 3px;
+	background-color: #303030;
+	border-radius: 5px;
 }
 
 .screenshot {
@@ -1126,7 +1140,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	width: 95%;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 .title {
@@ -1458,10 +1472,6 @@ body code.styled {
     .title {
         position: fixed;
         z-index: 60000;
-    }
-
-    input[type="search"] {
-        text-align: center;
     }
 
     nav ul {
