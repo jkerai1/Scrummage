@@ -14,10 +14,8 @@
             <header>
                 <h1 class="title">Scrummage</h1>
             </header>
-            {% if session.get('user') == username %}
-                <p class="follow">Logged in as {{ username }}  |  <a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
-            {% else %}
-                <p class="follow"><a href="https://www.github.com/matamorphosis/Scrummage">Follow on GitHub</a></p>
+            {% if session.get('user') != None and session.get('user') == username %}
+                <p class="follow">Welcome {{ username }}</p>
             {% endif %}
             <div class="navbar-toggle" id="hamburger">
                 <div class="hamburger_slice_outer_top">
