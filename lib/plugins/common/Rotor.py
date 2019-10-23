@@ -94,7 +94,7 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
     if Numbers:
         A_List.append("4")
         B_List.append("8")
-        E_List.append("3")
+        E_List.append(["3", u"з", u"З", u"Ӡ"])
         I_List.append("1")
         L_List.append("1")
         O_List.append("0")
@@ -109,20 +109,22 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         T_List.append("+")
 
     if Cyrillic:
-        A_List.append(u"а")
+        A_List.extend([u"а", u"д"])
         B_List.append(u"в")
         C_List.append(u"с")
-        E_List.append(u"е")
-        H_List.extend([u"Һ", u"ʜ"])
+        E_List.extend([u"е", u"є"])
+        H_List.extend([u"һ", u"Һ", u"ʜ"])
+        I_List.append(u"і")
         K_List.append(u"к")
         M_List.append(u"м")
         N_List.extend([u"п", u"и", u"й", u"л"])
         O_List.append(u"о")
         P_List.append(u"р")
         R_List.extend([u"г", u"я"])
+        S_List.append(u"ѕ")
         T_List.append(u"т")
         W_List.extend([u"ш", u"щ"])
-        X_List.append(u"х")
+        X_List.extend([u"х", u"ж"])
         Y_List.extend([u"у", u"ү"])
 
     if Greek:
