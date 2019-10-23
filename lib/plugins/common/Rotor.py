@@ -116,7 +116,7 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         K_List.append(u"к")
         M_List.append(u"м")
         O_List.append(u"о")
-        R_List.append(u"г")
+        R_List.extend([u"г", u"я"])
         T_List.append(u"т")
         X_List.append(u"х")
         Y_List.extend([u"у", u"ү"])
