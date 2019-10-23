@@ -111,13 +111,17 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
     if Cyrillic:
         A_List.append(u"а")
         B_List.append(u"в")
+        C_List.append(u"с")
         E_List.append(u"е")
         H_List.extend([u"Һ", u"ʜ"])
         K_List.append(u"к")
         M_List.append(u"м")
+        N_List.extend([u"п", u"и", u"й", u"л"])
         O_List.append(u"о")
+        P_List.append(u"р")
         R_List.extend([u"г", u"я"])
         T_List.append(u"т")
+        W_List.extend([u"ш", u"щ"])
         X_List.append(u"х")
         Y_List.extend([u"у", u"ү"])
 
