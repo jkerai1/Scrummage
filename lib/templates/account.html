@@ -45,23 +45,23 @@
                                     {% if result[3] == True %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="enableuser" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Unblock">
+                                        <input class="button-run" type=submit value="Unblock">
                                     </form>
                                     {% else %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="disableuser" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to block user number {{result[0]}}?');" class="button" type=submit value="Block">
+                                        <input onclick="return confirm('Are you sure you want to block user number {{result[0]}}?');" class="button-delete" type=submit value="Block">
                                     </form>
                                     {% endif %}
                                     {% if result[4] == True %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="demote" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to demote user number {{result[0]}}?');" class="button" type=submit value="Demote">
+                                        <input onclick="return confirm('Are you sure you want to demote user number {{result[0]}}?');" class="button-delete" type=submit value="Demote">
                                     </form>
                                     {% else %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="promote" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to promote user number {{result[0]}}?');" class="button" type=submit value="Promote">
+                                        <input onclick="return confirm('Are you sure you want to promote user number {{result[0]}}?');" class="button-run" type=submit value="Promote">
                                     </form>
                                     {% endif %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
@@ -70,7 +70,7 @@
                                     </form>
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="deleteuser" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to delete user number {{result[0]}}?');" class="button" type=submit value="Delete">
+                                        <input onclick="return confirm('Are you sure you want to delete user number {{result[0]}}?');" class="button-delete" type=submit value="Delete">
                                     </form>
                                 </td>
                             {% endif %}
@@ -96,6 +96,7 @@
                 document.getElementById("createuser").style.display = null;
                 document.getElementById("fc").style.display = null;
                 document.getElementsByTagName("INPUT")[0].placeholder='Search';
+                document.getElementsByTagName("INPUT")[0].className='js_search';
             }
             </script>
         </main>

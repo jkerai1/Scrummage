@@ -151,12 +151,12 @@
                                 <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
                                     {% if result[6] == "Running" %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input class="button" type=submit value="Run" disabled>
+                                        <input class="button-disabled" type=submit value="Run" disabled>
                                     </form>
                                     {% else %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="runtask" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Run">
+                                        <input class="button-run" type=submit value="Run">
                                     </form>
                                     {% endif %}
                                     <form class="task_buttons" action="" method=post autocomplete="off">
@@ -169,7 +169,7 @@
                                     </form>
                                     <form class="task_buttons" action="" method=post autocomplete="off">
                                         <input name="delete_id" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to delete task item {{result[0]}}?');" class="button" type=submit value="Delete">
+                                        <input onclick="return confirm('Are you sure you want to delete task item {{result[0]}}?');" class="button-delete" type=submit value="Delete">
                                     </form>
                                 </td>
                             {% endif %}
@@ -183,7 +183,7 @@
                         <input name="newtask" class="button" type=submit value="New Task">
                     </form>
                     <form class="form_vo"  action="/verify_output" method=post autocomplete="off">
-                        <input name="verify" class="button" type=submit value="Verify Output">
+                        <input name="verify" class="button"  type=submit value="Verify Output">
                     </form>
                 </div>
                 {% endif %}
@@ -201,6 +201,7 @@
                 document.getElementById("paginate").style.display = null;
                 document.getElementById("fc").style.display = null;
                 document.getElementsByTagName("INPUT")[0].placeholder='Search';
+                document.getElementsByTagName("INPUT")[0].className='js_search';
             }
             </script>
         </main>

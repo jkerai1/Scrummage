@@ -196,7 +196,7 @@
 				{% if is_admin %}
 				<form style="padding: 10px 0px 0px 0px" id="deleteresult" class="form_left" action="" method=post autocomplete="off">
 					<input name="delete" value="{{results[0]}}" type=hidden>
-					<input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button" type=submit value="Delete Result">
+					<input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button-delete" type=submit value="Delete Result">
 				</form>
 				{% endif %}
 			</div>
@@ -234,7 +234,7 @@
 							<td class="nonscreenshottab" id="created_at">{{result[7]}}</td>
 							<td class="nonscreenshottab" id="updated_at">{{result[8]}}</td>
 							<td class="buttons_in_table" id="resultsbuttons">
-								<form class="task_buttons" action="" method=post autocomplete="off">
+								<form class="task_buttons" action="" method=post onclick="load_home()" autocomplete="off">
 									<input name="details" value="{{result[0]}}" type=hidden>
 									<input class="button" type=submit value="Show">
 								</form>
@@ -263,6 +263,7 @@
 				document.getElementById("newresult").style.display = null;
 				document.getElementById("fc").style.display = null;
 				document.getElementsByTagName("INPUT")[0].placeholder='Search';
+				document.getElementsByTagName("INPUT")[0].className='js_search';
 			}
 			</script>
 			{% else %}
