@@ -1290,6 +1290,19 @@ select:focus {
   animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
+#version {
+    text-decoration: none;
+    color: #303030;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+}
+
+#version:hover {
+    color: #DC143C;
+}
+
 @keyframes stroke {
   100% {
     stroke-dashoffset: 0;
