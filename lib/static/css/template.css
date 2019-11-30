@@ -1126,7 +1126,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
 	background-color: #fff;
 	border-radius: 5px;
-	border: 1px solid lightgrey;
 }
 
 .screenshot {
