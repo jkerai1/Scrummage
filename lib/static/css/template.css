@@ -425,6 +425,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     float: left;
     padding-top: 0.755em;
     padding-bottom: 10px;
+    font-size: 14px;
 }
 
 .dataTables_wrapper .dataTables_paginate
