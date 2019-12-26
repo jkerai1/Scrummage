@@ -1,10 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Scrummage  
-**NEW VERSION 1.2**
-- Added functionality for administrators provisioning accounts
+**NEW VERSION 2.0**
+- Added Scrummage API (Version 1) [Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API)
+- Added refresh option for Dashboard
 - UI/UX enhancements
-- New DNS plugin and Blockchain Plugin (Monero)
 - Bug fixes  
 
 Scrummage is an OSINT tool that centralises your OSINT scans, leveraging powerful yet simple OSINT sites, drawing inspiration from the https://github.com/Netflix-Skunkworks/Scumblr project as well as the the OSINT framework, a high-level overview of a range of sites that can be used to search for a variety of things, which can be found at https://osintframework.com/ or https://github.com/lockfale/OSINT-Framework.
