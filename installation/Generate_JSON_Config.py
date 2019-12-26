@@ -1,4 +1,4 @@
-import argparse, sys, os
+import argparse, sys, os, secrets
 
 Parser = argparse.ArgumentParser(description='To create users.')
 Parser.add_argument('-d', '--database')
@@ -16,6 +16,7 @@ if Arguments.database and Arguments.username and Arguments.password:
             sys.exit("[-] Bad character, please remove any quotes from the provided arguments.")
 
     try:
+        API_Secret = secrets.token_hex(32)
         Config_Directory = '../lib/plugins/common/config'
         Configuration_File = os.path.join(Config_Directory, 'config.json')
         Open_File = open(Configuration_File,"w+")
@@ -186,7 +187,8 @@ if Arguments.database and Arguments.username and Arguments.password:
                     "host": "127.0.0.1",
                     "port": 5000,
                     "certificate-file": "../certs/certificate.crt",
-                    "key-file": "../certs/privateKey.key"
+                    "key-file": "../certs/privateKey.key",
+                    "api-secret": "''' + API_Secret + '''"
                 }
             ],
             "youtube": [

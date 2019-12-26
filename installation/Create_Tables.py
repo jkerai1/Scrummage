@@ -1,4 +1,4 @@
-import psycopg2, sys, json, datetime
+import psycopg2
 
 def Load_Main_Database():
 
@@ -36,7 +36,9 @@ try:
           username TEXT UNIQUE NOT NULL,
           password TEXT NOT NULL,
           blocked BOOLEAN NOT NULL,
-          is_admin BOOLEAN NOT NULL);'''
+          is_admin BOOLEAN NOT NULL,
+          api_key TEXT,
+          api_generated_time TEXT);'''
 
     create_events_query = '''CREATE TABLE events
           (event_id SERIAL PRIMARY KEY NOT NULL,
