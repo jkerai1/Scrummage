@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Scrummage Version 1.1
+# Scrummage Version 2
 # Author: matamorphosis
 # License: GPL-3.0
 
-from flask import Flask, render_template, json, flash, request, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, json, flash, request, redirect, url_for, session, send_from_directory, jsonify
+from flask_jwt import jwt_required
 from signal import signal, SIGINT
 from flask_compress import Compress
 from functools import wraps
@@ -14,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from crontab import CronTab
 from logging.handlers import RotatingFileHandler
-import os, re, datetime, plugin_caller, getpass, time, sys, threading, html, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
+import os, re, plugin_caller, getpass, time, sys, threading, html, secrets, jwt, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
 
 Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "Blockchain Monero Transaction Search", "BSB Search", "Business Search - American Central Index Key", "Business Search - American Company Name", "Business Search - Australian Business Number", "Business Search - Australian Company Name", "Business Search - Canadian Business Number", "Business Search - Canadian Company Name", "Business Search - New Zealand Business Number", "Business Search - New Zealand Company Name", "Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Default Password Search", "DNS Reconnaissance Search", "Domain Fuzzer - All Extensions",
                  "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
@@ -48,6 +49,137 @@ except:
     app.logger.fatal(General.Date() + ' Failed to load main database, please make sure the database details are added correctly to the configuration.')
     sys.exit()
 
+class User:
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def authenticate(self):
+        PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
+        Cursor.execute(PSQL_Select_Query, (self.username,))
+        User_Details = Cursor.fetchone()
+
+        if User_Details:
+            Password_Check = check_password_hash(User_Details[2], self.password)
+
+            if not Password_Check:
+
+                for char in self.password:
+
+                    if char in Bad_Characters:
+                        Message = "Failed login attempt for the provided user ID " + str(User_Details[0]) + " with a password that contains potentially dangerous characters."
+                        app.logger.warning(Message)
+                        Create_Event(Message)
+                        return {"Message": True}
+
+                Message = "Failed login attempt for user " + str(User_Details[0]) + "."
+                app.logger.warning(Message)
+                Create_Event(Message)
+                return {"Message": True}
+
+            else:
+
+                if not User_Details[3]:
+                    self.ID = User_Details[0]
+                    self.authenticated = True
+                    self.api_current_timestamp = User_Details[6]
+                    self.admin = User_Details[4]
+                    self.API = User_Details[5]
+                    return {"ID": self.ID, "Username": User_Details[1], "Admin": self.admin, "API": self.API, "Status": True}
+
+                else:
+                    Message = "Login attempted by user ID " + str(User_Details[0]) + " who is currently blocked."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Message": True}
+
+        else:
+
+            for char in self.username:
+
+                if char in Bad_Characters:
+                    Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Message": True}
+
+                else:
+                    Message = "Failed login attempt for user " + self.username + "."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Message": True}
+
+    def API_registration(self):
+
+        def Create_JWT(self):
+            payload = {"id": self.ID, "name": self.username, "admin": self.admin, "time-created": General.Date(), "nonce": secrets.token_hex(32)}
+            JWT = jwt.encode(payload, API_Secret, algorithm='HS256')
+            return JWT.decode('utf-8')
+
+        if 'authenticated' in dir(self):
+
+            if 'api_current_timestamp' in dir(self):
+                Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
+                Timestamp_1 = datetime.strptime(self.api_current_timestamp, Timestamp_FMT)
+                Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
+                Timestamp_Difference = Timestamp_2 - Timestamp_1
+                Timestamp_Difference = int(str(Timestamp_Difference)[:1])
+
+                if Timestamp_Difference > 0:
+                    API_Key = Create_JWT(self)
+                    PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
+                    Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), self.ID,))
+                    Connection.commit()
+                    return API_Key
+
+                else:
+                    return self.API
+
+            else:
+                API_Key = Create_JWT(self)
+                PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
+                Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), self.ID,))
+                Connection.commit()
+                return API_Key
+
+        else:
+            return None
+
+def API_verification(auth_token):
+
+    try:
+        Decoded_Token = jwt.decode(auth_token, API_Secret, algorithm='HS256')
+
+        if Decoded_Token:
+            User_ID = int(Decoded_Token['id'])
+            PSQL_Select_Query = 'SELECT * FROM users WHERE user_id = %s'
+            Cursor.execute(PSQL_Select_Query, (User_ID,))
+            User_Details = Cursor.fetchone()
+
+            if auth_token == User_Details[5]:
+                Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
+                Timestamp_1 = datetime.strptime(User_Details[6], Timestamp_FMT)
+                Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
+                Timestamp_Difference = Timestamp_2 - Timestamp_1
+                Timestamp_Difference = int(str(Timestamp_Difference)[:1])
+
+                if Timestamp_Difference > 0:
+                    return {"Token": False, "Admin": False, "Message": "Token expired, please register for a new token."}
+
+                else:
+                    return {"Token": True, "Admin": User_Details[4], "Message": "Token verification successful."}
+
+            else:
+                return {"Token": False, "Admin": False, "Message": "Invalid token."}
+
+        else:
+            return {"Token": False, "Admin": False, "Message": "Failed to decode token."}
+
+    except Exception as e:
+        return {"Token": False, "Admin": False, "Message": "Failed to decode token."}
+        app.logger.error(e)
+
 def handler(signal_received, frame):
     print('[i] CTRL-C detected. Shutting program down.')
     Connection.close()
@@ -69,9 +201,10 @@ def Load_Web_App_Configuration():
             WA_Port = WA_Details['port']
             WA_Cert_File = WA_Details['certificate-file']
             WA_Key_File = WA_Details['key-file']
+            WA_API_Secret = WA_Details['api-secret']
 
-            if WA_Host and WA_Port and WA_Cert_File and WA_Key_File:
-                return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File]
+            if WA_Host and WA_Port and WA_Cert_File and WA_Key_File and WA_API_Secret:
+                return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File, WA_API_Secret]
 
             else:
                 return None
@@ -187,79 +320,36 @@ def login():
         if request.method == 'POST' or request.method == 'GET':
 
             if request.method == 'POST':
-                Username = request.form['username']
 
-                for char in Username:
+                for char in request.form['username']:
 
                     if char in Bad_Characters:
-                        return render_template('login.html', error="Please enter a valid username and password.")
+                        return render_template('login.html', error="Login Unsuccessful.")
 
-                Password = request.form['password']
-                PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
-                Cursor.execute(PSQL_Select_Query, (Username,))
-                User = Cursor.fetchone()
+                Current_User_Object = User(request.form['username'], request.form['password'])
+                Current_User = Current_User_Object.authenticate()
 
-                if User:
+                if 'Username' in Current_User and 'Status' in Current_User:
+                    session['dashboard-refresh'] = 0
+                    session['user_id'] = Current_User.get('ID')
+                    session['user'] = Current_User.get('Username')
+                    session['is_admin'] = Current_User.get('Admin')
+                    session['api_key'] = Current_User.get('API')
+                    session['form_step'] = 0
+                    session['form_type'] = ""
+                    session['task_frequency'] = ""
+                    session['task_description'] = ""
+                    session['task_limit'] = 0
+                    session['task_query'] = ""
+                    session['task_id'] = ""
+                    Message = "Successful login from " + Current_User.get('Username') + "."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
 
-                    if User[3] == True:
-                        return render_template('login.html', error='Please enter a valid username and password.')
+                    return redirect(url_for('dashboard'))
 
-                    else:
-
-                        if User[1] == Username:
-                            User_Check = True
-
-                        Password_Check = check_password_hash(User[2], Password)
-
-                        if User_Check != True or Password_Check != True:
-
-                            for char in Username:
-
-                                if char in Bad_Characters:
-                                    User_Bad_Chars = 1
-
-                            for char in Password:
-
-                                if char in Bad_Characters:
-                                    Password_Bad_Chars = 1
-
-                            if User_Bad_Chars == 1 and Password_Bad_Chars == 1:
-                                Message = "Failed login attempt for a provided username and password, both with potentially dangerous characters."
-                                app.logger.warning(Message)
-                                Create_Event(Message)
-
-                            elif User_Bad_Chars == 0 and Password_Bad_Chars == 1:
-                                Message = "Failed login attempt for the provided username: " + Username + " with a password that contains potentially dangerous characters."
-                                app.logger.warning(Message)
-                                Create_Event(Message)
-
-                            elif User_Bad_Chars == 1 and Password_Bad_Chars == 0:
-                                Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
-                                app.logger.warning(Message)
-                                Create_Event(Message)
-
-                            else:
-                                Message = "Failed login attempt for the user: " + Username + "."
-                                app.logger.warning(Message)
-                                Create_Event(Message)
-
-                            return render_template('login.html', error='Login Unsuccessful')
-
-                        else:
-                            session['user'] = Username
-                            session['is_admin'] = User[4]
-                            session['form_step'] = 0
-                            session['form_type'] = ""
-                            session['task_frequency'] = ""
-                            session['task_description'] = ""
-                            session['task_limit'] = 0
-                            session['task_query'] = ""
-                            session['task_id'] = ""
-                            Message = "Successful login from " + Username + "."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-
-                            return redirect(url_for('dashboard'))
+                elif 'Message' in Current_User:
+                    return render_template('login.html', error='Login Unsuccessful.')
 
                 else:
                     return render_template('login.html')
@@ -272,6 +362,43 @@ def login():
         else:
             return redirect(url_for('no_method'))
 
+    except Exception as e:
+        app.logger.error(e)
+
+@app.route('/api/v1/auth', methods=['POST'])
+def api_auth():
+
+    try:
+
+        if request.is_json:
+            Content = request.get_json()
+
+            if 'Username' in Content and 'Password' in Content:
+                Current_User_Object = User(Content['Username'], Content['Password'])
+                Current_User = Current_User_Object.authenticate()
+                Current_User_API = Current_User_Object.API_registration()
+
+                if 'API' in Current_User:
+                    Message = "Successful API key registration from " + Current_User.get('Username') + "."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    JSON_Message = "Registration successful. Welcome " + Current_User.get('Username') + "."
+
+                    if Current_User_API:
+                        return jsonify({"Message": JSON_Message, "API Key": Current_User_API})
+
+                    else:
+                        return jsonify({"Error": "Registration Unsuccessful"})
+
+                elif 'Message' in Current_User:
+                    return jsonify({"Error": "Registration Unsuccessful."})
+
+            else:
+                return jsonify({"Error": "Invalid fields in request."})
+
+        else:
+            return jsonify({"Error": "Invalid request format."})
+    
     except Exception as e:
         app.logger.error(e)
 
@@ -310,6 +437,53 @@ def verify_output():
 
         else:
             return redirect(url_for('no_session'))
+
+    except Exception as e:
+        app.logger.error(e)
+
+@app.route('/api/v1/verify_output', methods=['POST'])
+def api_verify_output():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+
+                if Authentication_Verified["Admin"]:
+
+                    if request.method == 'POST':
+                        CSV = Connectors.Load_CSV_Configuration()
+                        DD = Connectors.Load_Defect_Dojo_Configuration()
+                        DOCX = Connectors.Load_DOCX_Configuration()
+                        Email = Connectors.Load_Email_Configuration()
+                        Elastic = Connectors.Load_Elasticsearch_Configuration()
+                        Main_DB = Connectors.Load_Main_Database()
+                        JIRA = Connectors.Load_JIRA_Configuration()
+                        RTIR = Connectors.Load_RTIR_Configuration()
+                        Slack = Connectors.Load_Slack_Configuration()
+                        Scumblr = Connectors.Load_Scumblr_Configuration()
+
+                        return jsonify([{"Main Database": bool(Main_DB)}, {"CSV": bool(CSV)}, {"DefectDojo": bool(DD)}, {".DOCX": bool(DOCX)}, {"Email": bool(Email)}, {"ElasticSearch": bool(Elastic)}, {"JIRA": bool(JIRA)}, {"RTIR": bool(RTIR)}, {"Slack Channel Notification": bool(Slack)}, {"Scumblr Database": bool(Scumblr)}])
+
+                    else:
+                        return jsonify({"Error": "Method not allowed."})
+
+                else:
+                    return jsonify({"Error": "Insufficient privileges."})
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
 
     except Exception as e:
         app.logger.error(e)
@@ -553,13 +727,140 @@ def dashboard():
             mixed_values = [mixed_domain_spoof_results[0][0], mixed_data_leakages[0][0], mixed_phishing_results[0][0], mixed_blockchain_transaction_results[0][0], mixed_blockchain_address_results[0][0], mixed_exploit_results[0][0]]
 
             if most_common_tasks:
-                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values)
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), bar_labels=most_common_tasks_labels, bar_max=most_common_tasks_values[0], bar_values=most_common_tasks_values, refreshrate=session.get('dashboard-refresh'))
 
             else:
-                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors))
+                return render_template('dashboard.html', username=session.get('user'), max=17000, open_set=zip(open_values, labels, colors), closed_set=zip(closed_values, labels, colors), mixed_set=zip(mixed_values, labels, colors), refreshrate=session.get('dashboard-refresh'))
 
         else:
             return redirect(url_for('no_session'))
+
+    except Exception as e:
+        app.logger.error(e)
+
+@app.route('/dashboard/set-refresh', methods=['POST'])
+def dashboard_refresh():
+
+    try:
+
+        if session.get('user'):
+
+            if request.method == 'POST':
+
+                if 'setrefresh' in request.form and 'interval' in request.form:
+                    approved_refresh_rates = [0, 5, 10, 15, 20, 30, 60]
+                    refresh_rate = int(request.form['interval'])
+
+                    if refresh_rate in approved_refresh_rates:
+                        session['dashboard-refresh'] = refresh_rate
+                        return redirect(url_for('dashboard'))
+
+                    else:
+                        return redirect(url_for('dashboard'))
+
+                else:
+                    return redirect(url_for('dashboard'))
+
+            else:
+                return redirect(url_for('no_method'))
+
+        else:
+            return redirect(url_for('no_session'))
+
+    except Exception as e:
+        app.logger.error(e)
+
+@app.route('/api/v1/dashboard', methods=['POST'])
+def api_dashboard():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
+                open_domain_spoof_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Data Leakage",))
+                open_data_leakages = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Phishing",))
+                open_phishing_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Transaction",))
+                open_blockchain_transaction_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Blockchain Address",))
+                open_blockchain_address_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Open", "Exploit",))
+                open_exploit_results = Cursor.fetchall()
+
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Domain Spoof",))
+                closed_domain_spoof_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Data Leakage",))
+                closed_data_leakages = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Phishing",))
+                closed_phishing_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Transaction",))
+                closed_blockchain_transaction_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Blockchain Address",))
+                closed_blockchain_address_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
+                Cursor.execute(PSQL_Select_Query, ("Closed", "Exploit",))
+                closed_exploit_results = Cursor.fetchall()
+
+                Mixed_Options = ['Inspecting', 'Reviewing']
+
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Domain Spoof", Mixed_Options,))
+                mixed_domain_spoof_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Data Leakage", Mixed_Options,))
+                mixed_data_leakages = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Phishing", Mixed_Options,))
+                mixed_phishing_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Blockchain Transaction", Mixed_Options,))
+                mixed_blockchain_transaction_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Blockchain Address", Mixed_Options,))
+                mixed_blockchain_address_results = Cursor.fetchall()
+                PSQL_Select_Query = 'SELECT count(*) FROM results WHERE result_type = %s AND status = ANY (%s);'
+                Cursor.execute(PSQL_Select_Query, ("Exploit", Mixed_Options,))
+                mixed_exploit_results = Cursor.fetchall()
+
+                most_common_tasks_labels = []
+                most_common_tasks_values = []
+                Cursor.execute("""SELECT plugin, COUNT(*) AS counted FROM tasks WHERE plugin IS NOT NULL GROUP BY plugin ORDER BY counted DESC, plugin LIMIT 10;""")
+                most_common_tasks = Cursor.fetchall()
+
+                data = {"Open Issues": [{"Domain Spoofs": open_domain_spoof_results[0][0], "Data Leakages": open_data_leakages[0][0], "Phishing Attacks": open_phishing_results[0][0], "Blockchain Transactions": open_blockchain_transaction_results[0][0], "Blockchain Addresses": open_blockchain_address_results[0][0], "Exploits": open_exploit_results[0][0]}], "Closed Issues": [{"Domain Spoofs": closed_domain_spoof_results[0][0], "Data Leakages": closed_data_leakages[0][0], "Phishing Attacks": closed_phishing_results[0][0], "Blockchain Transactions": closed_blockchain_transaction_results[0][0], "Blockchain Addresses": closed_blockchain_address_results[0][0], "Exploits": closed_exploit_results[0][0]}], "Mixed Issues": [{"Domain Spoofs": mixed_domain_spoof_results[0][0], "Data Leakages": mixed_data_leakages[0][0], "Phishing Attacks": mixed_phishing_results[0][0], "Blockchain Transactions": mixed_blockchain_transaction_results[0][0], "Blockchain Addresses": mixed_blockchain_address_results[0][0], "Exploits": mixed_exploit_results[0][0]}], "Most Common Tasks": [{}]}
+                
+                for mc_task in most_common_tasks:
+                    data["Most Common Tasks"][0][mc_task[0]] = mc_task[1]
+
+                return jsonify(data)
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
 
     except Exception as e:
         app.logger.error(e)
@@ -606,6 +907,38 @@ def events():
     except Exception as e:
         app.logger.error(e)
         return redirect(url_for('events'))
+
+@app.route('/api/v1/event_details', methods=['POST'])
+def api_event_details():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+                data = {}
+                Cursor.execute('SELECT * FROM events ORDER BY event_id DESC LIMIT 100')
+
+                for Event in Cursor.fetchall():
+                    data[Event[0]] = [{"Description": Event[1], "Created Timestamp": Event[2]}]
+
+                return jsonify(data)
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
+
+    except:
+        return jsonify({"Error": "Unknown Exception Occurred."})
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -985,7 +1318,6 @@ def tasks():
                                                                error="Failed to remove task ID " + str(
                                                                    del_id) + " from crontab.")
 
-                                del_id = int(request.form['delete_id'])
                                 PSQL_Delete_Query = "DELETE FROM tasks WHERE task_id = %s;"
                                 Cursor.execute(PSQL_Delete_Query, (del_id,))
                                 Connection.commit()
@@ -1258,6 +1590,38 @@ def tasks():
         app.logger.error(e)
         return redirect(url_for('tasks'))
 
+@app.route('/api/v1/task_details', methods=['POST'])
+def api_task_details():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+                data = {}
+                Cursor.execute('SELECT * FROM tasks ORDER BY task_id DESC LIMIT 1000')
+
+                for Task in Cursor.fetchall():
+                    data[Task[0]] = [{"Query": Task[1], "Plugin": Task[2], "Description": Task[3], "Frequency": Task[4], "Limit": Task[5], "Status": Task[6], "Created Timestamp": Task[7], "Last Updated Timestamp": Task[8]}]
+
+                return jsonify(data)
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
+
+    except:
+        return jsonify({"Error": "Unknown Exception Occurred."})
+
 @app.route('/results', methods=['GET', 'POST'])
 def results():
 
@@ -1498,6 +1862,38 @@ def results():
         app.logger.error(e)
         return redirect(url_for('results'))
 
+@app.route('/api/v1/result_details', methods=['POST'])
+def api_result_details():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+                data = {}
+                Cursor.execute('SELECT * FROM results ORDER BY result_id DESC LIMIT 1000')
+
+                for Result in Cursor.fetchall():
+                    data[Result[0]] = [{"Associated Task ID": Result[1], "Title": Result[2], "Plugin": Result[3], "Status": Result[4], "Domain": Result[5], "Link": Result[6], "Created Timestamp": Result[7], "Last Updated Timestamp": Result[8], "Screenshot Location": Result[9], "Output File Location": Result[10], "Result Type": Result[11], "Screenshot Requested": Result[12]}]
+
+                return jsonify(data)
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
+
+    except:
+        return jsonify({"Error": "Unknown Exception Occurred."})
+
 def check_security_requirements(Password):
 
     try:
@@ -1549,13 +1945,13 @@ def account():
 
                             if Current_Password_Check != True:
                                 return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
-                                                       error="Current Password is incorrect.")
+                                                       error="Current Password is incorrect.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                             else:
 
                                 if request.form['New_Password'] != request.form['New_Password_Retype']:
                                     return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
-                                                           error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+                                                           error="Please make sure the \"New Password\" and \"Retype Password\" fields match.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                 else:
                                     Password_Security_Requirements_Check = check_security_requirements(
@@ -1567,17 +1963,83 @@ def account():
                                             "- The password is longer that 8 characters.",
                                             "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
                                             "- The password contains 1 or more number.",
-                                            "- The password contains one or more special character. Ex. @."])
+                                            "- The password contains one or more special character. Ex. @."], api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                     else:
                                         password = generate_password_hash(request.form['New_Password'])
                                         PSQL_Update_Query = 'UPDATE users SET password = %s WHERE user_id = %s'
                                         Cursor.execute(PSQL_Update_Query, (password, User[0],))
                                         Connection.commit()
-                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.")
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                         except:
-                            return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.")
+                            return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                    elif 'newapikey' in request.form:
+
+                        def Create_Session_Based_JWT(ID, Username, Admin):
+                            payload = {"id": ID, "name": Username, "admin": Admin, "time-created": General.Date(), "nonce": secrets.token_hex(32)}
+                            JWT = jwt.encode(payload, API_Secret, algorithm='HS256')
+                            return JWT.decode('utf-8')
+
+                        user_id = int(request.form['newapikey'])
+
+                        if user_id == session.get('user_id'):
+                            Cursor.execute('SELECT * FROM users WHERE user_id = %s', (user_id,))
+                            User_Info = Cursor.fetchone()
+
+                            if User_Info[5] and User_Info[6]:
+                                Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
+                                Timestamp_1 = datetime.strptime(User_Info[6], Timestamp_FMT)
+                                Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
+                                Timestamp_Difference_Full = Timestamp_2 - Timestamp_1
+                                Timestamp_Difference_Full_2 = Timestamp_1 - Timestamp_2
+                                print(Timestamp_Difference_Full)
+                                Timestamp_Difference_Regex = re.search(r'\d+\s.+', str(Timestamp_Difference_Full))
+
+                                if Timestamp_Difference_Regex:
+
+                                    Timestamp_Difference = int(str(Timestamp_Difference_Full)[:1])
+
+                                    if Timestamp_Difference > 0:
+                                        API_Key = Create_Session_Based_JWT(User_Info[0], User_Info[1], User_Info[4])
+                                        PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
+                                        Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), User_Info[0],))
+                                        Connection.commit()
+                                        Message = "New API Key generated for user ID " + str(user_id) + " by " + session.get('user') + "."
+                                        app.logger.warning(Message)
+                                        Create_Event(Message)
+                                        session['api_key'] = API_Key
+                                        Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message="New API Key generated successfully.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                                    else:
+                                        Time_Regex = re.search(r'\d{2}\:\d{2}\:\d{2}', str(Timestamp_Difference_Full_2))
+                                        Current_Message = "Current API is still valid. Time left until expiry: " + Time_Regex.group(0) + "."
+                                        Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Current_Message, api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                                else:
+                                    Time_Regex = re.search(r'\d{2}\:\d{2}\:\d{2}', str(Timestamp_Difference_Full_2))
+                                    Current_Message = "Current API is still valid. Time left until expiry: " + Time_Regex.group(0) + "."
+                                    Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Current_Message, api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                            else:
+                                API_Key = Create_Session_Based_JWT(User_Info[0], User_Info[1], User_Info[4])
+                                PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
+                                Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), User_Info[0],))
+                                Connection.commit()
+                                Message = "New API Key generated for user ID " + str(user_id) + " by " + session.get('user') + "."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+                                session['api_key'] = API_Key
+                                Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                                return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message="New API Key generated successfully.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                        else:
+                            Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                            return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message="You are only able to generate API's for your own user.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                     else:
 
@@ -1589,20 +2051,20 @@ def account():
                                 if session.get('form_step') == 0:
                                     session['form_step'] += 1
                                     session['form_type'] = "CreateUser"
-                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                 elif session.get('form_step') == 1:
 
                                     if not request.form['Username']:
-                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please provide a valid username.")
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please provide a valid username.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                     for char in Bad_Characters:
 
                                         if char in request.form['Username']:
-                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.")
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                     if request.form['New_Password'] != request.form['New_Password_Retype']:
-                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please make sure the \"New Password\" and \"Retype Password\" fields match.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                     else:
                                         Password_Security_Requirements_Check = check_security_requirements(
@@ -1614,7 +2076,7 @@ def account():
                                                 "- The password is longer that 8 characters.",
                                                 "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
                                                 "- The password contains 1 or more number.",
-                                                "- The password contains one or more special character. Ex. @."])
+                                                "- The password contains one or more special character. Ex. @."], api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                         else:
 
@@ -1625,7 +2087,7 @@ def account():
                                                 New_User_Is_Admin = "False"
 
                                             password = generate_password_hash(request.form['New_Password'])
-                                            Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (request.form['Username'], password, "False", New_User_Is_Admin,))
+                                            Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (request.form['Username'], password, "False", New_User_Is_Admin, ))
                                             Connection.commit()
 
                                             if New_User_Is_Admin == "True":
@@ -1634,13 +2096,13 @@ def account():
                                             else:
                                                 Message = "New low-privileged user created by " + session.get('user') + "."
 
-                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Message)
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Message, api_key=session.get('api_key'), current_user_id=session.get('user_id'))
                                             Create_Event(Message)
 
                                 else:
                                     session['form_step'] = 0
                                     session['form_type'] = ""
-                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                             elif "changeotheruserspassword" in request.form:
 
@@ -1648,7 +2110,7 @@ def account():
                                     session['other_user_id'] = int(request.form['changeotheruserspassword'])
                                     session['form_step'] += 1
                                     session['form_type'] = "ChangePassword"
-                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                 elif session.get('form_step') == 1:
 
@@ -1659,7 +2121,7 @@ def account():
 
                                         if request.form['New_Password'] != request.form['New_Password_Retype']:
                                             return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'),
-                                                                   error="Please make sure the \"New Password\" and \"Retype Password\" fields match.")
+                                                                   error="Please make sure the \"New Password\" and \"Retype Password\" fields match.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                         else:
                                             Password_Security_Requirements_Check = check_security_requirements(request.form['New_Password'])
@@ -1670,22 +2132,22 @@ def account():
                                                     "- The password is longer that 8 characters.",
                                                     "- The password contains 1 or more UPPERCASE and 1 or more lowercase character.",
                                                     "- The password contains 1 or more number.",
-                                                    "- The password contains one or more special character. Ex. @."])
+                                                    "- The password contains one or more special character. Ex. @."], api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                             else:
                                                 password = generate_password_hash(request.form['New_Password'])
                                                 PSQL_Update_Query = 'UPDATE users SET password = %s WHERE user_id = %s'
                                                 Cursor.execute(PSQL_Update_Query, (password, User[0],))
                                                 Connection.commit()
-                                                return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.")
+                                                return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), message="Password changed.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                     except:
-                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.")
+                                        return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), error="Password not updated due to bad request.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                 else:
                                     session['form_step'] = 0
                                     session['form_type'] = ""
-                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+                                    return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                             elif 'deleteuser' in request.form:
                                 user_id = int(request.form['deleteuser'])
@@ -1731,6 +2193,9 @@ def account():
                                 app.logger.warning(Message)
                                 Create_Event(Message)
 
+                            else:
+                                pass
+
                         else:
                             pass
 
@@ -1739,10 +2204,10 @@ def account():
                     session['form_type'] = ""
                     session['other_user_id'] = 0
                     Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
-                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall())
+                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
     
                 else:
-                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'))
+                    return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
             else:
                 return redirect(url_for('no_method'))
@@ -1754,7 +2219,45 @@ def account():
         app.logger.error(e)
         return redirect(url_for('account'))
 
+@app.route('/api/v1/account_details', methods=['POST'])
+def api_account_details():
+
+    try:
+
+        if 'Authorization' in request.headers:
+            Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+            Authentication_Verified = API_verification(Auth_Token)
+
+            if Authentication_Verified["Token"]:
+
+                if Authentication_Verified["Admin"]:
+                    data = {}
+                    Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+
+                    for User in Cursor.fetchall():
+                        data[User[0]] = [{"Username": User[1], "Blocked": User[3], "Admin": User[4]}]
+
+                    return jsonify(data)
+
+                else:
+                    return jsonify({"Error": "Insufficient privileges."})
+
+            else:
+
+                if Authentication_Verified["Message"]:
+                    return jsonify({"Error": Authentication_Verified["Message"]})
+
+                else:
+                    return jsonify({"Error": "No session."})
+
+        else:
+            return jsonify({"Error": "Missing Authorization header."})
+
+    except Exception as e:
+        app.logger.error(e)
+
 if __name__ == '__main__':
+    global API_Secret
     signal(SIGINT, handler)
     formatter = logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
     handler = RotatingFileHandler('Scrummage.log', maxBytes=10000, backupCount=5)
@@ -1763,6 +2266,7 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     app.secret_key = os.urandom(24)
     Application_Details = Load_Web_App_Configuration()
+    API_Secret = Application_Details[5]
 
     try:
         PSQL_Update_Query = 'UPDATE tasks SET status = %s'
