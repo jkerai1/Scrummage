@@ -13,7 +13,7 @@ input[type="search" i] {
 }
 
 input[type="search"] {
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 nav {
@@ -31,7 +31,7 @@ nav ul li a {
   	color: #ffffff;
 	font-family: arial;
 	font-size: 10pt;
-	padding: 15px;
+	padding: 12px;
     -webkit-transition: all 0.30s ease-in-out;
     -moz-transition: all 0.30s ease-in-out;
     -ms-transition: all 0.30s ease-in-out;
@@ -46,13 +46,13 @@ select {
 	padding: 5px 5px 5px 5px;
 	border: 1px solid lightgrey;
 	background-color: #fff;
-	border-radius: 5px;
+	border-radius: 0px;
 }
 
 table {
 	border-collapse: collapse;
 	border: 1px solid lightgrey;
-	border-radius: 5px;
+	border-radius: 0px;
 	width: 100%;
 }
 
@@ -423,8 +423,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 {
 	clear: both;
     float: left;
-    padding-top: 0.755em;
-    padding-bottom: 10px;
+    padding-top: 13px;
+    padding-bottom: 13px;
     font-size: 14px;
     color: #303030;
 }
@@ -433,7 +433,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 {
 	float: right;
     text-align: right;
-    padding-top: 0.25em;
+    padding-top: 10px;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button
@@ -451,7 +451,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     cursor:pointer;
     *cursor:hand;
     border: 1px solid lightgrey;
-    border-radius: 5px;
+    border-radius: 0px;
     -webkit-transition: all 0.30s ease-in-out;
     -moz-transition: all 0.30s ease-in-out;
     -ms-transition: all 0.30s ease-in-out;
@@ -636,6 +636,14 @@ table.dataTable,table.dataTable th,table.dataTable td
 	text-align: center;
 }
 
+#nonadmin-jwt-div {
+    padding-top: 10px;
+}
+
+#admin-jwt-div {
+    padding-bottom: 10px;
+}
+
 #resultdetailedtitle {
 	color: #303030;
 	font-family: arial;
@@ -677,7 +685,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	padding: 7px;
 	font-size: 11pt;
-	border-radius: 5px;
+	border-radius: 0px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
@@ -687,19 +695,32 @@ table.dataTable,table.dataTable th,table.dataTable td
 	border: 1px solid lightgrey;
 }
 
+.button-red {
+    padding: 7px;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	background-color: #fff;
+}
+
+.button-red:hover {
+    border: 1px solid #DC143C;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 1);
+}
+
 .button-delete {
 	text-decoration: none;
 	color: #303030;
 	padding: 7px;
 	font-size: 11pt;
-	border-radius: 5px;
+	border-radius: 0px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
 	background-color: #fff;
-	border: 1px solid #ffcccb;
+	border: 1px solid lightgrey;
 }
 
 .button-run {
@@ -707,14 +728,14 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: #303030;
 	padding: 7px;
 	font-size: 11pt;
-	border-radius: 5px;
+	border-radius: 0px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
 	background-color: #fff;
-	border: 1px solid #90ee90;
+	border: 1px solid lightgrey;
 }
 
 .button-disabled {
@@ -722,7 +743,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	color: lightgrey;
 	padding: 7px;
 	font-size: 11pt;
-	border-radius: 5px;
+	border-radius: 0px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
@@ -732,11 +753,13 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .button-run:hover {
-	background-color: rgba(0, 255, 0, 1);
+	background-color: #90ee90;
+    border: 1px solid #90ee90;
 }
 
 .button-delete:hover {
 	background-color: #DC143C;
+	border: 1px solid #ffcccb;
 }
 
 .button:hover {
@@ -762,7 +785,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     border: 5px solid transparent;
     display: inline-block;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 .dashboard_large_bottom_div {
@@ -770,7 +793,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     border: 1px solid lightgrey;
     display: inline-block;
     width: 90%;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 .form_div {
@@ -951,7 +974,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .dashboard_p {
-    padding: 10px 10px;
+    padding: 10px;
     color: #303030;
     font-size: 14px;
     background-color: lightgrey;
@@ -978,13 +1001,13 @@ table.dataTable,table.dataTable th,table.dataTable td
 .dashboard_small_outer_div {
     display: inline-block;
     border: 1px solid lightgrey;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 .dashboard_small_outer_right_div {
     display: inline-block;
     border: 1px solid lightgrey;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 .dashboard_large_outer_div {
@@ -1006,7 +1029,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	width: 80%;
-	border-radius: 5px;
+	border-radius: 0px;
 }
 
 .follow {
@@ -1015,7 +1038,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	float: right;
 	display: inline;
 	font-size: 10pt;
-    padding: 15px 15px 0px 0px;
+    padding: 12px 12px 0px 0px;
 }
 
 .follow a {
@@ -1125,9 +1148,65 @@ table.dataTable,table.dataTable th,table.dataTable td
 	overflow: hidden;
 }
 
+.apitab {
+	padding: 5px;
+}
+
+#admin-apitab {
+    background-color: lightgrey;
+    width: 125px;
+    text-align: center;
+    padding: 10px 0px 10px 0px;
+}
+
+#jwt-table {
+    table-layout: fixed;
+    width: auto;
+}
+
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
 	background-color: #fff;
-	border-radius: 5px;
+	border-radius: 0px;
+}
+
+#sync {
+	padding: 0px;
+	height: 25px;
+    width: 25px;
+    float: left;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    border: 0px;
+}
+
+#sync:hover {
+	background-image: url('../images/synchov.png');
+}
+
+#copy {
+   position: absolute;
+   top: -9999px;
+   left: -9999px;
+}
+
+#copy-div {
+	background-image: url('../images/copy.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	padding: 10px 0px 0px 0px;
+	height: 15px;
+    width: 25px;
+    float: left;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+}
+
+#copy-div:hover {
+	background-image: url('../images/copyhov.png');
 }
 
 .screenshot {
@@ -1172,6 +1251,23 @@ table.dataTable,table.dataTable th,table.dataTable td
 	background-image: url('../images/documenthov.png');
 }
 
+#refresh {
+    text-align: center;
+    padding-top: 15px;
+    font-size: 11pt;
+}
+
+#dash-refresh {
+    display: inline-block;
+    padding: 6px 6px 7px 6px;
+}
+
+#refresh-div {
+    padding: 5px;
+    background: lightgrey;
+    width: 370px;
+}
+
 .task_buttons {
 	display: inline-block;
 }
@@ -1188,7 +1284,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	width: 95%;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 .title {
@@ -1196,7 +1292,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	font-family: arial;
 	font-size: 20pt;
 	font-weight: normal;
-	padding: 5px 15px 0px 10px;
+	padding: 2px 12px 0px 5px;
 	float: left;
 }
 
@@ -1379,6 +1475,10 @@ body code.styled {
    padding: 25px 0px 25px 0px;
 }
 
+#chart4 {
+    padding: 20px 0px 20px 0px;
+}
+
 .unpredicted_page {
     padding-top: 30px;
 }
@@ -1403,7 +1503,11 @@ body code.styled {
 
 @media only screen and (max-width: 1050px) {
 
-    .dashboard_field-container {
+    #refresh {
+        padding-top: 50px;
+    }
+
+    #nonadmin-jwt-div {
         padding-top: 50px;
     }
 
@@ -1442,7 +1546,7 @@ body code.styled {
     }
 
     .container {
-        height: 45px;
+        height: 37px;
         position: fixed;
         z-index: 50000;
         width: 100%;
@@ -1457,7 +1561,7 @@ body code.styled {
     }
 
     #firstli {
-        padding-top: 10px
+        padding-top: 2px
     }
 
     .follow {
@@ -1485,8 +1589,11 @@ body code.styled {
     #hb1, #hb2, #hb3 {
         width: 30px;
         height: 5px;
-        border-radius: 2px;
         background-color: #fff;
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -ms-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
     }
 
     div:hover #hb1  {
@@ -1556,8 +1663,8 @@ body code.styled {
     .navbar-toggle {
         position: relative;
         z-index: 60000;
-        top: 10px;
-        right: 10px;
+        top: 6px;
+        right: 6px;
         cursor: pointer;
         color: rgba(255,255,255,0.8);
         font-size: 24px;
