@@ -23,6 +23,33 @@
             </noscript>
             <p id="loader-message" class="loaderabout">Loading Users...</p>
             <div style="display: none;" style="margin:0;" id="fc" class="field-container">
+                {% if api_key %}
+                <div id="admin-jwt-div">
+                    <table id="jwt-table">
+                        <tbody>
+                            <tr>
+                                <td class="apitab" id="admin-apitab">Your API Key</td>
+                                <td class="apitab" style="padding: 5px 7px 5px 5px; display: inline-flex;">
+                                    <form class="jwt-form" action="" method=post autocomplete="off">
+                                        <input name="newapikey" value="{{current_user_id}}" type=hidden />
+                                        <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
+                                    </form>
+                                    <input id="copy" value="{{api_key}}" type="text">
+                                    <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
+                                    <script>
+                                        function copyTextFunc() {
+                                          var copyText = document.getElementById("copy");
+                                          copyText.select();
+                                          copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+                                          document.execCommand("copy");
+                                        }
+                                    </script>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
                 <table id="paginate">
                     <thead>
                         <tr>
@@ -82,6 +109,47 @@
             <form style="display: none;" id="createuser" class="form_left" action="" method=post autocomplete="off">
                 <input class="button" name="createuser" type=submit value="Create User">
             </form>
+            {% if error %}
+            <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
+            <script>
+            var myVar;
+
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("msg").style.display = null;
+                document.getElementById("paginate").style.display = null;
+                document.getElementById("createuser").style.display = null;
+                document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[3].placeholder='Search';
+                document.getElementsByTagName("INPUT")[3].className='js_search';
+            }
+            </script>
+            {% elif message %}
+            <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
+            <script>
+            var myVar;
+
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("msg").style.display = null;
+                document.getElementById("paginate").style.display = null;
+                document.getElementById("createuser").style.display = null;
+                document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[3].placeholder='Search';
+                document.getElementsByTagName("INPUT")[3].className='js_search';
+            }
+            </script>
+            {% else %}
             <script>
             var myVar;
 
@@ -95,25 +163,12 @@
                 document.getElementById("paginate").style.display = null;
                 document.getElementById("createuser").style.display = null;
                 document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[0].placeholder='Search';
-                document.getElementsByTagName("INPUT")[0].className='js_search';
+                document.getElementsByTagName("INPUT")[3].placeholder='Search';
+                document.getElementsByTagName("INPUT")[3].className='js_search';
             }
             </script>
+            {% endif %}
         </main>
-        {% if error %}
-        <section><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
-        {% elif message %}
-        <section><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
-        {% endif %}
-        {% if requirement_error %}
-        <footer>
-            <div style="text-align: center; width: 51%; padding-top: 15px;">
-            {% for error in requirement_error %}
-                <p class="req_message">{{error}}</p>
-            {% endfor %}
-            </div>
-        </footer>
-        {% endif %}
         {% elif form_step == 1 %}
             {% if form_type == "ChangePassword" %}
                 <main>
@@ -164,45 +219,86 @@
                 </main>
             {% else %}
             {% endif %}
+            {% if error %}
+            <section><p class="acc_message"><strong>Error:</strong> {{error}}</p></section>
+            {% elif message %}
+            <section><p class="acc_message"><strong>Message:</strong> {{message}}</p></section>
+            {% endif %}
+            {% if requirement_error %}
+            <footer>
+                <div style="text-align: center; width: 51%;">
+                {% for error in requirement_error %}
+                    <p class="req_message">{{error}}</p>
+                {% endfor %}
+                </div>
+            </footer>
+            {% endif %}
         {% else %}
         {% endif %}
         {% else %}
-        <section>
-            <div class="field-container" style="text-align: center;">
-                <div>
-                    <div class="form_div">
-                        <form class="form" action="" method=post autocomplete="off">
-                            <dl>
-                                <dd>
-                                    <input class="field_textarea" type=password name=Current_Password placeholder="Current Password">
-                                </dd>
-                                <dd>
-                                    <input class="field_textarea" type=password name=New_Password placeholder="New Password">
-                                </dd>
-                                <dd>
-                                    <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
-                                </dd>
-                            </dl>
-                            <p style="padding-top: 10px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
-                        </form>
+            {% if api_key %}
+            <div id="nonadmin-jwt-div">
+                <table id="jwt-table">
+                    <tbody>
+                        <tr>
+                            <td class="apitab" id="admin-apitab">Your API Key</td>
+                            <td class="apitab" style="padding: 5px 7px 5px 5px; display: inline-flex;">
+                                <form class="jwt-form" action="" method=post autocomplete="off">
+                                    <input name="newapikey" value="{{current_user_id}}" type=hidden />
+                                    <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
+                                </form>
+                                <input id="copy" value="{{api_key}}" type="text">
+                                <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
+                                <script>
+                                    function copyTextFunc() {
+                                      var copyText = document.getElementById("copy");
+                                      copyText.select();
+                                      copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+                                      document.execCommand("copy");
+                                    }
+                                </script>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <section>
+                <div class="field-container" style="text-align: center; padding-top: 0px;">
+                    <div>
+                        <div class="form_div">
+                            <form class="form" action="" method=post autocomplete="off">
+                                <dl>
+                                    <dd>
+                                        <input class="field_textarea" type=password name=Current_Password placeholder="Current Password">
+                                    </dd>
+                                    <dd>
+                                        <input class="field_textarea" type=password name=New_Password placeholder="New Password">
+                                    </dd>
+                                    <dd>
+                                        <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
+                                    </dd>
+                                </dl>
+                                <p style="padding-top: 10px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        {% endif %}
-        {% if error %}
-        <section><p class="acc_message"><strong>Error:</strong> {{error}}</p></section>
-        {% elif message %}
-        <section><p class="acc_message"><strong>Message:</strong> {{message}}</p></section>
-        {% endif %}
-        {% if requirement_error %}
-        <footer>
-            <div style="text-align: center; width: 51%;">
-            {% for error in requirement_error %}
-                <p class="req_message">{{error}}</p>
-            {% endfor %}
-            </div>
-        </footer>
+            </section>
+            {% if error %}
+            <section><p class="acc_message"><strong>Error:</strong> {{error}}</p></section>
+            {% elif message %}
+            <section><p class="acc_message"><strong>Message:</strong> {{message}}</p></section>
+            {% endif %}
+            {% if requirement_error %}
+            <footer>
+                <div style="text-align: center; width: 51%;">
+                {% for error in requirement_error %}
+                    <p class="req_message">{{error}}</p>
+                {% endfor %}
+                </div>
+            </footer>
+            {% endif %}
         {% endif %}
     	{% endblock %}
     </body>

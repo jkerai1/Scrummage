@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Dashboard.">
+        {% if refreshrate > 0 %}
+        <meta http-equiv="refresh" content="{{refreshrate}}">
+        {% endif %}
         <link rel="icon" href="static/icons/main.ico" />
         <link rel="apple-touch-icon" href="static/icons/main.ico" />
         <script type="text/javascript" src='static/js/Chart.min.js'></script>
@@ -16,6 +19,20 @@
         <p class="message">Please enable JavaScript to render this page. Otherwise the graphs won't load.</p>
     </noscript>
     <main>
+        <form id="refresh" action="/dashboard/set-refresh" method=post autocomplete="off">
+            <div id="refresh-div">
+                <p id="dash-refresh">Auto Refresh (In Seconds):</p><select name="interval" id="interval">
+                    <option value="0">No Refresh</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="20">30</option>
+                    <option value="20">60</option>
+                </select>
+                <input class="button-red" name="setrefresh" type=submit value="Set">
+            </div>
+        </form>
         <div class="dashboard_field-container">
             <section>
             <div class="dashboard_large_outer_div">
@@ -124,7 +141,7 @@
             </div>
             </section>
             {% endif %}
-            <footer><p class="aboutinfo"><a href="https://github.com/matamorphosis/Scrummage" id="version">Scrummage v1.2</a></p></footer>
+            <footer><p class="aboutinfo"><a href="https://github.com/matamorphosis/Scrummage" id="version">Scrummage v2.0</a></p></footer>
         </div>
     </main>
     {% endblock %}
