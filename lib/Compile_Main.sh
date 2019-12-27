@@ -2,8 +2,8 @@
 # Compiles main.py to a binary file.
 
 pip3 install pyinstaller
-pyinstaller --onefile main.py
-mv dist/main main
+pyinstaller --onefile Scrummage.py
+mv dist/Scrummage Scrummage
 rm -r dist
 rm -r build
-rm main.spec
+rm Scrummage.spec
