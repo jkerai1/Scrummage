@@ -16,6 +16,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -62,7 +65,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Current_Step += 1
 
         else:
-            logging.warning(General.Date() + " Failed to match regular expression.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

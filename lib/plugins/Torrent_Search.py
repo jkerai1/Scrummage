@@ -13,6 +13,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 

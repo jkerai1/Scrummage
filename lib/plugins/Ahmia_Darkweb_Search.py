@@ -25,6 +25,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -65,7 +68,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
         else:
-            logging.info(General.Date() + " No Tor links scraped.")
+            logging.info(General.Date() + " - " + __name__ + " - No Tor links scraped.")
 
         I2P_Pull_URL = I2P_General_URL + Query
         I2P_Scrape_URLs = General.Get_Latest_URLs(I2P_Pull_URL, I2P_Scrape_Regex_URL)
@@ -84,7 +87,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
         else:
-            logging.info(General.Date() + " No I2P links scraped.")
+            logging.info(General.Date() + " - " + __name__ + " - - " + __name__ + " - No I2P links scraped.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

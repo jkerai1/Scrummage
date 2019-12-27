@@ -14,6 +14,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -43,7 +46,7 @@ def Search(Query_List, Task_ID, **kwargs):
             Response = requests.get("http://itunes.apple.com/search?term=" + Query + "&country=" + Location + "&entity=software&limit=" + str(Limit)).text
 
         except:
-            logging.warning(General.Date() + " Failed to make request, are you connected to the internet?")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request, are you connected to the internet?")
 
         JSON_Response = json.loads(Response)
         General.Main_File_Create(Directory, "iTunes", json.dumps(Response, indent=4, sort_keys=True), Query, ".json")
@@ -69,13 +72,13 @@ def Search(Query_List, Task_ID, **kwargs):
                             Data_to_Cache.append(JSON_Object['artistViewUrl'])
 
                 else:
-                    logging.warning(General.Date() + " Invalid value provided, value less than 0.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid value provided, value less than 0.")
 
             else:
-                logging.warning(General.Date() + " Invalid value provided, value equal to 0.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid value provided, value equal to 0.")
 
         else:
-            logging.warning(General.Date() + " Invalid value.")
+            logging.warning(General.Date() + " - " + __name__ + " - Invalid value.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

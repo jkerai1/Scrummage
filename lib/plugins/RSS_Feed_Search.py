@@ -13,6 +13,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -36,7 +39,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        logging.warning(General.Date() + " Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(General.Date() + " - " + __name__ + " - Please provide a valid file, failed to open the file which contains the data to search for.")
 
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -73,7 +76,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
                 else:
-                    logging.info(General.Date() + " Query not found.")
+                    logging.info(General.Date() + " - " + __name__ + " - Query not found.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

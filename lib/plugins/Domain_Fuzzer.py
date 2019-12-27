@@ -56,7 +56,7 @@ def Character_Switch(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " Character Switching Selected.")
+    logging.info(General.Date() + " - " + __name__ + " - Character Switching Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -77,7 +77,7 @@ def Character_Switch(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
 
         logging.info(General.Date() + ' ' + URL_Body)
         URL_List = list(URL_Body)
@@ -156,7 +156,7 @@ def Regular_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " Regular Extensions Selected.")
+    logging.info(General.Date() + " - " + __name__ + " - Regular Extensions Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -177,7 +177,7 @@ def Regular_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
 
         for Extension in Generic_Extensions:
 
@@ -249,7 +249,7 @@ def Global_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " Global Suffixes Selected.")
+    logging.info(General.Date() + " - " + __name__ + " - Global Suffixes Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -270,7 +270,7 @@ def Global_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
 
         for suffix in Global_Domain_Suffixes:
 
@@ -344,7 +344,7 @@ def All_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " All Extensions Selected.")
+    logging.info(General.Date() + " - " + __name__ + " - All Extensions Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -365,7 +365,7 @@ def All_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
 
         for Extension in Generic_Extensions:
 

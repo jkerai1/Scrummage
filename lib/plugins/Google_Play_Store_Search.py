@@ -15,6 +15,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -59,12 +62,12 @@ def Search(Query_List, Task_ID, **kwargs):
                             General.Connections(Output_file, Query, Plugin_Name, Result_URL, "play.google.com", "Data Leakage", Task_ID, General.Get_Title(Result_URL), Concat_Plugin_Name)
 
                     else:
-                        logging.info(General.Date() + " Failed to match regular expression.")
+                        logging.info(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
                     Data_to_Cache.append(Result_URL)
 
         except:
-            logging.info(General.Date() + " Failed to get results, this may be due to the query provided.")
+            logging.info(General.Date() + " - " + __name__ + " - Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

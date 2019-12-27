@@ -53,7 +53,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " Invalid query provided for ABN Search.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for ABN Search.")
 
             elif Type == "CCN":
                 Main_URL = 'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B' + urllib.parse.quote(Query) + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
@@ -91,13 +91,13 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Current_Step += 1
 
                 except:
-                    logging.warning(General.Date() + " Invalid query provided for CCN Search.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for CCN Search.")
 
             else:
-                logging.warning(General.Date() + " Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

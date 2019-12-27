@@ -50,7 +50,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " Invalid query provided for NZBN Search.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for NZBN Search.")
 
             elif Type == "NZCN":
 
@@ -88,19 +88,19 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                         Data_to_Cache.append(Full_NZBN_URL)
 
                         else:
-                            logging.warning(General.Date() + " Response did not match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__ + " - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " Query did not match regular expression.")
+                        logging.warning(General.Date() + " - " + __name__ + " - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " Invalid query provided for NZCN Search.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for NZCN Search.")
 
             else:
-                logging.warning(General.Date() + " Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

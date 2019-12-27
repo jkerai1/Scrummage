@@ -8,7 +8,7 @@ Plugin_Name = "Vulners"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
 
     try:
 
@@ -24,7 +24,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -34,6 +34,9 @@ def Search(Query_List, Task_ID, **kwargs):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
+
+        else:
+            Limit = 10
 
     else:
         Limit = 10

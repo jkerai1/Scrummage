@@ -35,6 +35,9 @@ def Search(Query_List, Task_ID, Type, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -136,10 +139,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Data_to_Cache.append(URL)
 
             else:
-                logging.warning(General.Date() + " Invalid response.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid response.")
 
         else:
-            logging.warning(General.Date() + " Invalid type provided.")
+            logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

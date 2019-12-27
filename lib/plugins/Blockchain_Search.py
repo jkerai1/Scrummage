@@ -16,6 +16,9 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -49,7 +52,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                 Query_Regex = re.search(r"(0x[\d\w]{64})", Query)
 
             else:
-                logging.warning(General.Date() + " Invalid type provided.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
             if Query_Regex:
                 Main_URL = "https://www.blockchain.com/" + Type + "/tx/" + Query
@@ -65,7 +68,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                     Address_Regex = re.findall(r"(0x[\w\d]{40})", Main_Response)
 
                 else:
-                    logging.warning(General.Date() + " Invalid type provided.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
                 if Address_Regex:
                     Current_Step = 0
@@ -84,10 +87,10 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                             Current_Step += 1
 
                 else:
-                    logging.warning(General.Date() + " Failed to match regular expression.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
             else:
-                logging.warning(General.Date() + " Failed to match regular expression.")
+                logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
     else:
         Query_URL = "https://moneroblocks.info/search/" + Query
@@ -117,6 +120,9 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
+
+        else:
+            Limit = 10
 
     else:
         Limit = 10
@@ -149,7 +155,7 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
             Query_Regex = re.search(r"(0x[\w\d]{40})", Query)
 
         else:
-            logging.warning(General.Date() + " Invalid type provided.")
+            logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
         if Query_Regex:
             Main_URL = "https://www.blockchain.com/" + Type + "/address/" + Query
@@ -165,7 +171,7 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
                 Transaction_Regex = re.findall(r"(0x[\d\w]{64})", Main_Response)
 
             else:
-                logging.warning(General.Date() + " Invalid type provided.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
             if Transaction_Regex:
                 Current_Step = 0
@@ -184,10 +190,10 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
                         Current_Step += 1
 
             else:
-                logging.warning(General.Date() + " Failed to match regular expression.")
+                logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
         else:
-            logging.warning(General.Date() + " Failed to match regular expression.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")

@@ -10,7 +10,7 @@ The_File_Extension = ".json"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
 
     try:
 
@@ -27,7 +27,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " Failed to load API details.")
+        logging.warning(General.Date() + " - " + __name__ + " - Failed to load API details.")
 
 def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
     Data_to_Cache = []
@@ -59,7 +59,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             pyhibp.set_api_key(key=Load_Configuration())
 
         except:
-            logging.warning(General.Date() + " Failed to set API key, make sure it is set in the configuration file.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to set API key, make sure it is set in the configuration file.")
 
         Query_List = General.Convert_to_List(Query_List)
 
@@ -185,7 +185,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                 General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
 
         else:
-            logging.warning(General.Date() + " Invalid type provided.")
+            logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
 
     except:
-        logging.warning(General.Date() + " Execution error.")
+        logging.warning(General.Date() + " - " + __name__ + " - Execution error.")

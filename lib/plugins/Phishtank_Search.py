@@ -14,6 +14,9 @@ def Search(Query_List, Task_ID, **kwargs):
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
 
+        else:
+            Limit = 10
+
     else:
         Limit = 10
 
@@ -75,10 +78,10 @@ def Search(Query_List, Task_ID, **kwargs):
                                 Current_Step += 1
 
                     except:
-                        logging.warning(General.Date() + " Failed to make request for result, link may no longer be available.")
+                        logging.warning(General.Date() + " - " + __name__ + " - Failed to make request for result, link may no longer be available.")
 
         except:
-            logging.warning(General.Date() + " Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

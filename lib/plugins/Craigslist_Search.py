@@ -25,7 +25,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -35,6 +35,9 @@ def Search(Query_List, Task_ID, **kwargs):
 
         if int(kwargs["Limit"]) > 0:
             Limit = kwargs["Limit"]
+
+        else:
+            Limit = 10
 
     else:
         Limit = 10

@@ -9,7 +9,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
 
     try:
 
@@ -27,7 +27,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
 
 
 def Search(Query_List, Task_ID, Type, **kwargs):
@@ -84,10 +84,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Data_to_Cache.append(Main_URL)
 
                     except:
-                        logging.warning(General.Date() + " Invalid query provided for UKBN Search.")
+                        logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for UKBN Search.")
 
                 else:
-                    logging.info(General.Date() + " Failed to retrieve API key.")
+                    logging.info(General.Date() + " - " + __name__ + " - Failed to retrieve API key.")
 
             elif Type == "UKCN":
                 Authorization_Key = Load_Configuration()
@@ -134,19 +134,19 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                             Data_to_Cache.append(Full_UKBN_URL)
 
                         except:
-                            logging.warning(General.Date() + " Error during UKCN Search, perhaps the rate limit has been exceeded.")
+                            logging.warning(General.Date() + " - " + __name__ + " - Error during UKCN Search, perhaps the rate limit has been exceeded.")
 
                     except:
-                        logging.warning(General.Date() + " Invalid query provided for UKCN Search.")
+                        logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for UKCN Search.")
 
                 else:
-                    logging.warning(General.Date() + " Failed to retrieve API key.")
+                    logging.warning(General.Date() + " - " + __name__ + " - Failed to retrieve API key.")
 
             else:
-                logging.warning(General.Date() + " Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
