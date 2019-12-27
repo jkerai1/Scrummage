@@ -2,7 +2,7 @@
 
 # Scrummage  
 **NEW VERSION 2.0**
-- Added Scrummage API (Version 1) [Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API)
+- Added Scrummage API (Version 1) [Information Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API) | [Upgrade Dependency Intructions Here](https://github.com/matamorphosis/Scrummage/wiki/Upgrading-Scrummage)
 - Added refresh option for Dashboard
 - UI/UX enhancements
 - Bug fixes  
