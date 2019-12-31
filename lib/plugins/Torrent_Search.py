@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Effective December 2019: Outdated - Server no longer active.
 import plugins.common.General as General, requests, json, os, logging
 
 The_File_Extension = ".html"
