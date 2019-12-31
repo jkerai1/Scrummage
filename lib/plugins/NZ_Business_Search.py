@@ -46,11 +46,12 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for NZBN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for NZBN Search.")
 
             elif Type == "NZCN":
 
@@ -74,9 +75,9 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         NZBNs_Regex = re.findall(r"\<span\sclass\=\"entityName\"\>([\w\d\s\-\_\&\|\!\@\#\$\%\^\*\(\)\.\,]+)\<\/span\>\s<span\sclass\=\"entityInfo\"\>\((\d{6})\)\s\(NZBN\:\s(\d{13})\)", Response)
 
                         if NZBNs_Regex:
+                            Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
 
                             for NZCN, NZ_ID, NZBN_URL in NZBNs_Regex:
-                                print(NZBN_URL, NZ_ID, NZCN)
                                 Full_NZBN_URL = 'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/' + NZ_ID + '?backurl=H4sIAAAAAAAAAEXLuwrCQBCF4bfZNtHESIpBbLQwhWBeYNgddSF7cWai5O2NGLH7zwenyHgjKWwKGaOfSwjZ3ncPaOt1W9bbsmqaamMoqtepnzIJ7Ltu2RdFHeXIacxf9tEmzgdOAZbuExh0jknk%2F17gRNMrsQMjiqxQmsEHr7Aycp3NfY5PjJbcGSMNoDySCckR%2FPwNLgXMiL4AAAA%3D'
 
                                 if Full_NZBN_URL not in Cached_Data and Full_NZBN_URL not in Data_to_Cache:
@@ -84,23 +85,23 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), NZCN.replace(' ', '-'), The_File_Extension)
 
                                     if Output_file:
-                                        General.Connections(Output_file, Query, Plugin_Name, Full_NZBN_URL, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, General.Get_Title(Full_NZBN_URL), Plugin_Name)
+                                        Output_Connections.Output(Output_file, Full_NZBN_URL, General.Get_Title(Full_NZBN_URL))
                                         Data_to_Cache.append(Full_NZBN_URL)
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__ + " - Response did not match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " - " + __name__ + " - Query did not match regular expression.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for NZCN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for NZCN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

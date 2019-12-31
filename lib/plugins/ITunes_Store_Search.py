@@ -46,7 +46,7 @@ def Search(Query_List, Task_ID, **kwargs):
             Response = requests.get("http://itunes.apple.com/search?term=" + Query + "&country=" + Location + "&entity=software&limit=" + str(Limit)).text
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request, are you connected to the internet?")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request, are you connected to the internet?")
 
         JSON_Response = json.loads(Response)
         General.Main_File_Create(Directory, "iTunes", json.dumps(Response, indent=4, sort_keys=True), Query, ".json")
@@ -56,6 +56,7 @@ def Search(Query_List, Task_ID, **kwargs):
             if not JSON_Response['resultCount'] == 0:
 
                 if JSON_Response['resultCount'] > 0:
+                    Output_Connections = General.Connections(Query, Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
                     for JSON_Object in JSON_Response['results']:
                         JSON_Object_Response = requests.get(JSON_Object['artistViewUrl']).text
@@ -67,18 +68,18 @@ def Search(Query_List, Task_ID, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Object_Response, iTunes_Regex.group(1), The_File_Extension)
 
                                 if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, JSON_Object['artistViewUrl'], "itunes.apple.com", "Data Leakage", Task_ID, General.Get_Title(JSON_Object['artistViewUrl']), Concat_Plugin_Name)
+                                    Output_Connections.Output(Output_file, JSON_Object['artistViewUrl'], General.Get_Title(JSON_Object['artistViewUrl']))
 
                             Data_to_Cache.append(JSON_Object['artistViewUrl'])
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid value provided, value less than 0.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid value provided, value less than 0.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid value provided, value equal to 0.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid value provided, value equal to 0.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Invalid value.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid value.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

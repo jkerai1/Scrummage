@@ -9,7 +9,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -27,7 +27,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 
 def Search(Query_List, Task_ID, Type, **kwargs):
@@ -84,10 +84,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Data_to_Cache.append(Main_URL)
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for UKBN Search.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for UKBN Search.")
 
                 else:
-                    logging.info(General.Date() + " - " + __name__ + " - Failed to retrieve API key.")
+                    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to retrieve API key.")
 
             elif Type == "UKCN":
                 Authorization_Key = Load_Configuration()
@@ -105,12 +105,8 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                     try:
                         Main_URL = 'https://api.companieshouse.gov.uk/search/companies?q=' + Query + '&items_per_page=' + Limit
-                        proxies = {
-                            "http": "http://127.0.0.1:8080",
-                            "https": "https://127.0.0.1:8080",
-                        }
                         headers = {"Authorization": "Basic SGI5M0V4STRkMDZ2d0NHSzBZTkI5QUxnQ3N3UDNhNEFNMDRHeWtVdzo="}
-                        Response = requests.get(Main_URL, headers=headers, proxies=proxies, verify=False).text
+                        Response = requests.get(Main_URL, headers=headers).text
                         JSON_Response = json.loads(Response)
                         Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
 
@@ -118,6 +114,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                             if JSON_Response['total_results'] > 0:
                                 General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, '.json')
+                                Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
 
                                 for Item in JSON_Response['items']:
                                     UKBN_URL = Item['links']['self']
@@ -126,27 +123,26 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     if Full_UKBN_URL not in Cached_Data and Full_UKBN_URL not in Data_to_Cache:
                                         UKCN = Item['title']
                                         Current_Response = requests.get(Full_UKBN_URL).text
-                                        print(Full_UKBN_URL)
                                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extension)
 
                                         if Output_file:
-                                            General.Connections(Output_file, Query, Plugin_Name, Full_UKBN_URL, "companieshouse.gov.uk", "Data Leakage", Task_ID, UKCN, Plugin_Name)
+                                            Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN)
                                             Data_to_Cache.append(Full_UKBN_URL)
 
                         except:
-                            logging.warning(General.Date() + " - " + __name__ + " - Error during UKCN Search, perhaps the rate limit has been exceeded.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Error during UKCN Search, perhaps the rate limit has been exceeded.")
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for UKCN Search.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for UKCN Search.")
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__ + " - Failed to retrieve API key.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to retrieve API key.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

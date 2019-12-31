@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# Effective December 2019: Outdated - Server no longer active.
+# Version 1 Outdated.
 import plugins.common.General as General, requests, json, os, logging
 
-The_File_Extension = ".html"
+The_File_Extension = ".json"
 Plugin_Name = "Torrent"
 
 def Search(Query_List, Task_ID, **kwargs):
@@ -48,16 +48,17 @@ def Search(Query_List, Task_ID, **kwargs):
 
         if Output_file:
             Current_Step = 0
+            Output_Connections = General.Connections(Query, Plugin_Name, "thepiratebay.org", "Data Leakage", Task_ID, Plugin_Name.lower())
 
             for Search_Result in Response:
                 Result_Title = Search_Result["title"]
                 Result_URL = Search_Result["magnet"]
 
                 if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
-                    # Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                    #Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Response, Result_Title, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Result_URL, "thepiratebay.org", "Data Leakage", Task_ID, Result_Title, Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, Result_URL, General.Get_Title(Result_URL))
 
                     Data_to_Cache.append(Result_URL)
                     Current_Step += 1

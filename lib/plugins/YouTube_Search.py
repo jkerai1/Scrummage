@@ -8,7 +8,7 @@ Plugin_Name = "YouTube"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -29,7 +29,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -76,6 +76,7 @@ def Search(Query_List, Task_ID, **kwargs):
         maxResults=Limit,
         ).execute()
         General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, ".json")
+        Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
         for Search_Result in Search_Response.get('items', []):
             Full_Video_URL = "https://www.youtube.com/watch?v=" + Search_Result['id']['videoId']
@@ -85,7 +86,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Full_Video_URL, "youtube.com", "Data Leakage", Task_ID, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
+                    Output_Connections.Output(Output_file, Full_Video_URL, General.Get_Title(Full_Video_URL))
 
                 Data_to_Cache.append(Full_Video_URL)
 

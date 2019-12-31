@@ -8,7 +8,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -24,7 +24,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -72,6 +72,7 @@ def Search(Query_List, Task_ID, **kwargs):
             General.Main_File_Create(Directory, Plugin_Name, JSON_Output_Response, Query, ".json")
 
             if JSON_Response["ack"] == "Success":
+                Output_Connections = General.Connections(Query, Plugin_Name, "ebay.com", "Data Leakage", Task_ID, Plugin_Name.lower())
                 Current_Step = 0
 
                 for JSON_Line in JSON_Response['searchResult']['item']:
@@ -84,16 +85,16 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Ebay_Item_Response, Ebay_Item_Regex.group(1), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Ebay_Item_URL, "ebay.com", "Data Leakage", Task_ID, General.Get_Title(Ebay_Item_URL), Plugin_Name.lower())
+                            Output_Connections.Output(Output_file, Ebay_Item_URL, General.Get_Title(Ebay_Item_URL))
 
                         Data_to_Cache.append(Ebay_Item_URL)
                         Current_Step += 1
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - No results found.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - No results found.")
 
         except:
-            logging.info(General.Date() + " - " + __name__ + " - Failed to make API call.")
+            logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

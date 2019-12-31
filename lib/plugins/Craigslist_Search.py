@@ -25,7 +25,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -67,6 +67,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Craigslist_Response = feedparser.parse(Main_URL)
         Craigslist_Items = Craigslist_Response["items"]
         Current_Step = 0
+        Output_Connections = General.Connections(Query, Plugin_Name, Local_Domain, "Data Leakage", Task_ID, Plugin_Name.lower())
 
         for Item in Craigslist_Items:
             Item_URL = Item["link"]
@@ -82,7 +83,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Craigslist_Response, Filename, The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Item_URL, Local_Domain, "Data Leakage", Task_ID, General.Get_Title(Item_URL), Plugin_Name.lower())
+                    Output_Connections.Output(Output_file, Item_URL, General.Get_Title(Item_URL))
 
                 Data_to_Cache.append(Item_URL)
                 Current_Step += 1

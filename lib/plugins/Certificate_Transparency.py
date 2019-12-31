@@ -69,21 +69,22 @@ def Search(Query_List, Task_ID):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(JSON_Response, indent=4, sort_keys=True), SSLMate_Regex.group(1), The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Request, "sslmate.com", "Domain Spoof", Task_ID, General.Get_Title(Request), Plugin_Name.lower())
+                                Output_Connections = General.Connections(Query, Plugin_Name, "sslmate.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
+                                Output_Connections.Output(Output_file, Request, General.Get_Title(Request))
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__ + " - Failed to create file.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to create file.")
 
                     Data_to_Cache.append(Request)
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - No response.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - No response.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Query does not exist.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query does not exist.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

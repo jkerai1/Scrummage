@@ -68,6 +68,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
             Output_file = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, ".json")
             Posts = CSE_Response[0]["edge_owner_to_timeline_media"]["edges"]
+            Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
             Current_Step = 0
 
             for Post in Posts:
@@ -77,7 +78,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -88,6 +89,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
             Output_file = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, ".json")
             Posts = CSE_Response[0]["edge_hashtag_to_media"]["edges"]
+            Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
             Current_Step = 0
 
             for Post in Posts:
@@ -97,7 +99,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -108,6 +110,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
             Output_file = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, ".json")
             Posts = CSE_Response[0]["edge_location_to_media"]["edges"]
+            Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
             Current_Step = 0
 
             for Post in Posts:
@@ -117,7 +120,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
 
                 Data_to_Cache.append(URL)
                 Current_Step += 1
@@ -134,15 +137,16 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if URL not in Cached_Data and URL not in Data_to_Cache:
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Local_Plugin_Name, URL, "instagram.com", "Data Leakage", Task_ID, General.Get_Title(URL), Local_Plugin_Name.lower())
+                        Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
 
                 Data_to_Cache.append(URL)
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid response.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid response.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Invalid type provided.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid type provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

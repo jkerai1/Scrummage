@@ -47,6 +47,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Win_Store_Response = requests.get(Main_URL, headers=headers).text
         General.Main_File_Create(Directory, Plugin_Name, Win_Store_Response, Query, The_File_Extension)
         Win_Store_Regex = re.findall(r"\/en\-au\/p\/([\w\-]+)\/([\w\d]+)", Win_Store_Response)
+        Output_Connections = General.Connections(Query, Plugin_Name, "microsoft.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
         if Win_Store_Regex:
             Current_Step = 0
@@ -60,13 +61,13 @@ def Search(Query_List, Task_ID, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Win_Store_Response, Regex_Group_1, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Item_URL, "microsoft.com", "Data Leakage", Task_ID, General.Get_Title(Item_URL), Concat_Plugin_Name)
+                        Output_Connections.Output(Output_file, Item_URL, General.Get_Title(Item_URL))
 
                     Data_to_Cache.append(Item_URL)
                     Current_Step += 1
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

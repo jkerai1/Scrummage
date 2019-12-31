@@ -8,7 +8,7 @@ Plugin_Name = "Vulners"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -24,7 +24,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -65,6 +65,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Search_Response = vulners_api.search(Query, limit=int(Limit))
         JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
         General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, ".json")
+        Output_Connections = General.Connections(Query, Plugin_Name, "vulners.com", "Exploit", Task_ID, Plugin_Name.lower())
 
         for Search_Result in Search_Response:
 
@@ -77,7 +78,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Result_URL, "vulners.com", "Exploit", Task_ID, Result_Title, Plugin_Name.lower())
+                        Output_Connections.Output(Output_file, Result_URL, Result_Title)
 
                     Data_to_Cache.append(Result_URL)
 

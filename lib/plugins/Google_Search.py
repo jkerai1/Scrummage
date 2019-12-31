@@ -8,7 +8,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -28,7 +28,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load API details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load API details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -72,6 +72,7 @@ def Search(Query_List, Task_ID, **kwargs):
         CSE_JSON_Response = json.loads(CSE_JSON_Output_Response)
 
         General.Main_File_Create(Directory, Plugin_Name, CSE_JSON_Output_Response, Query, ".json")
+        Output_Connections = General.Connections(Query, Plugin_Name, "google.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
 
         for JSON_Response_Items in CSE_JSON_Response['items']:
 
@@ -91,10 +92,10 @@ def Search(Query_List, Task_ID, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Google_Item_URL, "google.com", "Domain Spoof", Task_ID, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
+                                Output_Connections.Output(Output_file, Google_Item_URL, General.Get_Title(Google_Item_URL))
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
 
                         Data_to_Cache.append(Google_Item_URL)
 

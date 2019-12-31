@@ -46,6 +46,7 @@ def Search(Query_List, Task_ID, **kwargs):
             Play_Store_Response = play_scraper.developer(Query, results=Limit)
             Play_Store_Response_JSON = json.dumps(Play_Store_Response, indent=4, sort_keys=True)
             General.Main_File_Create(Plugin_Name, Play_Store_Response_JSON, Query, ".json")
+            Output_Connections = General.Connections(Query, Plugin_Name, "play.google.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
             for Result_Details in Play_Store_Response:
                 Result_URL = Result_Details['url']
@@ -59,15 +60,15 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Result_URL, "play.google.com", "Data Leakage", Task_ID, General.Get_Title(Result_URL), Concat_Plugin_Name)
+                            Output_Connections.Output(Output_file, Result_URL, General.Get_Title(Result_URL))
 
                     else:
-                        logging.info(General.Date() + " - " + __name__ + " - Failed to match regular expression.")
+                        logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
 
                     Data_to_Cache.append(Result_URL)
 
         except:
-            logging.info(General.Date() + " - " + __name__ + " - Failed to get results, this may be due to the query provided.")
+            logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

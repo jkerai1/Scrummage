@@ -42,7 +42,8 @@ def Search(Query_List, Task_ID):
                     Output_file = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Link, Query, "Domain Spoof", Task_ID, Title, Concat_Plugin_Name)
+                        Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
+                        Output_Connections.Output(Output_file, Link, Title)
 
                     Data_to_Cache.append(Link)
 
@@ -56,12 +57,13 @@ def Search(Query_List, Task_ID):
                 Output_file = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, Link, Query, "Domain Spoof", Task_ID, Title, Concat_Plugin_Name)
+                    Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
+                    Output_Connections.Output(Output_file, Link, Title)
 
                 Data_to_Cache.append(Link)
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Error retrieving DNS details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Error retrieving DNS details.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -50,6 +50,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
         if Regex:
             Current_Step = 0
+            Output_Connections = General.Connections(Query, Plugin_Name, "default-password.info", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
             for URL, Title in Regex:
                 Item_URL = URL_Body + URL
@@ -67,18 +68,18 @@ def Search(Query_List, Task_ID, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Response['data'], Title, The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Item_URL, "default-password.info", "Data Leakage", Task_ID, General.Get_Title(Item_URL), Concat_Plugin_Name)
+                                Output_Connections.Output(Output_file, Item_URL, General.Get_Title(Item_URL))
 
                             Data_to_Cache.append(Item_URL)
                             Current_Step += 1
                     except:
-                        logging.warning(General.Date() + " - " + __name__ + " - Failed to generate output, may have a blank detailed response.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to generate output, may have a blank detailed response.")
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression for current result.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression for current result.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to match regular expression for Query.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression for Query.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

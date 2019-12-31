@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide a valid file, failed to open the file which contains the data to search for.")
 
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -70,13 +70,14 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Feed.description, File_Link, The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Feed.link, Domain, "Data Leakage", Task_ID, General.Get_Title(Feed.link), Plugin_Name.lower(), Dump_Types=Dump_Types)
+                            Output_Connections = General.Connections(Query, Plugin_Name, Domain, "Data Leakage", Task_ID, Plugin_Name.lower())
+                            Output_Connections.Output(Output_file, Feed.link, General.Get_Title(Feed.link), Dump_Types=Dump_Types)
 
                         Data_to_Cache.append(Feed.link)
                         Current_Step += 1
 
                 else:
-                    logging.info(General.Date() + " - " + __name__ + " - Query not found.")
+                    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Query not found.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

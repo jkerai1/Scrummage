@@ -55,6 +55,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Full_Link = "https://www.phishtank.com/" + link.attrs['href']
                     Links.append(Full_Link)
 
+            Output_Connections = General.Connections(Query, Plugin_Name, "phishtank.com", "Phishing", Task_ID, Plugin_Name.lower())
             Current_Step = 0
 
             for Link in Links:
@@ -73,15 +74,15 @@ def Search(Query_List, Task_ID, **kwargs):
                         if Output_file:
 
                             if Current_Link not in Cached_Data and Current_Link not in Data_to_Cache and Current_Step < int(Limit):
-                                General.Connections(Output_file, Query, Plugin_Name, Current_Link, "phishtank.com", "Phishing", Task_ID, General.Get_Title(Current_Link), Plugin_Name.lower())
+                                Output_Connections.Output(Output_file, Current_Link, General.Get_Title(Current_Link))
                                 Data_to_Cache.append(Current_Link)
                                 Current_Step += 1
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__ + " - Failed to make request for result, link may no longer be available.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request for result, link may no longer be available.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

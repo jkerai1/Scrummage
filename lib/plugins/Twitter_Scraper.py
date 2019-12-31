@@ -9,7 +9,7 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -29,7 +29,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load Twitter details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
     Data_to_Cache = []
@@ -62,6 +62,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             })
 
     JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
+    Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
     for JSON_Item in JSON_Response:
 
@@ -69,18 +70,18 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             Link = JSON_Item['url']
 
             if Link not in Cached_Data and Link not in Data_to_Cache:
-                logging.info(General.Date() + " - " + __name__ + " - " + Link)
+                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - " + Link)
                 Item_Response = requests.get(Link).text
                 Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), ".html")
 
                 if Output_file:
-                    General.Connections(Output_file, Handle, Plugin_Name, Link, "twitter.com", "Data Leakage", Task_ID, General.Get_Title(Link), Plugin_Name.lower())
+                    Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__ + " - Output file not returned.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Output file not returned.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Insufficient parameters provided.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Insufficient parameters provided.")
 
         Data_to_Cache.append(Link)
 
@@ -129,4 +130,4 @@ def Search(Query_List, Task_ID, **kwargs):
             General_Pull(Query, Limit, Directory, API, Task_ID)
 
         except:
-            logging.info(General.Date() + " - " + __name__ + " - Failed to get results. Are you connected to the internet?")
+            logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to get results. Are you connected to the internet?")

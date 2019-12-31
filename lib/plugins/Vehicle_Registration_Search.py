@@ -31,6 +31,7 @@ def Search(Query_List, Task_ID):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
+        Output_Connections = General.Connections(Query, Plugin_Name, "general-insurance.coles.com.au", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
         for State in States:
             Post_URL = 'https://general-insurance.coles.com.au/bin/wesfarmers/search/vehiclerego'
@@ -48,15 +49,15 @@ def Search(Query_List, Task_ID):
                 Item_URL = Post_URL + "?" + Query
 
                 if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache:
-                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(Registration_Response, indent=4, sort_keys=True), Title, The_File_Extension)
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(Registration_Response, indent=4, sort_keys=True), Title.replace(" ", "-"), The_File_Extension)
 
                     if Output_file:
-                        General.Connections(Output_file, Query, Plugin_Name, Item_URL, "general-insurance.coles.com.au", "Data Leakage", Task_ID, Title, Concat_Plugin_Name)
+                        Output_Connections.Output(Output_file, Item_URL, Title)
 
                     Data_to_Cache.append(Item_URL)
 
             except:
-                logging.info(General.Date() + " - " + __name__ + " - No result found for given query " + Query + " for state " + State + ".")
+                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - No result found for given query " + Query + " for state " + State + ".")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

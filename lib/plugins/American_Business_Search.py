@@ -50,7 +50,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for CIK Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for CIK Search.")
 
             elif Type == "ACN":
                 Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?company=' + Query + '&owner=exclude&action=getcompany'
@@ -73,6 +73,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
 
                         if CIKs_Regex:
+                            Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Data Leakage", Task_ID, Plugin_Name)
 
                             for CIK_URL, ACN in CIKs_Regex:
                                 Full_CIK_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + CIK_URL + '&owner=exclude&count=40&hidefilings=0'
@@ -82,24 +83,24 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
 
                                     if Output_file:
-                                        General.Connections(Output_file, Query, Plugin_Name, Full_CIK_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Full_CIK_URL), Plugin_Name)
+                                        Output_Connections.Output(Output_file, Full_CIK_URL, General.Get_Title(Full_CIK_URL))
                                         Data_to_Cache.append(Full_CIK_URL)
                                         Current_Step += 1
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__ + " - Response did not match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " - " + __name__ + " - Query did not match regular expression.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for ACN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ACN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

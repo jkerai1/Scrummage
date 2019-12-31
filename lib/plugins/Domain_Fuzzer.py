@@ -56,7 +56,7 @@ def Character_Switch(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__ + " - Character Switching Selected.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Character Switching Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -77,7 +77,7 @@ def Character_Switch(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
 
         logging.info(General.Date() + ' ' + URL_Body)
         URL_List = list(URL_Body)
@@ -110,7 +110,7 @@ def Character_Switch(Query_List, Task_ID):
 
 
                     except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query +' to IP address.')
+                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
 
                 except Exception as e:
                     logging.warning(General.Date() + ' ' + str(e))
@@ -123,8 +123,8 @@ def Character_Switch(Query_List, Task_ID):
         if Output_File:
 
             for Host in Valid_Hosts:
-                General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID,
-                                    General.Get_Title(Host), Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -156,7 +156,7 @@ def Regular_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__ + " - Regular Extensions Selected.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Regular Extensions Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -177,7 +177,7 @@ def Regular_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
 
         for Extension in Generic_Extensions:
 
@@ -204,7 +204,7 @@ def Regular_Extensions(Query_List, Task_ID):
                                 Valid_Hosts.append(Web_Host)
 
                     except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query +' to IP address.')
+                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
 
                 except Exception as e:
                     logging.warning(General.Date() + ' ' + str(e))
@@ -216,8 +216,8 @@ def Regular_Extensions(Query_List, Task_ID):
         if Output_File:
 
             for Host in Valid_Hosts:
-                General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID,
-                                    General.Get_Title(Host), Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -249,7 +249,7 @@ def Global_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__ + " - Global Suffixes Selected.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Global Suffixes Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -270,7 +270,7 @@ def Global_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
 
         for suffix in Global_Domain_Suffixes:
 
@@ -297,7 +297,7 @@ def Global_Extensions(Query_List, Task_ID):
                                 Valid_Hosts.append(Web_Host)
 
                     except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query +' to IP address.')
+                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
 
                 except Exception as e:
                     logging.warning(General.Date() + ' ' + str(e))
@@ -309,8 +309,8 @@ def Global_Extensions(Query_List, Task_ID):
         if Output_File:
 
             for Host in Valid_Hosts:
-                General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID,
-                                    General.Get_Title(Host), Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
 
     if Data_to_Cache:
 
@@ -344,7 +344,7 @@ def All_Extensions(Query_List, Task_ID):
     if not Cached_Data:
         Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__ + " - All Extensions Selected.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - All Extensions Selected.")
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
@@ -365,7 +365,7 @@ def All_Extensions(Query_List, Task_ID):
                 URL_Extension = URL_Regex.group(4)
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Please provide valid URLs.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
 
         for Extension in Generic_Extensions:
 
@@ -396,20 +396,19 @@ def All_Extensions(Query_List, Task_ID):
                                     Valid_Hosts.append(Web_Host)
 
                         except:
-                            logging.info(General.Date() + ' Failed to resolve hostname ' + Query +' to IP address.')
+                            logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
 
                     except Exception as e:
                         logging.warning(General.Date() + ' ' + str(e))
 
         URL_Domain = URL_Body + URL_Extension
-        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body,
-                                               The_File_Extension)
+        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
 
         if Output_File:
 
             for Host in Valid_Hosts:
-                General.Connections(Output_File, Query, Local_Plugin_Name, Host, URL_Domain, "Domain Spoof", Task_ID,
-                                    General.Get_Title(Host), Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
 
         if Data_to_Cache:
 

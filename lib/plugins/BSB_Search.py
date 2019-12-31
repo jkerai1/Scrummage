@@ -30,6 +30,7 @@ def Search(Query_List, Task_ID):
         BSB_Search_URL = "https://www.bsbnumbers.com/" + Query + ".html"
         Response = requests.get(BSB_Search_URL).text
         Error_Regex = re.search(r"Correct\sthe\sfollowing\serrors", Response)
+        Output_Connections = General.Connections(Query, Plugin_Name, "bsbnumbers.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
         if not Error_Regex:
 
@@ -37,12 +38,12 @@ def Search(Query_List, Task_ID):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Query, The_File_Extension)
 
                 if Output_file:
-                    General.Connections(Output_file, Query, Plugin_Name, BSB_Search_URL, "bsbnumbers.com", "Data Leakage", Task_ID, General.Get_Title(BSB_Search_URL), Plugin_Name.lower())
+                    Output_Connections.Output(Output_file, BSB_Search_URL, General.Get_Title(BSB_Search_URL))
 
                 Data_to_Cache.append(BSB_Search_URL)
 
         else:
-            logging.warning(General.Date() + " - " + __name__ + " - Query returned error, probably does not exist.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query returned error, probably does not exist.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -7,7 +7,7 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__ + " - Loading configuration data.")
+    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
 
     try:
 
@@ -23,7 +23,7 @@ def Load_Configuration():
                     return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__ + " - Failed to load location details.")
+        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -64,7 +64,7 @@ def Search(Query_List, Task_ID, **kwargs):
         flickr_api.set_keys(api_key=Flickr_Details[0], api_secret=Flickr_Details[1])
 
     except:
-        logging.info(General.Date() + " - " + __name__ + " - Failed to establish API identity.")
+        logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to establish API identity.")
 
     for Query in Query_List:
         Email_Regex = re.search(r"[^@]+@[^\.]+\..+", Query)
@@ -75,10 +75,11 @@ def Search(Query_List, Task_ID, **kwargs):
                 User = flickr_api.Person.findByEmail(Query)
                 Photos = User.getPhotos()
                 General.Main_File_Create(Directory, Plugin_Name, Photos, Query, ".txt")
+                Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                Current_Step = 0
 
                 for Photo in Photos:
                     Photo_URL = "https://www.flickr.com/photos/" + Query + "/" + Photo["id"]
-                    Current_Step = 0
 
                     if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
                         headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
@@ -86,25 +87,25 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, Photo, The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Photo_URL, "flickr.com", "Data Leakage", Task_ID, General.Get_Title(Photo_URL), Plugin_Name.lower())
+                            Output_Connections.Output(Output_file, Photo_URL, General.Get_Title(Photo_URL))
 
                         Data_to_Cache.append(Photo_URL)
                         Current_Step += 1
 
             except:
-                logging.info(General.Date() + " - " + __name__ + " - Failed to make API call.")
+                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make API call.")
 
         else:
 
             try:
-                print(Query)
                 User = flickr_api.Person.findByUserName(Query)
                 Photos = User.getPhotos()
                 General.Main_File_Create(Directory, Plugin_Name, Photos, Query, ".txt")
+                Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                Current_Step = 0
 
                 for Photo in Photos:
                     Photo_URL = "https://www.flickr.com/photos/" + Query + "/" + Photo["id"]
-                    Current_Step = 0
 
                     if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
                         headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
@@ -112,13 +113,13 @@ def Search(Query_List, Task_ID, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, str(Photo['id']), The_File_Extension)
 
                         if Output_file:
-                            General.Connections(Output_file, Query, Plugin_Name, Photo_URL, "flickr.com", "Data Leakage", Task_ID, General.Get_Title(Photo_URL), Plugin_Name.lower())
+                            Output_Connections.Output(Output_file, Photo_URL, General.Get_Title(Photo_URL))
 
                         Data_to_Cache.append(Photo_URL)
                         Current_Step += 1
 
             except:
-                logging.info(General.Date() + " - " + __name__ + " - Failed to make API call.")
+                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

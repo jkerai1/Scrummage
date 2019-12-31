@@ -46,11 +46,12 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for ABN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ABN Search.")
 
             elif Type == "ACN":
                 Main_URL = 'https://abr.business.gov.au/Search/Run'
@@ -74,6 +75,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
 
                         if ABNs_Regex:
+                            Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
 
                             for ABN_URL, ACN in ABNs_Regex:
                                 Full_ABN_URL = 'https://abr.business.gov.au/ABN/View?abn=' + ABN_URL
@@ -84,24 +86,24 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
 
                                     if Output_file:
-                                        General.Connections(Output_file, Query, Plugin_Name, Full_ABN_URL, "abr.business.gov.au", "Data Leakage", Task_ID, General.Get_Title(Full_ABN_URL), Plugin_Name)
+                                        Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
                                         Data_to_Cache.append(Full_ABN_URL)
                                         Current_Step += 1
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__ + " - Response did not match regular expression.")
+                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " - " + __name__ + " - Query did not match regular expression.")
+                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for ACN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ACN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

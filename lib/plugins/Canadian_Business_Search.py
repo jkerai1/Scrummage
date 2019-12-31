@@ -49,11 +49,12 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for ABN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ABN Search.")
 
             elif Type == "CCN":
                 Main_URL = 'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B' + urllib.parse.quote(Query) + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
@@ -72,6 +73,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 try:
                     General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, ".json")
                     Current_Step = 0
+                    Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
 
                     for JSON_Item in JSON_Response['docs']:
 
@@ -86,18 +88,18 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), CCN.replace(' ', '-'), The_File_Extension)
 
                                 if Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, Full_ABN_URL, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, General.Get_Title(Full_ABN_URL), Plugin_Name)
+                                    Output_Connections.Output(Output_file, Full_ABN_URL, General.Get_Title(Full_ABN_URL))
                                     Data_to_Cache.append(Full_ABN_URL)
                                     Current_Step += 1
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__ + " - Invalid query provided for CCN Search.")
+                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for CCN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__ + " - Invalid request type.")
+                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__ + " - Failed to make request.")
+            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
