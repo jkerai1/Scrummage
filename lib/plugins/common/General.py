@@ -22,6 +22,7 @@ def Logging(Directory, Plugin_Name):
     except:
         logging.warning(Date() + " Failed to initialise logging.")
 
+
 def Get_Cache(Directory, Plugin_Name):
     Main_File = Plugin_Name + "-cache.txt"
     General_Directory_Search = re.search(r"(.*)\/\d{4}\/\d{2}\/\d{2}", Directory)
@@ -84,48 +85,60 @@ def Convert_to_List(String):
     except:
         logging.warning(Date() + " Failed to convert the provided query to a list.")
 
-def Connections(Complete_File, Input, Plugin_Name, Link, Domain, Result_Type, Task_ID, DB_Title, Concat_Plugin_Name, **kwargs):
+class Connections():
 
-    try:
-        Plugin_Name = str(Plugin_Name)
-        Complete_File = str(Complete_File)
-        Input = str(Input)
+    def __init__(self, Input, Plugin_Name, Domain, Result_Type, Task_ID, Concat_Plugin_Name):
 
-        if "Dump_Types" in kwargs:
-            Dump_Types = kwargs["Dump_Types"]
-            Title = "Data for input: " + Input + ", found by Scrummage plugin " + Plugin_Name + ".\nData types include: " + ", ".join(Dump_Types) + ".\nAll data is stored in " + Complete_File + "."
-            Ticket_Subject = "Scrummage " + Plugin_Name + " results for query " + Input + "."
-            Ticket_Text = "Results were identified for the search " + Input + " performed by the Scrummage plugin " + Plugin_Name + ".\nThe following types of sensitive data were found:\n - " + "\n - ".join(Dump_Types) + ". Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at " + Complete_File + "."
+        try:
+            self.Plugin_Name = str(Plugin_Name)
+            self.Domain = str(Domain)
+            self.Result_Type = str(Result_Type)
+            self.Task_ID = str(Task_ID)
+            self.Input = str(Input)
+            self.Concat_Plugin_Name = str(Concat_Plugin_Name)
+
+        except:
+            logging.warning(Date() + " Error setting initial variables.")
+
+    def Output(self, Complete_File, Link, DB_Title, **kwargs):
+
+        try:
+
+            if "Dump_Types" in kwargs:
+                self.Dump_Types = kwargs["Dump_Types"]
+                self.Title = "Data for input: " + self.Input + ", found by Scrummage plugin " + self.Plugin_Name + ".\nData types include: " + ", ".join(Dump_Types) + ".\nAll data is stored in " + Complete_File + "."
+                self.Ticket_Subject = "Scrummage " + self.Plugin_Name + " results for query " + self.Input + "."
+                self.Ticket_Text = "Results were identified for the search " + self.Input + " performed by the Scrummage plugin " + self.Plugin_Name + ".\nThe following types of sensitive data were found:\n - " + "\n - ".join(Dump_Types) + ". Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at " + Complete_File + "."
+
+            else:
+                self.Title = "Data for input: " + self.Input + ", found by Scrummage plugin " + self.Plugin_Name + ".\nAll data is stored in " + Complete_File + "."
+                self.Ticket_Subject = "Scrummage " + self.Plugin_Name + " results for query " + self.Input + "."
+                self.Ticket_Text = "Results were identified for the search " + self.Input + " performed by the Scrummage plugin " + self.Plugin_Name + ". Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at " + Complete_File + "."
+
+        except:
+            logging.warning(Date() + " Error setting unique variables.")
+
+        Connectors.Scumblr_Main(self.Input, DB_Title, self.Title)
+        Connectors.RTIR_Main(self.Ticket_Subject, self.Ticket_Text)
+        Connectors.JIRA_Main(self.Ticket_Subject, self.Ticket_Text)
+        Connectors.Email_Main(self.Ticket_Subject, self.Ticket_Text)
+        Connectors.Slack_Main(self.Ticket_Text)
+        Relative_File = Complete_File.replace(os.path.dirname(os.path.realpath('__file__')), "")
+        logging.info(Date() + " Adding item to Scrummage database.")
+
+        if DB_Title:
+            Connectors.Main_Database_Insert(DB_Title, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.Elasticsearch_Main(DB_Title, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID, self.Concat_Plugin_Name)
+            Connectors.CSV_Output(DB_Title, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.DOCX_Output(DB_Title, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.Defect_Dojo_Output(DB_Title, self.Ticket_Text)
 
         else:
-            Title = "Data for input: " + Input + ", found by Scrummage plugin " + Plugin_Name + ".\nAll data is stored in " + Complete_File + "."
-            Ticket_Subject = "Scrummage " + Plugin_Name + " results for query " + Input + "."
-            Ticket_Text = "Results were identified for the search " + Input + " performed by the Scrummage plugin " + Plugin_Name + ". Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at " + Complete_File + "."
-
-    except:
-        logging.warning(Date() + " Error setting variables.")
-
-    Connectors.Scumblr_Main(Input, DB_Title, Title)
-    Connectors.RTIR_Main(Ticket_Subject, Ticket_Text)
-    Connectors.JIRA_Main(Ticket_Subject, Ticket_Text)
-    Connectors.Email_Main(Ticket_Subject, Ticket_Text)
-    Connectors.Slack_Main(Ticket_Text)
-    Relative_File = Complete_File.replace(os.path.dirname(os.path.realpath('__file__')), "")
-    logging.info(Date() + " Adding item to Scrummage database.")
-
-    if DB_Title:
-        Connectors.Main_Database_Insert(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.Elasticsearch_Main(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
-        Connectors.CSV_Output(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.DOCX_Output(DB_Title, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.Defect_Dojo_Output(DB_Title, Ticket_Text)
-
-    else:
-        Connectors.Main_Database_Insert(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.Elasticsearch_Main(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID, Concat_Plugin_Name)
-        Connectors.CSV_Output(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.DOCX_Output(Plugin_Name, Plugin_Name, Domain, Link, Result_Type, Relative_File, Task_ID)
-        Connectors.Defect_Dojo_Output(Plugin_Name, Ticket_Text)
+            Connectors.Main_Database_Insert(self.Plugin_Name, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.Elasticsearch_Main(self.Plugin_Name, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID, self.Concat_Plugin_Name)
+            Connectors.CSV_Output(self.Plugin_Name, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.DOCX_Output(self.Plugin_Name, self.Plugin_Name, self.Domain, Link, self.Result_Type, Relative_File, self.Task_ID)
+            Connectors.Defect_Dojo_Output(self.Plugin_Name, self.Ticket_Text)
 
 def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension):
     Main_File = "Main-file-for-" + Plugin_Name + "-query-" + Query + Main_File_Extension
@@ -334,30 +347,6 @@ def Get_Latest_URLs(Pull_URL, Scrape_Regex_URL):
         logging.warning(Date() + " Failed to regex URLs.")
 
     return Scrape_URLs
-
-# def Query_Existing_Files(File_Query, Query_Output_File):
-#     # Function to query existing files for new clients.
-
-#     for Bad_Character in Bad_Characters:
-
-#         if Bad_Character in File_Query:
-#             logging.warning(Date() + " Bad Characters found in query. Please remove any conflicting special characters.")
-
-#     os.system(' grep -Hrn ' + File_Query + ' * > ' + Query_Output_File)
-
-#     try:
-#         Current_File = open(Query_File, "r")
-#         Query_Inputs = Current_File.read().splitlines()
-#         Current_File.close()
-
-#     except:
-#         logging.warning(Date() + " Failed to open file.")
-
-#     for Query_Input in Query_Inputs:
-#         Query_Input_Regex = re.search(r"(.*\.txt)\:(\d+)\:(.*)", Query_Input)
-
-#         if Query_Input_Regex:
-#             logging.info(Date() + " The query " + File_Query + " was found on line: " + Query_Input_Regex.group(2) + " of file: " + Query_Input_Regex.group(1) + ".")
 
 def Get_Title(URL):
 
