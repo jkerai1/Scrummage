@@ -1,9 +1,9 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Scrummage  
-**NEW VERSION 2.0**
-- Added Scrummage API (Version 1) [Information Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API) | [Upgrade Dependency Intructions Here](https://github.com/matamorphosis/Scrummage/wiki/Upgrading-Scrummage)
-- Added refresh option for Dashboard
+**NEW VERSION 2.1**
+- Added Rate Limiting to Scrummage API (Version 1.1) [Information Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API) | [Upgrade Dependency Intructions Here](https://github.com/matamorphosis/Scrummage/wiki/Upgrading-Scrummage)
+- Added refresh option for Dashboard (Version 2+)
 - UI/UX enhancements
 - Bug fixes  
 
