@@ -189,6 +189,8 @@ if Arguments.database and Arguments.username and Arguments.password:
                     "certificate-file": "../certs/certificate.crt",
                     "key-file": "../certs/privateKey.key",
                     "api-secret": "''' + API_Secret + '''"
+                    "api-max-calls": 10,
+                    "api-period-in-seconds": 60
                 }
             ],
             "youtube": [
