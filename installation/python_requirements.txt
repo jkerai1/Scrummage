@@ -20,3 +20,4 @@ defectdojo_api
 pyinstaller
 flask_compress
 ratelimiter
+flask_jwt
