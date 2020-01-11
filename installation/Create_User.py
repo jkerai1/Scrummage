@@ -74,6 +74,13 @@ connection = Load_Main_Database()
 cursor = connection.cursor()
 username = Arguments.username
 
+PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
+Cursor.execute(PSQL_Select_Query, (username,))
+User = Cursor.fetchone()
+
+if User:
+    sys.exit("[-] User already exists.")
+
 if check_security_requirements(Arguments.password) and check_safe_username(Arguments.username):
     password = generate_password_hash(Arguments.password)
     cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (username, password, Arguments.blocked, Arguments.admin,))
