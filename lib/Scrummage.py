@@ -2099,6 +2099,16 @@ if __name__ == '__main__':
                                             if char in request.form['Username']:
                                                 return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Bad character detected in username.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
+                                        PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
+                                        Cursor.execute(PSQL_Select_Query, (request.form.get('Username'),))
+                                        User = Cursor.fetchone()
+
+                                        if User:
+                                            Cursor.execute('SELECT * FROM users')
+                                            return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Username already exists.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                                        Cursor.execute('SELECT * FROM users')
+
                                         if request.form['New_Password'] != request.form['New_Password_Retype']:
                                             return render_template('account.html', username=session.get('user'), form_type=session.get('form_type'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), error="Please make sure the \"New Password\" and \"Retype Password\" fields match.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
