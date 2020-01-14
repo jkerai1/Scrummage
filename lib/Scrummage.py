@@ -64,6 +64,9 @@ if __name__ == '__main__':
                 WA_API_Max_Calls = int(WA_Details['api-max-calls'])
                 WA_API_Period = int(WA_Details['api-period-in-seconds'])
 
+                if WA_API_Validity_Limit < 60:
+                    sys.exit("[-] API Key Validity Limit too short. Minimum should be 60 minutes.")
+
                 if WA_Host and WA_Port and WA_Cert_File and WA_Key_File and WA_API_Secret and WA_API_Validity_Limit and WA_API_Max_Calls and WA_API_Period:
                     return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File, WA_API_Secret, WA_API_Validity_Limit, WA_API_Max_Calls, WA_API_Period]
 
@@ -153,7 +156,6 @@ if __name__ == '__main__':
                     if not User_Details[3]:
                         self.ID = User_Details[0]
                         self.authenticated = True
-                        self.api_current_timestamp = User_Details[6]
                         self.admin = User_Details[4]
                         self.API = User_Details[5]
                         return {"ID": self.ID, "Username": User_Details[1], "Admin": self.admin, "API": self.API, "Status": True}
@@ -183,79 +185,60 @@ if __name__ == '__main__':
         def API_registration(self):
 
             def Create_JWT(self):
-                payload = {"id": self.ID, "name": self.username, "admin": self.admin, "time-created": General.Date(), "nonce": secrets.token_hex(32)}
+                Expiry_Hours = API_Validity_Limit / 60
+                Expiry = datetime.utcnow() + timedelta(hours=Expiry_Hours)
+                payload = {"id": self.ID, "name": self.username, "iat": datetime.utcnow(), "exp": Expiry, "nonce": secrets.token_hex(32)}
                 JWT = jwt.encode(payload, API_Secret, algorithm='HS256')
                 return JWT.decode('utf-8')
 
             if 'authenticated' in dir(self):
 
-                if 'api_current_timestamp' in dir(self):
-                    Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
-                    Timestamp_1 = datetime.strptime(self.api_current_timestamp, Timestamp_FMT)
-                    Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
-                    Timestamp_Difference_Full = Timestamp_2 - Timestamp_1
-                    Timestamp_Difference_Full_2 = Timestamp_1 - Timestamp_2
-                    Minutes = Timestamp_Difference_Full.seconds / 60
+                try:
+                    Decoded_Token = jwt.decode(self.API, API_Secret, algorithm='HS256')
+                    return {"Key": self.API, "Message": "Current API is still valid."}
 
-                    if Minutes > API_Validity_Limit:
-                        API_Key = Create_JWT(self)
-                        PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
-                        Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), self.ID,))
-                        Connection.commit()
-                        Message = "New API Key generated for user ID " + str(user_id) + "."
-                        app.logger.warning(Message)
-                        Create_Event(Message)
-                        return {"Key": API_Key, "Message": Message}
-
-                    else:
-                        API_Validity_Limit_Seconds = API_Validity_Limit * 60
-                        Timestamp_Difference_Full_2 = timedelta(seconds=API_Validity_Limit_Seconds) - Timestamp_Difference_Full
-                        Current_Message = "Current API is still valid. Time left until expiry: " + str(Timestamp_Difference_Full_2) + "."
-                        return {"Key": self.API, "Message": Current_Message}
-
-                else:
+                except jwt.ExpiredSignatureError:
                     API_Key = Create_JWT(self)
                     PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
                     Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), self.ID,))
                     Connection.commit()
-                    return API_Key
+                    Message = "New API Key generated for user ID " + str(user_id) + "."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Key": API_Key, "Message": Message}
+
+                except jwt.DecodeError:
+                    return {"Key": None, "Message": "Failed to verify token."}
+
+                except jwt.InvalidTokenError:
+                    return {"Key": None, "Message": "Failed to verify token."}
 
             else:
-                return None
+                return {"Key": None, "Message": "Unauthorised."}
 
     def API_verification(auth_token):
 
         try:
             Decoded_Token = jwt.decode(auth_token, API_Secret, algorithm='HS256')
+            User_ID = int(Decoded_Token['id'])
+            PSQL_Select_Query = 'SELECT * FROM users WHERE user_id = %s'
+            Cursor.execute(PSQL_Select_Query, (User_ID,))
+            User_Details = Cursor.fetchone()
 
-            if Decoded_Token:
-                User_ID = int(Decoded_Token['id'])
-                PSQL_Select_Query = 'SELECT * FROM users WHERE user_id = %s'
-                Cursor.execute(PSQL_Select_Query, (User_ID,))
-                User_Details = Cursor.fetchone()
-
-                if auth_token == User_Details[5]:
-                    Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
-                    Timestamp_1 = datetime.strptime(User_Details[6], Timestamp_FMT)
-                    Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
-                    Timestamp_Difference_Full = Timestamp_2 - Timestamp_1
-                    Minutes = Timestamp_Difference_Full.seconds / 60
-
-                    if Minutes > API_Validity_Limit:
-                        return {"Token": False, "Admin": False, "Message": "Token expired, please register for a new token."}
-
-                    else:
-                        return {"Token": True, "Admin": User_Details[4], "Message": "Token verification successful."}
-
-                else:
-                    return {"Token": False, "Admin": False, "Message": "Invalid token."}
+            if auth_token == User_Details[5]:
+                return {"Token": True, "Admin": User_Details[4], "Message": "Token verification successful."}
 
             else:
-                return {"Token": False, "Admin": False, "Message": "Failed to decode token."}
+                return {"Token": False, "Admin": False, "Message": "Invalid token."}
 
-        except Exception as e:
+        except jwt.ExpiredSignatureError:
+            return {"Token": False, "Admin": False, "Message": "Token expired."}
+
+        except jwt.DecodeError:
             return {"Token": False, "Admin": False, "Message": "Failed to decode token."}
-            app.logger.error(e)
+
+        except jwt.InvalidTokenError:
+            return {"Token": False, "Admin": False, "Message": "Invalid token."}
 
     def Output_API_Checker(Plugin_Name):
 
@@ -2025,7 +2008,9 @@ if __name__ == '__main__':
                         elif 'newapikey' in request.form:
 
                             def Create_Session_Based_JWT(ID, Username, Admin):
-                                payload = {"id": ID, "name": Username, "admin": Admin, "time-created": General.Date(), "nonce": secrets.token_hex(32)}
+                                Expiry_Hours = API_Validity_Limit / 60
+                                Expiry = datetime.utcnow() + timedelta(hours=Expiry_Hours)
+                                payload = {"id": ID, "name": Username, "iat": datetime.utcnow(), "exp": Expiry, "nonce": secrets.token_hex(32)}
                                 JWT = jwt.encode(payload, API_Secret, algorithm='HS256')
                                 return JWT.decode('utf-8')
 
@@ -2036,13 +2021,13 @@ if __name__ == '__main__':
                                 User_Info = Cursor.fetchone()
 
                                 if User_Info[5] and User_Info[6]:
-                                    Timestamp_FMT = '%Y-%m-%d %H:%M:%S'
-                                    Timestamp_1 = datetime.strptime(User_Info[6], Timestamp_FMT)
-                                    Timestamp_2 = datetime.strptime(General.Date(), Timestamp_FMT)
-                                    Timestamp_Difference_Full = Timestamp_2 - Timestamp_1
-                                    Minutes = Timestamp_Difference_Full.seconds / 60
 
-                                    if Minutes > API_Validity_Limit:
+                                    try:
+                                        Decoded_Token = jwt.decode(User_Info[5], API_Secret, algorithm='HS256')
+                                        Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message="Current token is still valid.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
+
+                                    except:
                                         API_Key = Create_Session_Based_JWT(User_Info[0], User_Info[1], User_Info[4])
                                         PSQL_Update_Query = 'UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s'
                                         Cursor.execute(PSQL_Update_Query, (API_Key, General.Date(), User_Info[0],))
@@ -2053,13 +2038,6 @@ if __name__ == '__main__':
                                         session['api_key'] = API_Key
                                         Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
                                         return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message="New API Key generated successfully.", api_key=session.get('api_key'), current_user_id=session.get('user_id'))
-
-                                    else:
-                                        API_Validity_Limit_Seconds = API_Validity_Limit * 60
-                                        Timestamp_Difference_Full_2 = timedelta(seconds=API_Validity_Limit_Seconds) - Timestamp_Difference_Full
-                                        Current_Message = "Current API is still valid. Time left until expiry: " + str(Timestamp_Difference_Full_2) + "."
-                                        Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
-                                        return render_template('account.html', username=session.get('user'), form_step=session.get('form_step'), is_admin=session.get('is_admin'), results=Cursor.fetchall(), message=Current_Message, api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                                 else:
                                     API_Key = Create_Session_Based_JWT(User_Info[0], User_Info[1], User_Info[4])
