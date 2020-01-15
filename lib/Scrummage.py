@@ -409,22 +409,22 @@ if __name__ == '__main__':
                         Current_User_API = Current_User_Object.API_registration()
 
                         if "Key" in Current_User_API and "Message" in Current_User_API:
-                            return jsonify({"Message": Current_User_API['Message'], "API Key": Current_User_API['Key']})
+                            return jsonify({"Message": Current_User_API['Message'], "API Key": Current_User_API['Key']}), 200
 
                         else:
-                            return jsonify({"Error": "Registration Unsuccessful"})
+                            return jsonify({"Error": "Registration Unsuccessful"}), 500
 
                     elif 'Message' in Current_User:
-                        return jsonify({"Error": "Registration Unsuccessful."})
+                        return jsonify({"Error": "Registration Unsuccessful."}), 500
 
                 else:
-                    return jsonify({"Error": "Invalid fields in request."})
+                    return jsonify({"Error": "Invalid fields in request."}), 500
 
             else:
-                return jsonify({"Error": "Invalid request format."})
+                return jsonify({"Error": "Invalid request format."}), 500
             
         except Exception as e:
-            return jsonify({"Error": "Invalid request format."})
+            return jsonify({"Error": "Invalid request format."}), 500
             app.logger.error(e)
 
     @app.route('/nosession')
@@ -492,27 +492,28 @@ if __name__ == '__main__':
                             Slack = Connectors.Load_Slack_Configuration()
                             Scumblr = Connectors.Load_Scumblr_Configuration()
 
-                            return jsonify([{"Main Database": bool(Main_DB)}, {"CSV": bool(CSV)}, {"DefectDojo": bool(DD)}, {".DOCX": bool(DOCX)}, {"Email": bool(Email)}, {"ElasticSearch": bool(Elastic)}, {"JIRA": bool(JIRA)}, {"RTIR": bool(RTIR)}, {"Slack Channel Notification": bool(Slack)}, {"Scumblr Database": bool(Scumblr)}])
+                            return jsonify([{"Main Database": bool(Main_DB)}, {"CSV": bool(CSV)}, {"DefectDojo": bool(DD)}, {".DOCX": bool(DOCX)}, {"Email": bool(Email)}, {"ElasticSearch": bool(Elastic)}, {"JIRA": bool(JIRA)}, {"RTIR": bool(RTIR)}, {"Slack Channel Notification": bool(Slack)}, {"Scumblr Database": bool(Scumblr)}]), 200
 
                         else:
-                            return jsonify({"Error": "Method not allowed."})
+                            return jsonify({"Error": "Method not allowed."}), 500
 
                     else:
-                        return jsonify({"Error": "Insufficient privileges."})
+                        return jsonify({"Error": "Insufficient privileges."}), 500
 
                 else:
 
                     if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except Exception as e:
             app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     def requirement(f):
 
@@ -803,10 +804,10 @@ if __name__ == '__main__':
         try:
 
             if 'Authorization' in request.headers:
-                Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
-                if Authentication_Verified["Token"]:
+                if Authentication_Verified.get("Token"):
                     PSQL_Select_Query = 'SELECT count(*) FROM results WHERE status = %s AND result_type = %s'
                     Cursor.execute(PSQL_Select_Query, ("Open", "Domain Spoof",))
                     open_domain_spoof_results = Cursor.fetchall()
@@ -876,21 +877,22 @@ if __name__ == '__main__':
                     for mc_task in most_common_tasks:
                         data["Most Common Tasks"][0][mc_task[0]] = mc_task[1]
 
-                    return jsonify(data)
+                    return jsonify(data), 200
 
                 else:
 
-                    if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except Exception as e:
             app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/dropsession')
     def dropsession():
@@ -945,28 +947,28 @@ if __name__ == '__main__':
                 Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
-                if Authentication_Verified["Token"]:
+                if Authentication_Verified.get("Token"):
                     data = {}
                     Cursor.execute('SELECT * FROM events ORDER BY event_id DESC LIMIT 100')
 
                     for Event in Cursor.fetchall():
                         data[Event[0]] = [{"Description": Event[1], "Created Timestamp": Event[2]}]
 
-                    return jsonify(data)
+                    return jsonify(data), 200
 
                 else:
 
-                    if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except:
-            return jsonify({"Error": "Unknown Exception Occurred."})
+            return jsonify({"Error": "Unknown Exception Occurred."}), 500
 
     @app.route('/tasks', methods=['GET', 'POST'])
     def tasks():
@@ -1628,28 +1630,28 @@ if __name__ == '__main__':
                 Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
-                if Authentication_Verified["Token"]:
+                if Authentication_Verified.get("Token"):
                     data = {}
                     Cursor.execute('SELECT * FROM tasks ORDER BY task_id DESC LIMIT 1000')
 
                     for Task in Cursor.fetchall():
                         data[Task[0]] = [{"Query": Task[1], "Plugin": Task[2], "Description": Task[3], "Frequency": Task[4], "Limit": Task[5], "Status": Task[6], "Created Timestamp": Task[7], "Last Updated Timestamp": Task[8]}]
 
-                    return jsonify(data)
+                    return jsonify(data), 200
 
                 else:
 
-                    if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except:
-            return jsonify({"Error": "Unknown Exception Occurred."})
+            return jsonify({"Error": "Unknown Exception Occurred."}), 500
 
     @app.route('/results', methods=['GET', 'POST'])
     def results():
@@ -1901,28 +1903,28 @@ if __name__ == '__main__':
                 Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
-                if Authentication_Verified["Token"]:
+                if Authentication_Verified.get("Token"):
                     data = {}
                     Cursor.execute('SELECT * FROM results ORDER BY result_id DESC LIMIT 1000')
 
                     for Result in Cursor.fetchall():
                         data[Result[0]] = [{"Associated Task ID": Result[1], "Title": Result[2], "Plugin": Result[3], "Status": Result[4], "Domain": Result[5], "Link": Result[6], "Created Timestamp": Result[7], "Last Updated Timestamp": Result[8], "Screenshot Location": Result[9], "Output File Location": Result[10], "Result Type": Result[11], "Screenshot Requested": Result[12]}]
 
-                    return jsonify(data)
+                    return jsonify(data), 200
 
                 else:
 
-                    if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except:
-            return jsonify({"Error": "Unknown Exception Occurred."})
+            return jsonify({"Error": "Unknown Exception Occurred."}), 500
 
     def check_security_requirements(Password):
 
@@ -2253,7 +2255,7 @@ if __name__ == '__main__':
                 Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
-                if Authentication_Verified["Token"]:
+                if Authentication_Verified.get("Token"):
 
                     if Authentication_Verified["Admin"]:
                         data = {}
@@ -2262,21 +2264,21 @@ if __name__ == '__main__':
                         for User in Cursor.fetchall():
                             data[User[0]] = [{"Username": User[1], "Blocked": User[3], "Admin": User[4]}]
 
-                        return jsonify(data)
+                        return jsonify(data), 200
 
                     else:
-                        return jsonify({"Error": "Insufficient privileges."})
+                        return jsonify({"Error": "Insufficient privileges."}), 500
 
                 else:
 
-                    if Authentication_Verified["Message"]:
-                        return jsonify({"Error": Authentication_Verified["Message"]})
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
 
                     else:
-                        return jsonify({"Error": "No session."})
+                        return jsonify({"Error": "Unauthorised."}), 500
 
             else:
-                return jsonify({"Error": "Missing Authorization header."})
+                return jsonify({"Error": "Missing Authorization header."}), 500
 
         except Exception as e:
             app.logger.error(e)
