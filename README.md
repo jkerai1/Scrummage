@@ -1,11 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Scrummage  
-**NEW VERSION 2.1**
-- Added Rate Limiting to Scrummage API (Version 1.1) [Information Link here](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API) | [Upgrade Dependency Intructions Here](https://github.com/matamorphosis/Scrummage/wiki/Upgrading-Scrummage)
-- Added refresh option for Dashboard (Version 2+)
-- UI/UX enhancements
-- Bug fixes  
+**NEW VERSION 2.2**
+- New Dark theme by default, let's take care of our eyes :). The light theme can be enabled by changing the css, and chart.min.js files to the "light" files.
+- Improved concurrency - mainly for the Domain Fuzzer.
+- Bug fixes for task management functions. 
 
 Scrummage is an OSINT tool that centralises your OSINT scans, leveraging powerful yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
 - The https://github.com/Netflix-Skunkworks/Scumblr project, which while is now deprecated, had a simple yet powerful concept.
@@ -85,5 +84,5 @@ The account page looks as per below for non-administrative users:
 ![AccountLP](/installation/images_dark_theme/Account_Low_Priv.png)
 
 **Developer Information**  
-Knock yourself out, create any plugins you like, and feel free to leverage existing libraries to help you.
-Please remember that the first time you run a plugin from the web app after changing the code, or creating a new plugin, you will need to click run and then restart the web app to allow for it to generate the pycache for the plugin.
+***Contributions Welcome!!***  
+Knock yourself out, create any plugins you like, and feel free to leverage existing libraries to help you. Refer to the plugin development guide [here](https://github.com/matamorphosis/Scrummage/wiki/Plugin-Development-Guide).
