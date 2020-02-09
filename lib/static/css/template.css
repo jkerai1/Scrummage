@@ -3,17 +3,23 @@
   	font-family: arial;
 }
 
+body {
+	background-color: #000;
+}
+
 form dl dd {
 	padding: 15px 0px 15px 0px;
 }
 
 input[type="search" i] {
 	padding: 7px;
-	border: 1px solid lightgrey;
+	border: 1px solid #303030;
 }
 
 input[type="search"] {
     border-radius: 0px;
+    background-color: #000;
+    color: #fff;
 }
 
 nav {
@@ -42,30 +48,23 @@ nav ul li a:hover {
     background-color: #DC143C;
 }
 
-select {
-	padding: 5px 5px 5px 5px;
-	border: 1px solid lightgrey;
-	background-color: #fff;
-	border-radius: 0px;
-}
-
 table {
 	border-collapse: collapse;
-	border: 1px solid lightgrey;
+	border: 1px solid #303030;
 	border-radius: 0px;
 	width: 100%;
 }
 
 table thead tr th {
-	color: #303030;
-	background-color: lightgrey;
+	color: #fff;
+	background-color: #303030;
 	font-size: 14px;
 	padding: 8px 0px 8px 10px;
 	font-weight: normal;
 }
 
 table tbody tr td {
-	color: #303030;
+	color: #fff;
 	font-size: 14px;
 }
 
@@ -135,7 +134,7 @@ table.dataTable thead .sorting_desc_disabled
 
 table.dataTable tbody tr
 {
-	background-color:#ffffff;
+
 }
 
 table.dataTable tbody tr.selected
@@ -426,7 +425,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     padding-top: 13px;
     padding-bottom: 13px;
     font-size: 14px;
-    color: #303030;
+    color: #fff;
 }
 
 .dataTables_wrapper .dataTables_paginate
@@ -438,8 +437,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dataTables_wrapper .dataTables_paginate .paginate_button
 {
-	color: #303030;
-	background-color: #fff;
+	color: #fff;
     box-sizing:border-box;
     display:inline-block;
     min-width:1.5em;
@@ -450,7 +448,7 @@ table.dataTable,table.dataTable th,table.dataTable td
     text-decoration:none !important;
     cursor:pointer;
     *cursor:hand;
-    border: 1px solid lightgrey;
+    border: 1px solid #303030;
     border-radius: 0px;
     -webkit-transition: all 0.30s ease-in-out;
     -moz-transition: all 0.30s ease-in-out;
@@ -629,7 +627,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 #logintitle {
-	color: #303030;
+	color: #fff;
 	font-family: arial;
 	font-size: 14pt;
 	padding: 30px 0px 5px 0px;
@@ -645,7 +643,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 #resultdetailedtitle {
-	color: #303030;
+	color: #fff;
 	font-family: arial;
 	font-size: 16pt;
 	padding: 20px 0px 5px 10px;
@@ -665,14 +663,14 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .aboutinfo {
-	color: #303030;
+	color: #fff;
 	font-family: arial;
 	font-size: 14pt;
 	padding: 15px 0px 15px 0px;
 }
 
 .loaderabout {
-	color: #303030;
+	color: #fff;
 	font-family: arial;
 	font-size: 16pt;
 	text-align: center;
@@ -682,7 +680,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .button {
 	text-decoration: none;
-	color: #303030;
+	color: #fff;
 	padding: 7px;
 	font-size: 11pt;
 	border-radius: 0px;
@@ -691,8 +689,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #fff;
-	border: 1px solid lightgrey;
+	background-color: #000;
+	border: 1px solid #303030;
 }
 
 .button-red {
@@ -700,7 +698,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
-	background-color: #fff;
+	background-color: #000;
+	color: #fff;
 }
 
 .button-red:hover {
@@ -710,7 +709,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .button-delete {
 	text-decoration: none;
-	color: #303030;
+	color: #fff;
 	padding: 7px;
 	font-size: 11pt;
 	border-radius: 0px;
@@ -719,13 +718,13 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #fff;
-	border: 1px solid lightgrey;
+	background-color: #000;
+	border: 1px solid #303030;
 }
 
 .button-run {
 	text-decoration: none;
-	color: #303030;
+	color: #fff;
 	padding: 7px;
 	font-size: 11pt;
 	border-radius: 0px;
@@ -734,8 +733,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #fff;
-	border: 1px solid lightgrey;
+	background-color: #000;
+	border: 1px solid #303030;
 }
 
 .button-disabled {
@@ -753,17 +752,15 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .button-run:hover {
-	background-color: #90ee90;
-    border: 1px solid #90ee90;
+	background-color: #006400;
 }
 
 .button-delete:hover {
 	background-color: #DC143C;
-	border: 1px solid #ffcccb;
 }
 
 .button:hover {
-	background-color: lightgrey;
+	background-color: grey;
 }
 
 .login_div {
@@ -790,7 +787,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dashboard_large_bottom_div {
     text-align: center;
-    border: 1px solid lightgrey;
+    border: 1px solid #303030;
     display: inline-block;
     width: 90%;
     border-radius: 0px;
@@ -825,7 +822,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #303030;
+	color: #fff;
 }
 
 .open_button:hover {
@@ -844,7 +841,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #303030;
+	color: #fff;
 }
 
 .inspect_button:hover {
@@ -852,7 +849,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .review_button {
-    background-color: #FFFF33;
+    background-color: #6a0dad;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -863,7 +860,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #303030;
+	color: #fff;
 }
 
 .review_button:hover {
@@ -871,7 +868,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .close_button {
-    background-color: #00FF00;
+    background-color: #0000FF;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -882,7 +879,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #303030;
+	color: #fff;
 }
 
 .close_button:hover {
@@ -890,7 +887,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .non_progressed_button {
-    background-color: lightgrey;
+    background-color: #303030;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -901,7 +898,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	outline: none;
 	border: 0;
 	width: 100%;
-	color: #303030;
+	color: #fff;
 }
 
 .non_progressed_button:hover {
@@ -933,7 +930,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .review_p {
-    background-color: #FFFF33;
+    background-color: #6a0dad;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -945,7 +942,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .close_p {
-    background-color: #00FF00;
+    background-color: #0000ff;
     text-decoration: none;
 	padding: 5px 0px 5px 0px;
 	font-size: 12pt;
@@ -975,15 +972,16 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dashboard_p {
     padding: 10px;
-    color: #303030;
+    color: #fff;
     font-size: 14px;
-    background-color: lightgrey;
+    background-color: #303030;
 }
 
 .error {
 	text-align: center;
 	list-style-type: none;
 	padding: 15px 0px 0px 0px;
+	color: #fff;
 }
 
 .field-container {
@@ -1000,13 +998,13 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .dashboard_small_outer_div {
     display: inline-block;
-    border: 1px solid lightgrey;
+    border: 1px solid #303030;
     border-radius: 0px;
 }
 
 .dashboard_small_outer_right_div {
     display: inline-block;
-    border: 1px solid lightgrey;
+    border: 1px solid #303030;
     border-radius: 0px;
 }
 
@@ -1023,13 +1021,15 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .field_textarea {
 	padding: 10px 0px 10px 10px;
-	border: 1px solid lightgrey;
+	border: 1px solid #303030;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	outline: none;
 	width: 80%;
 	border-radius: 0px;
+	background-color: #000;
+	color: #fff;
 }
 
 .follow {
@@ -1096,7 +1096,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 #acc-label {
-    color: #303030;
+    color: #fff;
 }
 
 #admin-box {
@@ -1114,26 +1114,26 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .message {
 	text-align: center;
-	color: #303030;
+	color: #fff;
 	padding: 15px 0px 0px 0px;
 	width: 99%;
 }
 
 .acc_message {
 	text-align: center;
-	color: #303030;
+	color: #fff;
 	width: 99%;
 }
 
 .req_message {
-	color: #303030;
+	color: #fff;
 	width: 99%;
 	text-align: left;
 }
 
 .api_message {
 	text-align: center;
-	color: #303030;
+	color: #fff;
 	padding: 20px 0px 0px 0px;
 	width: 99%;
 }
@@ -1153,7 +1153,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 #admin-apitab {
-    background-color: lightgrey;
+    background-color: #303030;
     width: 125px;
     text-align: center;
     padding: 10px 0px 10px 0px;
@@ -1165,7 +1165,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-	background-color: #fff;
 	border-radius: 0px;
 }
 
@@ -1260,11 +1259,12 @@ table.dataTable,table.dataTable th,table.dataTable td
 #dash-refresh {
     display: inline-block;
     padding: 6px 6px 7px 6px;
+    color: #fff;
 }
 
 #refresh-div {
     padding: 5px;
-    background: lightgrey;
+    background: #303030;
     width: 370px;
 }
 
@@ -1278,13 +1278,15 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .textarea {
 	padding: 10px 10px 10px 10px;
-	border: 1px solid lightgrey;
+	border: 1px solid #303030;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	outline: none;
 	width: 95%;
     border-radius: 0px;
+    background-color: #000;
+    color: #fff;
 }
 
 .title {
@@ -1322,7 +1324,7 @@ input, textarea {
   -o-transition: all 0.30s ease-in-out;
   outline: none;
   padding: 7px;
-  border: 1px solid lightgrey;
+  border: 1px solid #303030;
 }
 
 .textarea:focus {
@@ -1345,13 +1347,18 @@ input[type="search"]:focus {
 }
 
 select {
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
-  outline: none;
-  padding: 6px;
-  border: 1px solid lightgrey;
+	padding: 5px 5px 5px 5px;
+	border: 1px solid #303030;
+	color: #fff;
+	background-color: #000;
+	border-radius: 0px;
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+	outline: none;
+	padding: 6px;
+	border: 1px solid #303030;
 }
 
 select:focus {
@@ -1390,7 +1397,7 @@ select:focus {
 
 #version {
     text-decoration: none;
-    color: #303030;
+    color: #fff;
     -webkit-transition: all 0.30s ease-in-out;
     -moz-transition: all 0.30s ease-in-out;
     -ms-transition: all 0.30s ease-in-out;

@@ -77,70 +77,70 @@
 						<tr>
 							{% if is_admin %}
 								{% if results[4] == "Open" %}
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="open" value="{{results[0]}}" type=hidden>
 									<input class="open_button" type=submit value="Open">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="inspect" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Inspect">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="review" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Review">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="close" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Close">
 								</form></td>
 								{% elif results[4] == "Inspecting" %}
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="open" value="{{results[0]}}" type=hidden>
 									<input class="open_button" type=submit value="Opened">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="inspect" value="{{results[0]}}" type=hidden>
 									<input class="inspect_button" type=submit value="Inspecting">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="review" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Review">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="close" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Close">
 								</form></td>
 								{% elif results[4] == "Reviewing" %}
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="open" value="{{results[0]}}" type=hidden>
 									<input class="open_button" type=submit value="Opened">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="inspect" value="{{results[0]}}" type=hidden>
 									<input class="inspect_button" type=submit value="Inspected">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="review" value="{{results[0]}}" type=hidden>
 									<input class="review_button" type=submit value="Reviewing">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="close" value="{{results[0]}}" type=hidden>
 									<input class="non_progressed_button" type=submit value="Close">
 								</form></td>
 								{% elif results[4] == "Closed" %}
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="open" value="{{results[0]}}" type=hidden>
 									<input class="open_button" type=submit value="Opened">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="inspect" value="{{results[0]}}" type=hidden>
 									<input class="inspect_button" type=submit value="Inspected">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="review" value="{{results[0]}}" type=hidden>
 									<input class="review_button" type=submit value="Reviewed">
 								</form></td>
-								<td style="background-color: #FFF; width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
+								<td style="width: 25%;"><form class="form_left_multiple" action="" method=post autocomplete="off">
 									<input name="close" value="{{results[0]}}" type=hidden>
 									<input class="close_button" type=submit value="Closed">
 								</form></td>
@@ -279,6 +279,8 @@
 				document.getElementById("loader-message").style.display = "none";
 				document.getElementById("paginate").style.display = null;
 				document.getElementById("fc").style.display = null;
+				document.getElementsByTagName("INPUT")[0].placeholder='Search';
+				document.getElementsByTagName("INPUT")[0].className='js_search';
 			}
 			</script>
 		</main> 

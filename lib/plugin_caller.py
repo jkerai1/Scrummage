@@ -179,43 +179,47 @@ class Plugin_Caller:
 
         elif self.plugin_name == "Domain Fuzzer - Regular Domain Suffixes":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Thread_1 = threading.Thread(target= Domain_Fuzzer.Regular_Extensions, args=(self.query, self.task_id,))
+            Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Regular_Extensions)
             Thread_1.start()
             Thread_1.join()
 
         elif self.plugin_name == "Domain Fuzzer - Global Domain Suffixes":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Thread_1 = threading.Thread(target= Domain_Fuzzer.Global_Extensions, args=(self.query, self.task_id,))
+            Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Global_Extensions)
             Thread_1.start()
             Thread_1.join()
 
-        elif self.plugin_name == "Domain Fuzzer - Alpha-Linguistic Character Switcher":
+        elif self.plugin_name == "Domain Fuzzer - Punycode":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Thread_1 = threading.Thread(target= Domain_Fuzzer.Character_Switch, args=(self.query, self.task_id,))
+            Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Character_Switch)
             Thread_1.start()
             Thread_1.join()
 
         elif self.plugin_name == "Domain Fuzzer - All Extensions":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
-            Thread_1 = threading.Thread(target= Domain_Fuzzer.All_Extensions, args=(self.query, self.task_id,))
+            Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.All_Extensions)
             Thread_1.start()
             Thread_1.join()
 
         elif self.plugin_name == "DNS Reconnaissance Search":
             import plugins.DNS_Recon_Search as DNS_Recon_Search
-            Thread_1 = threading.Thread(target= DNS_Recon_Search.Search, args=(self.query, self.task_id,))
+            Thread_1 = threading.Thread(target=DNS_Recon_Search.Search, args=(self.query, self.task_id,))
             Thread_1.start()
             Thread_1.join()
 
         elif self.plugin_name == "Default Password Search":
             import plugins.Default_Password_Search as Default_Password_Search
-            Thread_1 = threading.Thread(target= Default_Password_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1 = threading.Thread(target=Default_Password_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
             Thread_1.start()
             Thread_1.join()
 
         elif self.plugin_name == "Ahmia Darkweb Search":
             import plugins.Ahmia_Darkweb_Search as Ahmia_Darkweb_Search
-            Thread_1 = threading.Thread(target= Ahmia_Darkweb_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+            Thread_1 = threading.Thread(target=Ahmia_Darkweb_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
             Thread_1.start()
             Thread_1.join()
 
@@ -343,10 +347,10 @@ class Plugin_Caller:
         Thread_2.start()
         
 if __name__ == "__main__":
-    import argparse, sys, plugins.common.General as General
+    import argparse, sys
     Parser = argparse.ArgumentParser(description='Plugin Caller calls Scrummage plugins.')
     Parser.add_argument('-t', '--task', help='This option is used to specify a task ID to run. ./plugin_caller.py -t 1')
-    Arguments = Parser.parse_args()
+    Arguments = Parser.parse_args()/pro
 
     Task_ID = 0
 

@@ -15,10 +15,10 @@ python-crontab
 instagram_explore
 slackclient==2.0.0
 vulners
-python-docx
+StackAPI
 defectdojo_api
-pyinstaller
+flickr_api
+python-docx
 flask_compress
-ratelimiter
 flask_jwt
 tweepy

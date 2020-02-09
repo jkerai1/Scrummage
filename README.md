@@ -32,7 +32,7 @@ All feedback is welcome.
 **Dashboard**  
 The dashboard is the home screen which the application directs a user to when they log in. It provides a high-level chart which shows the amount of each results based on their result type. It does this for each kind of finding. However, if a graph doesn’t load, this is most likely due to none of the results being in that category, I.e if there are no closed results, no graph will appear under “Overview of Closed Results”.  
   
-![Dashboard](/installation/Dashboard.png)
+![Dashboard](/installation/images_dark_theme/Dashboard.png)
 
 
 **Events**  
@@ -40,7 +40,7 @@ The events page shows anything that changes within the web application, from log
   
 *Note: This page only loads the latest 1000 events, for optimisation of the web application.*  
 
-![Events](/installation/Events.png)
+![Events](/installation/images_dark_theme/Events.png)
 
 
 **Results**  
@@ -48,15 +48,15 @@ The results page, simply shows results that have been created by a task. The res
   
 *Note: This page only loads the latest 1000 results, for optimisation of the web application.*  
 
-![Results](/installation/Results.png)
+![Results](/installation/images_dark_theme/Results.png)
 
 For optimisation purposes, the results table only displays some of the general information regarding a result, to investigate a result further, the user should use the Details button. The details page allows the user to view the soft copy of the result's link and provides the ability for a user to generate a screenshot.  
   
-![Results](/installation/Result_Details1.png)
+![Results](/installation/images_dark_theme/Result_Details1.png)
 
 Furthermore, buttons for reviewing, inspecting and closing a result are provided to show other users where a result is at in terms of assessment. The buttons are colour coded and are coloured as the result progresses through the assessment.  
   
-![Results](/installation/Result_Details2.png)
+![Results](/installation/images_dark_theme/Result_Details2.png)
 
 *Results are categorised into the following:*  
 * Data Leakage
@@ -71,18 +71,18 @@ The tasks page shows all created task, and provides the ability for the user to 
 This page doesn’t have a limit on tasks; however, don’t go crazy creating tasks, you can always add a list to a task, rather than having the same task created multiple times for one search. So really you shouldn’t have any more than 50 tasks.
 Tasks have caching and logging for each which can be found in the “protected/output” directory under the tasks name, ex. Google Search is called “google”. If you need to remove the cache, you can edit/delete the appropriate cache file.
   
-![Tasks](/installation/Tasks.png)
+![Tasks](/installation/images_dark_theme/Tasks.png)
 
 All the plugins are open-source, free to individuals, just like the rest of the code. Furthermore, feel free to use the pre-existing libraries used in other plugins. If you are creating or editting a plugin, make sure to understand that when you run it for the first time, the web app may reload to reload the python cache. This is normal.
 
 **Account**
 This page changes according to the user's privileges, if a user is an admin, they have the ability to change their password as well as other user's passwords, they can block/unblock users, demote/promote users' privileges. They can also create new users and delete existing users. The account page looks as per below for administrative users:
 
-![Account](/installation/Account.png)
+![Account](/installation/images_dark_theme/Account.png)
 
 The account page looks as per below for non-administrative users:
 
-![AccountLP](/installation/Account_Low_Priv.png)
+![AccountLP](/installation/images_dark_theme/Account_Low_Priv.png)
 
 **Developer Information**  
 Knock yourself out, create any plugins you like, and feel free to leverage existing libraries to help you.

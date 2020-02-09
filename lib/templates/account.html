@@ -23,7 +23,6 @@
             </noscript>
             <p id="loader-message" class="loaderabout">Loading Users...</p>
             <div style="display: none;" style="margin:0;" id="fc" class="field-container">
-                {% if api_key %}
                 <div id="admin-jwt-div">
                     <table id="jwt-table">
                         <tbody>
@@ -35,6 +34,7 @@
                                         <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
                                     </form>
                                     <input id="copy" value="{{api_key}}" type="text">
+                                    {% if api_key %}
                                     <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
                                     <script>
                                         function copyTextFunc() {
@@ -44,12 +44,12 @@
                                           document.execCommand("copy");
                                         }
                                     </script>
+                                    {% endif %}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                {% endif %}
                 <table id="paginate">
                     <thead>
                         <tr>
@@ -236,7 +236,6 @@
         {% else %}
         {% endif %}
         {% else %}
-            {% if api_key %}
             <div id="nonadmin-jwt-div">
                 <table id="jwt-table">
                     <tbody>
@@ -248,6 +247,7 @@
                                     <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
                                 </form>
                                 <input id="copy" value="{{api_key}}" type="text">
+                                {% if api_key %}
                                 <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
                                 <script>
                                     function copyTextFunc() {
@@ -257,12 +257,12 @@
                                       document.execCommand("copy");
                                     }
                                 </script>
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            {% endif %}
             <section>
                 <div class="field-container" style="text-align: center; padding-top: 0px;">
                     <div>

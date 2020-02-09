@@ -2,14 +2,13 @@
 
 if [ -f /etc/redhat-release ]; then
 	yum update
-	yum install -y yum-utils python36-setuptools postgresql postgresql-contrib python3-psycopg2 ruby ruby-devel rubygems wget unzip git
+	yum install -y yum-utils python36-setuptools postgresql postgresql-contrib python3-psycopg2 ruby ruby-devel rubygems wget unzip git openssl
 	easy_install-3.6 pip
 fi
 
 if [ -f /etc/lsb-release ]; then
 	apt update
-	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems build-essential wget unzip git
-	service postgresql start
+	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems build-essential wget unzip git openssl
 fi
 
 if [ -e /etc/os-release ]; then
@@ -20,20 +19,19 @@ fi
 
 if [[ "$ID_LIKE" = *"suse"* ]]; then
 	zypper update
-	zypper install -n python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems wget unzip git
+	zypper install -n python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems wget unzip git openssl
 	zypper install -n -t pattern devel_basis
 fi
 
-mkdir ../lib/static/protected
-mkdir ../lib/static/protected/output
-mkdir ../lib/static/protected/screenshots
+mkdir ../bin/static/protected
+mkdir ../bin/static/protected/output
+mkdir ../bin/static/protected/screenshots
 mkdir chrome_dev
 cd chrome_dev
 wget https://chromedriver.storage.googleapis.com/76.0.3809.12/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/bin/chromedriver
 cd ..
-rm -r chrome_dev
 
 git clone https://github.com/bryand1/python-pinterest-api
 cd python-pinterest-api
@@ -52,6 +50,11 @@ echo "[+] Installation Complete."
 DATABASE="scrummage"
 USER="scrummage"
 PASSWD=`tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1`
+
+FLASK_ENVIRONMENT="development"
+
+echo "export FLASK_ENV=$FLASK_ENVIRONMENT" >> ~/.bashrc
+echo "[+] Environment variable added to startup."
 
 sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
 sudo -u postgres psql -c "CREATE USER $USER WITH ENCRYPTED PASSWORD '$PASSWD';"

@@ -1,419 +1,351 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re, os, logging, socket, plugins.common.Rotor as Rotor, plugins.common.General as General
-
-Generic_Extensions = [".com", ".edu", ".gov", ".net", ".info"]
-Global_Domain_Suffixes = [".ac", ".ac", ".ad", ".ae", ".af", ".ag", ".ai", ".al", ".am", ".as", ".at", ".az", ".ba",
-                          ".be", ".bf", ".bg", ".bi", ".bj", ".bo", ".bs", ".bt", ".by", ".ca", ".cc", ".cd", ".cf",
-                          ".cg", ".ch", ".ci", ".cl", ".cm", ".cn", ".co", ".cv", ".cz", ".de", ".dj", ".dk", ".dm",
-                          ".dz", ".ec", ".ee", ".es", ".eu", ".fi", ".fm", ".fr", ".ga", ".ge", ".gf", ".gg", ".gl",
-                          ".gm", ".gp", ".gr", ".gy", ".hk", ".hn", ".hr", ".ht", ".hu", ".id", ".ie", ".im", ".in",
-                          ".io", ".iq", ".is", ".it", ".je", ".jo", ".jp", ".kg", ".ki", ".kz", ".la", ".li", ".lk",
-                          ".lt", ".lu", ".lv", ".ma", ".md", ".me", ".mg", ".mk", ".ml", ".mn", ".ms", ".mu", ".mv",
-                          ".mw", ".mx", ".ne", ".ng", ".nl", ".no", ".nr", ".nu", ".pf", ".pk", ".pl", ".pn", ".ps",
-                          ".pt", ".qa", ".re", ".ro", ".rs", ".ru", ".rw", ".sc", ".se", ".sh", ".si", ".sk", ".sl",
-                          ".sm", ".sn", ".so", ".sr", ".st", ".sy", ".td", ".tg", ".tk", ".tl", ".tm", ".tn", ".to",
-                          ".tt", ".ua", ".us", ".uz", ".vg", ".vn", ".vu", ".ws", ".co", ".co.am", ".co.ao", ".co.bw",
-                          ".co.ck", ".co.cr", ".co.gy", ".co.hu", ".co.id", ".co.il", ".co.im", ".co.in", ".co.je",
-                          ".co.jp", ".co.ke", ".co.kr", ".co.lc", ".co.ls", ".co.ma", ".co.mz", ".co.nz", ".co.pe",
-                          ".co.rs", ".co.th", ".co.tz", ".co.ug", ".co.uk", ".co.uz", ".co.ve", ".co.vi", ".co.za",
-                          ".co.zm", ".co.zw", ".com", ".com.af", ".com.ag", ".com.ai", ".com.aq", ".com.ar", ".com.au",
-                          ".com.bd", ".com.bh", ".com.bi", ".com.bn", ".com.bo", ".com.br", ".com.by", ".com.bz",
-                          ".com.cn", ".com.co", ".com.cu", ".com.cy", ".com.do", ".com.ec", ".com.eg", ".com.et",
-                          ".com.fj", ".com.ge", ".com.gh", ".com.gi", ".com.gp", ".com.gr", ".com.gt", ".com.gy",
-                          ".com.hk", ".com.ht", ".com.iq", ".com.jm", ".com.jo", ".com.kh", ".com.kw", ".com.kz",
-                          ".com.lb", ".com.ly", ".com.mm", ".com.mt", ".com.mx", ".com.my", ".com.na", ".com.nf",
-                          ".com.ng", ".com.ni", ".com.np", ".com.nr", ".com.om", ".com.pa", ".com.pe", ".com.pg",
-                          ".com.ph", ".com.pk", ".com.pl", ".com.pr", ".com.ps", ".com.py", ".com.qa", ".com.ru",
-                          ".com.sa", ".com.sb", ".com.sg", ".com.sl", ".com.sv", ".com.tj", ".com.ua", ".com.uy",
-                          ".com.vc", ".com.ve"]
-Plugin_Name = "Domain-Fuzzer"
-Concat_Plugin_Name = "urlfuzzer"
-The_File_Extension = ".csv"
+import re, os, logging, socket, plugins.common.Rotor as Rotor, plugins.common.General as General, multiprocessing, multiprocessing.pool as mpool
 
 
-def Character_Switch(Query_List, Task_ID):
-    Local_Plugin_Name = Plugin_Name + "-Character-Switch"
-    Data_to_Cache = []
-    Cached_Data = []
-    Valid_Results = ["Domain,IP Address"]
-    Valid_Hosts = []
-    Directory = General.Make_Directory(Concat_Plugin_Name)
+class Fuzzer:
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    def __init__(self, Query_List, Task_ID):
+        self.Query_List = Query_List
+        self.Task_ID = Task_ID
+        self.Data_to_Cache = []
+        self.Cached_Data = []
+        self.Valid_Results = ["Domain,IP Address"]
+        self.Valid_Hosts = []
+        self.Generic_Extensions = [".com", ".edu", ".gov", ".net", ".info"]
+        self.Global_Domain_Suffixes = [".ac", ".ac", ".ad", ".ae", ".af", ".ag", ".ai", ".al", ".am", ".as", ".at", ".az", ".ba",
+                                  ".be", ".bf", ".bg", ".bi", ".bj", ".bo", ".bs", ".bt", ".by", ".ca", ".cc", ".cd", ".cf",
+                                  ".cg", ".ch", ".ci", ".cl", ".cm", ".cn", ".co", ".cv", ".cz", ".de", ".dj", ".dk", ".dm",
+                                  ".dz", ".ec", ".ee", ".es", ".eu", ".fi", ".fm", ".fr", ".ga", ".ge", ".gf", ".gg", ".gl",
+                                  ".gm", ".gp", ".gr", ".gy", ".hk", ".hn", ".hr", ".ht", ".hu", ".id", ".ie", ".im", ".in",
+                                  ".io", ".iq", ".is", ".it", ".je", ".jo", ".jp", ".kg", ".ki", ".kz", ".la", ".li", ".lk",
+                                  ".lt", ".lu", ".lv", ".ma", ".md", ".me", ".mg", ".mk", ".ml", ".mn", ".ms", ".mu", ".mv",
+                                  ".mw", ".mx", ".ne", ".ng", ".nl", ".no", ".nr", ".nu", ".pf", ".pk", ".pl", ".pn", ".ps",
+                                  ".pt", ".qa", ".re", ".ro", ".rs", ".ru", ".rw", ".sc", ".se", ".sh", ".si", ".sk", ".sl",
+                                  ".sm", ".sn", ".so", ".sr", ".st", ".sy", ".td", ".tg", ".tk", ".tl", ".tm", ".tn", ".to",
+                                  ".tt", ".ua", ".us", ".uz", ".vg", ".vn", ".vu", ".ws", ".co", ".co.am", ".co.ao", ".co.bw",
+                                  ".co.ck", ".co.cr", ".co.gy", ".co.hu", ".co.id", ".co.il", ".co.im", ".co.in", ".co.je",
+                                  ".co.jp", ".co.ke", ".co.kr", ".co.lc", ".co.ls", ".co.ma", ".co.mz", ".co.nz", ".co.pe",
+                                  ".co.rs", ".co.th", ".co.tz", ".co.ug", ".co.uk", ".co.uz", ".co.ve", ".co.vi", ".co.za",
+                                  ".co.zm", ".co.zw", ".com", ".com.af", ".com.ag", ".com.ai", ".com.aq", ".com.ar", ".com.au",
+                                  ".com.bd", ".com.bh", ".com.bi", ".com.bn", ".com.bo", ".com.br", ".com.by", ".com.bz",
+                                  ".com.cn", ".com.co", ".com.cu", ".com.cy", ".com.do", ".com.ec", ".com.eg", ".com.et",
+                                  ".com.fj", ".com.ge", ".com.gh", ".com.gi", ".com.gp", ".com.gr", ".com.gt", ".com.gy",
+                                  ".com.hk", ".com.ht", ".com.iq", ".com.jm", ".com.jo", ".com.kh", ".com.kw", ".com.kz",
+                                  ".com.lb", ".com.ly", ".com.mm", ".com.mt", ".com.mx", ".com.my", ".com.na", ".com.nf",
+                                  ".com.ng", ".com.ni", ".com.np", ".com.nr", ".com.om", ".com.pa", ".com.pe", ".com.pg",
+                                  ".com.ph", ".com.pk", ".com.pl", ".com.pr", ".com.ps", ".com.py", ".com.qa", ".com.ru",
+                                  ".com.sa", ".com.sb", ".com.sg", ".com.sl", ".com.sv", ".com.tj", ".com.ua", ".com.uy",
+                                  ".com.vc", ".com.ve"]
+        self.Plugin_Name = "Domain-Fuzzer"
+        self.Concat_Plugin_Name = "urlfuzzer"
+        self.The_File_Extension = ".csv"
 
-    Log_File = General.Logging(Directory, Local_Plugin_Name)
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    def Query_URL(self, URL, Extension):
 
-    Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+        try:
+            Query = URL + Extension
 
-    if not Cached_Data:
-        Cached_Data = []
-
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Character Switching Selected.")
-    Query_List = General.Convert_to_List(Query_List)
-
-    for Query in Query_List:
-        URL_Regex = re.search(
-            r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
-
-        if URL_Regex:
-            URL_Prefix = URL_Regex.group(1)
-            URL_Body = URL_Regex.group(3)
-
-            if URL_Regex.group(5) and URL_Regex.group(6):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
-
-            elif URL_Regex.group(5):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+            if self.URL_Prefix:
+                Web_Host = self.URL_Prefix.replace("s", "") + Query
 
             else:
-                URL_Extension = URL_Regex.group(4)
+                Web_Host = 'http://' + Query
 
-        else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
+            try:
+                Response = socket.gethostbyname(Query)
 
-        logging.info(General.Date() + ' ' + URL_Body)
-        URL_List = list(URL_Body)
-        Altered_URLs = Rotor.Search(URL_List, True, False, False, False, True, True, True)
-        logging.info(General.Date() + ' ' + ", ".join(Altered_URLs))
+                if Response:
+                    Cache = Query + ":" + Response
 
-        for Altered_URL in Altered_URLs:
+                    if Cache not in self.Cached_Data and Cache not in self.Data_to_Cache:
+                        self.Valid_Results.append(Query + "," + Response)
+                        self.Data_to_Cache.append(Cache)
+                        self.Valid_Hosts.append(Web_Host)
 
-            if not Altered_URL == URL_Body:
+            except:
+                logging.info(f'{General.Date()} Failed to resolve hostname {Query} to IP address.')
 
-                try:
-                    Query = Altered_URL + URL_Extension
+        except Exception as e:
+            logging.warning(f'{General.Date()} {str(e)}')
 
-                    if URL_Prefix:
-                        Web_Host = URL_Prefix.replace("s", "") + Query
+    def Character_Switch(self):
+        Local_Plugin_Name = self.Plugin_Name + "-Character-Switch"
+        Directory = General.Make_Directory(self.Concat_Plugin_Name)
 
-                    else:
-                        Web_Host = 'http://' + Query
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
 
-                    try:
-                        Response = socket.gethostbyname(Query)
+        Log_File = General.Logging(Directory, Local_Plugin_Name)
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-                        if Response:
-                            Cache = Query + ":" + Response
+        self.Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
-                            if Cache not in Cached_Data and Cache not in Data_to_Cache:
-                                Valid_Results.append(Query + "," + Response)
-                                Data_to_Cache.append(Cache)
-                                Valid_Hosts.append(Web_Host)
+        if not self.Cached_Data:
+            self.Cached_Data = []
 
+        logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Character Switching Selected.")
+        self.Query_List = General.Convert_to_List(self.Query_List)
 
-                    except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
+        for Query in self.Query_List:
+            URL_Regex = re.search(r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
 
-                except Exception as e:
-                    logging.warning(General.Date() + ' ' + str(e))
+            if URL_Regex:
+                self.URL_Prefix = URL_Regex.group(1)
+                self.URL_Body = URL_Regex.group(3)
 
-        logging.info(General.Date() + ' ' + Directory)
-        URL_Domain = URL_Body + URL_Extension
-        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body,
-                                               The_File_Extension)
+                if URL_Regex.group(5) and URL_Regex.group(6):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
 
-        if Output_File:
+                elif URL_Regex.group(5):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
 
-            for Host in Valid_Hosts:
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
-                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
-
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
-
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
-
-
-def Regular_Extensions(Query_List, Task_ID):
-    Local_Plugin_Name = Plugin_Name + "-Regular-Extensions"
-    Data_to_Cache = []
-    Cached_Data = []
-    Valid_Results = ["Domain,IP Address"]
-    Valid_Hosts = []
-    Directory = General.Make_Directory(Concat_Plugin_Name)
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    Log_File = General.Logging(Directory, Local_Plugin_Name)
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
-
-    if not Cached_Data:
-        Cached_Data = []
-
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Regular Extensions Selected.")
-    Query_List = General.Convert_to_List(Query_List)
-
-    for Query in Query_List:
-        URL_Regex = re.search(
-            r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
-
-        if URL_Regex:
-            URL_Prefix = URL_Regex.group(1)
-            URL_Body = URL_Regex.group(3)
-
-            if URL_Regex.group(5) and URL_Regex.group(6):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
-
-            elif URL_Regex.group(5):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+                else:
+                    self.URL_Extension = URL_Regex.group(4)
 
             else:
-                URL_Extension = URL_Regex.group(4)
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Please provide valid URLs.")
+
+            logging.info(f'{General.Date()} {self.URL_Body}')
+            URL_List = list(self.URL_Body)
+            Altered_URLs = Rotor.Search(URL_List, True, False, False, False, True, True, True)
+            logging.info(f'{General.Date()} {", ".join(Altered_URLs)}')
+            Pool = mpool.ThreadPool(int(multiprocessing.cpu_count())*int(multiprocessing.cpu_count()))
+            Pool_Threads = []
+
+            for Altered_URL in Altered_URLs:
+
+                if not Altered_URL == self.URL_Body:
+                    Thread = Pool.apply_async(self.Query_URL, args=(Altered_URL, self.URL_Extension,))
+                    Pool_Threads.append(Thread)
+
+            [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
+            logging.info(f'{General.Date()} {Directory}')
+            URL_Domain = self.URL_Body + self.URL_Extension
+            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+
+            if Output_File:
+
+                for Host in self.Valid_Hosts:
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+
+        if self.Cached_Data:
+            General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
 
         else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
-
-        for Extension in Generic_Extensions:
-
-            if not URL_Extension == Extension:
-
-                try:
-                    Query = URL_Body + Extension
-
-                    if URL_Prefix:
-                        Web_Host = URL_Prefix.replace("s", "") + Query
-
-                    else:
-                        Web_Host = 'http://' + Query
-
-                    try:
-                        Response = socket.gethostbyname(Query)
-
-                        if Response:
-                            Cache = Query + ":" + Response
-
-                            if Cache not in Cached_Data and Cache not in Data_to_Cache:
-                                Valid_Results.append(Query + "," + Response)
-                                Data_to_Cache.append(Cache)
-                                Valid_Hosts.append(Web_Host)
-
-                    except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
-
-                except Exception as e:
-                    logging.warning(General.Date() + ' ' + str(e))
-
-        URL_Domain = URL_Body + URL_Extension
-        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body,
-                                               The_File_Extension)
-
-        if Output_File:
-
-            for Host in Valid_Hosts:
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
-                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
-
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
-
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
+            General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "w")
 
 
-def Global_Extensions(Query_List, Task_ID):
-    Local_Plugin_Name = Plugin_Name + "-Global-Suffixes"
-    Data_to_Cache = []
-    Cached_Data = []
-    Valid_Results = ["Domain,IP Address"]
-    Valid_Hosts = []
-    Directory = General.Make_Directory(Concat_Plugin_Name)
+    def Regular_Extensions(self):
+        Local_Plugin_Name = self.Plugin_Name + "-Regular-Extensions"
+        Directory = General.Make_Directory(self.Concat_Plugin_Name)
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
 
-    Log_File = General.Logging(Directory, Local_Plugin_Name)
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+        Log_File = General.Logging(Directory, Local_Plugin_Name)
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-    Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+        Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
-    if not Cached_Data:
-        Cached_Data = []
+        if not Cached_Data:
+            Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Global Suffixes Selected.")
-    Query_List = General.Convert_to_List(Query_List)
+        logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Regular Extensions Selected.")
+        self.Query_List = General.Convert_to_List(self.Query_List)
 
-    for Query in Query_List:
-        URL_Regex = re.search(
-            r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
+        for Query in self.Query_List:
+            URL_Regex = re.search(r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
 
-        if URL_Regex:
-            URL_Prefix = URL_Regex.group(1)
-            URL_Body = URL_Regex.group(3)
+            if URL_Regex:
+                self.URL_Prefix = URL_Regex.group(1)
+                self.URL_Body = URL_Regex.group(3)
 
-            if URL_Regex.group(5) and URL_Regex.group(6):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
+                if URL_Regex.group(5) and URL_Regex.group(6):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
 
-            elif URL_Regex.group(5):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+                elif URL_Regex.group(5):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+
+                else:
+                    self.URL_Extension = URL_Regex.group(4)
 
             else:
-                URL_Extension = URL_Regex.group(4)
+                logging.warning(f"{General.Date()} {__name__.strip('plugins.')} - Please provide valid URLs.")
 
-        else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
+            Pool = mpool.ThreadPool(int(multiprocessing.cpu_count()) * int(multiprocessing.cpu_count()))
+            Pool_Threads = []
 
-        for suffix in Global_Domain_Suffixes:
+            for Extension in self.Generic_Extensions:
 
-            if not URL_Extension == suffix:
+                if not self.URL_Extension == Extension:
+                    Thread = Pool.apply_async(self.Query_URL, args=(self.URL_Body, Extension,))
+                    Pool_Threads.append(Thread)
 
-                try:
-                    Query = URL_Body + suffix
+            [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
+            URL_Domain = self.URL_Body + self.URL_Extension
+            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
 
-                    if URL_Prefix:
-                        Web_Host = URL_Prefix.replace("s", "") + Query
+            if Output_File:
 
-                    else:
-                        Web_Host = 'http://' + Query
-
-                    try:
-                        Response = socket.gethostbyname(Query)
-
-                        if Response:
-                            Cache = Query + ":" + Response
-
-                            if Cache not in Cached_Data and Cache not in Data_to_Cache:
-                                Valid_Results.append(Query + "," + Response)
-                                Data_to_Cache.append(Cache)
-                                Valid_Hosts.append(Web_Host)
-
-                    except:
-                        logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
-
-                except Exception as e:
-                    logging.warning(General.Date() + ' ' + str(e))
-
-        URL_Domain = URL_Body + URL_Extension
-        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body,
-                                               The_File_Extension)
-
-        if Output_File:
-
-            for Host in Valid_Hosts:
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
-                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
-
-    if Data_to_Cache:
+                for Host in self.Valid_Hosts:
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
 
         if Cached_Data:
-            General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
+            General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
 
         else:
-            General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
+            General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "w")
 
 
-def All_Extensions(Query_List, Task_ID):
-    Local_Plugin_Name = Plugin_Name + "-All-Extensions"
-    Data_to_Cache = []
-    Cached_Data = []
-    Valid_Results = ["Domain,IP Address"]
-    Valid_Hosts = []
-    Directory = General.Make_Directory(Concat_Plugin_Name)
+    def Global_Extensions(self):
+        Local_Plugin_Name = self.Plugin_Name + "-Global-Suffixes"
+        Directory = General.Make_Directory(self.Concat_Plugin_Name)
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
 
-    Log_File = General.Logging(Directory, Local_Plugin_Name)
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+        Log_File = General.Logging(Directory, Local_Plugin_Name)
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-    Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+        self.Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
-    if not Cached_Data:
-        Cached_Data = []
+        if not self.Cached_Data:
+            self.Cached_Data = []
 
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - All Extensions Selected.")
-    Query_List = General.Convert_to_List(Query_List)
+        logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Global Suffixes Selected.")
+        self.Query_List = General.Convert_to_List(self.Query_List)
 
-    for Query in Query_List:
-        URL_Regex = re.search(
-            r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
+        for Query in self.Query_List:
+            URL_Regex = re.search(r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
 
-        if URL_Regex:
-            URL_Prefix = URL_Regex.group(1)
-            URL_Body = URL_Regex.group(3)
+            if URL_Regex:
+                self.URL_Prefix = URL_Regex.group(1)
+                self.URL_Body = URL_Regex.group(3)
 
-            if URL_Regex.group(5) and URL_Regex.group(6):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
+                if URL_Regex.group(5) and URL_Regex.group(6):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
 
-            elif URL_Regex.group(5):
-                URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+                elif URL_Regex.group(5):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+
+                else:
+                    self.URL_Extension = URL_Regex.group(4)
 
             else:
-                URL_Extension = URL_Regex.group(4)
+                logging.warning(f"{General.Date()} {__name__.strip('plugins.')} - Please provide valid URLs.")
 
-        else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide valid URLs.")
+            Pool = mpool.ThreadPool(int(multiprocessing.cpu_count()) * int(multiprocessing.cpu_count()))
+            Pool_Threads = []
 
-        for Extension in Generic_Extensions:
+            for suffix in self.Global_Domain_Suffixes:
 
-            for suffix in Global_Domain_Suffixes:
-                suffix = suffix.replace(".com", "")
-                suffix = suffix.replace(".co", "")
+                if not self.URL_Extension == suffix:
+                    Thread = Pool.apply_async(self.Query_URL, args=(self.URL_Body, suffix,))
+                    Pool_Threads.append(Thread)
 
-                if not URL_Extension == suffix:
+            [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
+            URL_Domain = self.URL_Body + self.URL_Extension
+            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
 
-                    try:
-                        Query = URL_Body + Extension + suffix
+            if Output_File:
 
-                        if URL_Prefix:
-                            Web_Host = URL_Prefix.replace("s", "") + Query
+                for Host in self.Valid_Hosts:
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
 
-                        else:
-                            Web_Host = 'http://' + Query
+        if self.Data_to_Cache:
 
-                        try:
-                            Response = socket.gethostbyname(Query)
-
-                            if Response:
-                                Cache = Query + ":" + Response
-
-                                if Cache not in Cached_Data and Cache not in Data_to_Cache:
-                                    Valid_Results.append(Query + "," + Response)
-                                    Data_to_Cache.append(Cache)
-                                    Valid_Hosts.append(Web_Host)
-
-                        except:
-                            logging.info(General.Date() + ' Failed to resolve hostname ' + Query + ' to IP address.')
-
-                    except Exception as e:
-                        logging.warning(General.Date() + ' ' + str(e))
-
-        URL_Domain = URL_Body + URL_Extension
-        Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(Valid_Results), URL_Body, The_File_Extension)
-
-        if Output_File:
-
-            for Host in Valid_Hosts:
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, Host, "Domain Spoof", Task_ID, Local_Plugin_Name.lower())
-                Output_Connections.Output(Output_File, URL_Domain, General.Get_Title(Host))
-
-        if Data_to_Cache:
-
-            if Cached_Data:
-                General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
+            if self.Cached_Data:
+                General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
 
             else:
-                General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
+                General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "w")
+
+
+    def All_Extensions(self):
+        Local_Plugin_Name = self.Plugin_Name + "-All-Extensions"
+        Directory = General.Make_Directory(self.Concat_Plugin_Name)
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+        Log_File = General.Logging(Directory, Local_Plugin_Name)
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+
+        if not Cached_Data:
+            Cached_Data = []
+
+        logging.info(f"{General.Date()} {__name__.strip('plugins.')} - All Extensions Selected.")
+        self.Query_List = General.Convert_to_List(self.Query_List)
+
+        for Query in self.Query_List:
+            URL_Regex = re.search(r"(https?:\/\/(www\.)?)?([-a-zA-Z0-9@:%_\+~#=]{2,256})(\.[a-z]{2,3})(\.[a-z]{2,3})?(\.[a-z]{2,3})?", Query)
+
+            if URL_Regex:
+                self.URL_Prefix = URL_Regex.group(1)
+                self.URL_Body = URL_Regex.group(3)
+
+                if URL_Regex.group(5) and URL_Regex.group(6):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5) + URL_Regex.group(6)
+
+                elif URL_Regex.group(5):
+                    self.URL_Extension = URL_Regex.group(4) + URL_Regex.group(5)
+
+                else:
+                    self.URL_Extension = URL_Regex.group(4)
+
+            else:
+                logging.warning(f"{General.Date()} {__name__.strip('plugins.')} - Please provide valid URLs.")
+
+            Pool = mpool.ThreadPool(int(multiprocessing.cpu_count()) * int(multiprocessing.cpu_count()))
+            Pool_Threads = []
+
+            for Extension in self.Generic_Extensions:
+
+                for suffix in self.Global_Domain_Suffixes:
+                    suffix = suffix.replace(".com", "")
+                    suffix = suffix.replace(".co", "")
+
+                    if not self.URL_Extension == suffix:
+                        Thread = Pool.apply_async(self.Query_URL, args=(self.URL_Body, Extension + suffix,))
+                        Pool_Threads.append(Thread)
+
+            [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
+            URL_Domain = self.URL_Body + self.URL_Extension
+            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+
+            if Output_File:
+
+                for Host in self.Valid_Hosts:
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+
+            if self.Data_to_Cache:
+
+                if Cached_Data:
+                    General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
+
+                else:
+                    General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "w")

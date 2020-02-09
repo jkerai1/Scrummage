@@ -5,11 +5,11 @@
 
 if __name__ == '__main__':
     from flask import Flask, render_template, json, flash, request, redirect, url_for, session, send_from_directory, jsonify
-    from flask_jwt import jwt_required
     from flask_compress import Compress
     from signal import signal, SIGINT
     from functools import wraps
     from datetime import datetime, timedelta
+    from time import sleep
     from werkzeug.security import generate_password_hash, check_password_hash
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -19,14 +19,14 @@ if __name__ == '__main__':
     import os, re, plugin_caller, getpass, time, sys, threading, html, secrets, jwt, plugins.common.Connectors as Connectors, plugins.common.General as General, logging
 
     Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "Blockchain Monero Transaction Search", "BSB Search", "Business Search - American Central Index Key", "Business Search - American Company Name", "Business Search - Australian Business Number", "Business Search - Australian Company Name", "Business Search - Canadian Business Number", "Business Search - Canadian Company Name", "Business Search - New Zealand Business Number", "Business Search - New Zealand Company Name", "Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Default Password Search", "DNS Reconnaissance Search", "Domain Fuzzer - All Extensions",
-                     "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
+                     "Domain Fuzzer - Punycode", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
                      "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Account Search", "Instagram Location Search", "Instagram Media Search", "Instagram Tag Search", "Instagram User Search", "iTunes Store Search", "Library Genesis Search", "PhishTank Search", "Google Play Store Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "RSS Feed Search", "Torrent Search", "Twitter Scraper", "Vehicle Registration Search", "Vulners Search", "Windows Store Search", "YouTube Search"]
     Plugins_without_Limit = ["BSB Search", "Blockchain Monero Transaction Search", "Business Search - American Central Index Key", "Business Search - Australian Business Number", "Business Search - Canadian Business Number", "Business Search - New Zealand Business Number", "Business Search - United Kingdom Business Number", "Certificate Transparency", "DNS Reconnaissance Search", "Domain Fuzzer - All Extensions", "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Password Search", "Instagram Media Search", "Pinterest Pin Search", "Vehicle Registration Search"]
     API_Plugins = ["Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Ebay Search", "Flickr Search", "Google Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "Twitter Scraper", "Vulners Search", "YouTube Search"]
     Phishing_Sites = [["All", "All"], [139, "ABL"], [201, "ABN"], [92, "ABSA Bank"], [68, "Accurint"], [207, "Adobe"], [209, "Aetna"], [211, "Alibaba.com"], [160, "Allegro"], [51, "Alliance Bank"], [28, "Amarillo"], [61, "Amazon.com"], [118, "American Airlines"], [184, "American Express"], [141, "American Greetings"], [15, "Ameritrade"], [133, "ANZ"], [110, "AOL"], [183, "Apple"], [170, "ArenaNet"], [144, "ASB"], [17, "Associated Bank"], [189, 'AT&T'], [165, "ATO"], [249, "B-tc.ws"], [73, "Banca di Roma"], [178, "Banca Intesa"], [124, "Bancasa"], [158, "Banco De Brasil"], [125, "Banco Real"], [208, "Bank Millennium"], [6, "Bank of America / MBNA"], [40, "Bank of KC"], [45, "Bank of the West"], [5, "Barclays"], [63, "BB&amp;T"], [27, "Bendigo"], [226, "Binance"], [217, "Bitfinex"], [224, "bitFlyer"], [229, "Bitmex"], [122, "Blizzard"], [210, "Blockchain"], [96, "BloomSpot"], [44, "BMO"], [82, "Bradesco"], [212, "BT"], [98, "BuyWithMe"], [126, "Cahoot"], [138, "Caixa"], [120, "Caixo"], [29, "Capital One"], [156, "Capitec Bank"], [65, "Career Builder"], [105, "Cariparma Credit Agricole"], [107, "Cartasi"], [131, "Centurylink"], [19, "Charter One"], [3, "Chase"], [32, "CIBC"], [137, "Cielo"], [150, "CIMB Bank"], [42, "Citibank"], [14, "Citizens"], [230, "CNB"], [146, "Co-operative Bank"], [214, "Coinbase"], [22, "Comerica"], [167, "Commonwealth Bank of Australia"], [30, "Compass"], [113, "Craigslist"], [219, "Credit Karma"], [31, "Crown"], [87, "CUA (Credit Union Australia)"], [33, "DBS"], [140, "Delta"], [185, "Deutsche Bank"], [197, "DHL"], [188, "Diners Club"], [187, "Discover Bank"], [186, "Discover Card"], [196, "Discovery"], [60, "Downey Savings"], [194, "Dropbox"], [59, "e-gold"], [2, "eBay"], [102, "Egg"], [77, "EPPICard"], [74, "Facebook"], [41, "FHB"], [48, "Fifth Third Bank"], [103, "First Direct"], [50, "First Federal Bank of California"], [91, "First National Bank (South Africa)"], [39, "Franklin"], [218, "GitHub"], [76, "Google"], [94, "Groupon"], [106, "Gruppo Carige"], [151, "GTBank"], [171, "GuildWars2"], [81, "Habbo"], [104, "Halifax"], [108, "HMRC"], [97, "HomeRun"], [154, "Hotmail"], [4, "HSBC"], [18, "Huntington"], [228, "IDEX"], [57, "Independent Bank"], [123, "ING"], [67, "Interactive Brokers"], [202, "Intesa Sanpaolo"], [62, "IRS"], [135, "Itau"], [72, "KCFCU (Kauai Credit Union)"], [20, "Key Bank"], [203, "Kiwibank"], [9, "LaSalle"], [204, "LinkedIn"], [152, "Littlewoods"], [112, "Live"], [95, "LivingSocial"], [182, "Lloyds Bank"], [215, "LocalBitcoins.com"], [179, "Lottomatica"], [12, "M &amp; I"], [130, "Mastercard"], [66, "MBTrading"], [173, "Metro Bank"], [177, "Microsoft"], [227, "MyCrypto"], [223, "MyEtherWallet"], [225, "MyMonero"], [78, "MySpace"], [164, "NAB"], [37, "Nantucket Bank"], [34, "National City"], [148, "Nationwide"], [26, "NatWest"], [71, "Nedbank"], [200, "Netflix"], [161, "Nets"], [205, "NetSuite"], [127, "NEXON"], [175, "Nordea"], [149, "Northern Rock"], [168, "Orange"], [89, "Orkut"], [8, "Other"], [159, "otoMoto"], [192, "PagSeguro"], [216, "Paxful"], [1, "PayPal"], [23, "Peoples"], [195, "Permanent TSB"], [180, "Pintrest"], [176, "PKO"], [114, "Playdom"], [115, "Playfish"], [100, "Plum District"], [69, "PNC Bank"], [64, "Poste"], [128, "Rabobank"], [221, "Rackspace"], [36, "RBC"], [70, "RBS"], [16, "Regions"], [134, "RuneScape"], [121, "Safra National Bank of New York"], [35, "Salem Five"], [75, "Salesforce"], [109, "Santander UK"], [84, "Scotiabank"], [55, "Sky Financial"], [117, "Skype"], [147, "Smile Bank"], [93, "South African Revenue Service"], [166, "St George Bank"], [90, "Standard Bank Ltd."], [86, "Steam"], [163, "Suncorp"], [172, "Swedbank"], [145, "Tagged"], [136, "TAM Fidelidade"], [43, "TD Canada Trust"], [193, "Tesco"], [85, "Tibia"], [99, "Tippr"], [181, "TSB"], [132, "Twitter"], [213, "Uber"], [220, "UniCredit"], [157, "US Airways"], [24, "US Bank"], [199, "USAA"], [169, "Verizon"], [153, "Very"], [248, "Virustotal"], [129, "Visa"], [155, "Vodafone"], [58, "Volksbanken Raiffeisenbanken"], [13, "Wachovia"], [56, "WalMart"], [21, "Washington Mutual"], [7, "Wells Fargo"], [53, "Western Union"], [25, "Westpac"], [206, "WhatsApp"], [88, "World of Warcraft"], [222, "Xapo"], [111, "Yahoo"], [116, "ZML"], [101, "Zynga"]]
     Bad_Characters = ["|", "&", "?", "\\", "\"", "\'", "[", "]", ">", "<", "~", "`", ";", "{", "}", "%", "^", "--", "++", "+", "'", "(", ")", "*", "="]
     Finding_Types = ['Domain Spoof', 'Data Leakage', 'Phishing', 'Blockchain Transaction', 'Blockchain Address', 'Exploit']
-    Version = "2.1"
+    Version = "2.2"
 
     try:
         File_Path = os.path.dirname(os.path.realpath('__file__'))
@@ -440,7 +440,7 @@ if __name__ == '__main__':
 
                 if session.get('is_admin'):
 
-                    if request.method == 'POST':
+                    if request.method == 'POST' or request.method == 'GET':
                         CSV = Connectors.Load_CSV_Configuration()
                         DD = Connectors.Load_Defect_Dojo_Configuration()
                         DOCX = Connectors.Load_DOCX_Configuration()
@@ -473,7 +473,7 @@ if __name__ == '__main__':
         try:
 
             if 'Authorization' in request.headers:
-                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Auth_Token = request.headers['Authorization'].strip("Bearer ").strip("bearer ")
                 Authentication_Verified = API_verification(Auth_Token)
 
                 if Authentication_Verified["Token"]:
@@ -611,23 +611,18 @@ if __name__ == '__main__':
                                         screenshot_file = screenshot_file.replace(replaceable_item, '-')
 
                                     screenshot_file = screenshot_file + ".png"
-
                                     CHROME_PATH = '/usr/bin/google-chrome'
                                     CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
-                                    # WINDOW_SIZE = "1920,1080"
-
                                     chrome_options = Options()
                                     chrome_options.add_argument("--headless")
-                                    # chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
                                     chrome_options.binary_location = CHROME_PATH
 
                                     driver = webdriver.Chrome(
                                         executable_path=CHROMEDRIVER_PATH,
                                         options=chrome_options
                                     )
-
+                                    driver.implicitly_wait(5)
                                     driver.get(result[0])
-                                    # total_width = driver.execute_script("return document.body.offsetWidth")
                                     total_height = driver.execute_script("return document.body.scrollHeight")
                                     driver.set_window_size(1920, total_height)
                                     driver.save_screenshot("static/protected/screenshots/" + screenshot_file)
@@ -1000,9 +995,7 @@ if __name__ == '__main__':
                                         if result[4]:
                                             time.sleep(1)
                                             PSQL_Select_Query = "SELECT * FROM tasks WHERE query = %s AND plugin = %s AND description = %s AND frequency = %s AND task_limit = %s AND status = %s AND created_at = %s AND updated_at = %s;"
-                                            Cursor.execute(PSQL_Select_Query, (
-                                            result[1], result[2], result[3], result[4], str(result[5]), "Stopped",
-                                            str(Current_Timestamp), str(Current_Timestamp),))
+                                            Cursor.execute(PSQL_Select_Query, (result[1], result[2], result[3], result[4], str(result[5]), "Stopped", str(Current_Timestamp), str(Current_Timestamp),))
                                             result = Cursor.fetchone()
                                             task_id = result[0]
 
@@ -1178,16 +1171,24 @@ if __name__ == '__main__':
                                                         return render_template('tasks.html', username=session.get('user'),
                                                                                form_step=session.get('form_step'), use_limit=True,
                                                                                edit_task=True, Valid_Plugins=Valid_Plugins,
-                                                                               results=results,
+                                                                               results=results, is_admin=session.get('is_admin'), form_type=session.get('form_type'),
                                                                                error="Invalid query specified, please provide a valid query with no special characters.")
+
+                                                if session.get("form_type") == "PhishTank Search":
+
+                                                    if not any(session['task_query'] in p for p in Phishing_Sites):
+                                                        return render_template('tasks.html', username=session.get('user'),
+                                                                               form_type=session.get('form_type'), form_step=session.get('form_step'),
+                                                                               is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, edit_task=True,
+                                                                               error="Invalid query selected, please choose a pre-defined query from the list.")
 
                                                 try:
                                                     session['task_limit'] = int(request.form['limit'])
 
                                                 except:
                                                     return render_template('tasks.html', username=session.get('user'), form_step=session.get('form_step'),
-                                                                           use_limit=True, edit_task=True,
-                                                                           Valid_Plugins=Valid_Plugins, results=results,
+                                                                           use_limit=True, edit_task=True, form_type=session.get('form_type'),
+                                                                           Valid_Plugins=Valid_Plugins, results=results, is_admin=session.get('is_admin'),
                                                                            error="Invalid limit specified, please provide a valid limit represented by a number.")
 
                                             else:
@@ -1195,11 +1196,10 @@ if __name__ == '__main__':
                                                 for char in session.get('task_query'):
 
                                                     if char in Bad_Characters:
-                                                        return render_template('tasks.html', username=session.get('user'),
-                                                                               form_step=session.get('form_step'), edit_task=True,
+                                                        return render_template('tasks.html', username=session.get('user'), form_type=session.get('form_type'),
+                                                                               form_step=session.get('form_step'), edit_task=True, is_admin=session.get('is_admin'),
                                                                                Valid_Plugins=Valid_Plugins, results=results,
-                                                                               error="Invalid limit specified, please provide a valid query with no special characters.")
-
+                                                                               error="Invalid query specified, please provide a valid query with no special characters.")
 
                                                 if session.get("form_type") == "PhishTank Search":
 
@@ -1462,22 +1462,41 @@ if __name__ == '__main__':
 
                                             else:
 
-                                                for char in session.get('task_query'):
+                                                if session.get('form_type') not in Plugins_without_Limit:
 
-                                                    if char in Bad_Characters:
-                                                        return render_template('tasks.html', username=session.get('user'),
-                                                                               form_type=session.get('form_type'), form_step=session.get('form_step'),
-                                                                               is_admin=session.get('is_admin'), new_task=True,
-                                                                               error="Invalid query specified, please provide a valid query with no special characters.")
+                                                    for char in session.get('task_query'):
 
-                                                if session.get("form_type") == "PhishTank Search":
+                                                        if char in Bad_Characters:
+                                                            return render_template('tasks.html', username=session.get('user'),
+                                                                                   form_type=session.get('form_type'), form_step=session.get('form_step'),
+                                                                                   is_admin=session.get('is_admin'), new_task=True, use_limit=True,
+                                                                                   error="Invalid query specified, please provide a valid query with no special characters.")
 
-                                                    if not any(session['task_query'] in p for p in Phishing_Sites):
-                                                        return render_template('tasks.html', username=session.get('user'),
-                                                                               form_type=session.get('form_type'), form_step=session.get('form_step'),
-                                                                               is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, new_task=True,
-                                                                               error="Invalid query selected, please choose a pre-defined query from the list.")
+                                                    if session.get("form_type") == "PhishTank Search":
 
+                                                        if not any(session['task_query'] in p for p in Phishing_Sites):
+                                                            return render_template('tasks.html', username=session.get('user'),
+                                                                                   form_type=session.get('form_type'), form_step=session.get('form_step'),
+                                                                                   is_admin=session.get('is_admin'), use_limit=True, phish_sites=Phishing_Sites, new_task=True,
+                                                                                   error="Invalid query selected, please choose a pre-defined query from the list.")
+
+                                                else:
+
+                                                    for char in session.get('task_query'):
+
+                                                        if char in Bad_Characters:
+                                                            return render_template('tasks.html', username=session.get('user'),
+                                                                                   form_type=session.get('form_type'), form_step=session.get('form_step'),
+                                                                                   is_admin=session.get('is_admin'), new_task=True,
+                                                                                   error="Invalid query specified, please provide a valid query with no special characters.")
+
+                                                    if session.get("form_type") == "PhishTank Search":
+
+                                                        if not any(session['task_query'] in p for p in Phishing_Sites):
+                                                            return render_template('tasks.html', username=session.get('user'),
+                                                                                   form_type=session.get('form_type'), form_step=session.get('form_step'),
+                                                                                   is_admin=session.get('is_admin'), phish_sites=Phishing_Sites, new_task=True,
+                                                                                   error="Invalid query selected, please choose a pre-defined query from the list.")
 
                                             Current_Timestamp = General.Date()  # Variable set as it is needed for two different functions and needs to be consistent.
                                             PSQL_Insert_Query = 'INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
