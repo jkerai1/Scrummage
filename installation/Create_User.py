@@ -75,8 +75,8 @@ cursor = connection.cursor()
 username = Arguments.username
 
 PSQL_Select_Query = 'SELECT * FROM users WHERE username = %s'
-Cursor.execute(PSQL_Select_Query, (username,))
-User = Cursor.fetchone()
+cursor.execute(PSQL_Select_Query, (username,))
+User = cursor.fetchone()
 
 if User:
     sys.exit("[-] User already exists.")
