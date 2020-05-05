@@ -22,3 +22,4 @@ python-docx
 flask_compress
 flask_jwt
 tweepy
+ratelimiter
