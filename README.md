@@ -2,7 +2,7 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/matamorphosis?locale.x=en_AU)
 
 # Scrummage  
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
 **NEW VERSION 2.2**
 - New Dark theme by default, let's take care of our eyes :). The light theme can be enabled by changing the css, and chart.min.js files to the "light" files.
 - Improved concurrency - mainly for the Domain Fuzzer.
