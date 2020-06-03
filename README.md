@@ -4,8 +4,8 @@
 # Scrummage  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
 **NEW VERSION 2.2**
-- New Dark theme by default, let's take care of our eyes :). The light theme can be enabled by changing the css, and chart.min.js files to the "light" files.
-- Improved concurrency - mainly for the Domain Fuzzer.
+- Significant UI Improvements.
+- Simplified new code that retains the same look and feel as before with a few improvements.
 - Bug fixes for task management functions. 
 
 Scrummage is an OSINT tool that centralises your OSINT scans, leveraging powerful yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  

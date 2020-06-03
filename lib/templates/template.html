@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Template.">
         <title>Scrummage</title>
-        <link rel="icon" href="static/icons/main.ico" />
-        <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <link rel="icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/template.css') }}"/>
     </head>
     <body>
@@ -41,7 +41,7 @@
                 </ul>
             </div>
         </nav>
-        <script>
+        <script type="text/javascript">
             let mainNav = document.getElementById('js-menu');
             let navBarToggle = document.getElementById('hamburger');
 

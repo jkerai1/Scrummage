@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Change Account Password.">
-        <link rel="icon" href="static/icons/main.ico" />
-        <link rel="apple-touch-icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
-		<script type="text/javascript" src="static/js/datatables.min.js"></script>
-		<script type="text/javascript" src="static/js/main.js"></script>
+        <link rel="icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
         <title>Scrummage Accounts</title>
     </head>
     <body onload="myFunction()">
@@ -29,19 +29,27 @@
                             <tr>
                                 <td class="apitab" id="admin-apitab">Your API Key</td>
                                 <td class="apitab" style="padding: 5px 7px 5px 5px; display: inline-flex;">
-                                    <form class="jwt-form" action="" method=post autocomplete="off">
-                                        <input name="newapikey" value="{{current_user_id}}" type=hidden />
-                                        <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
+                                    <form class="jwt-form" action="{{ url_for('get_account_apikey', accountid=current_user_id) }}" method=post autocomplete="off">
+                                        <input type="image" id="sync" src="{{ url_for('static', filename='images/sync.png') }}" onmouseover="this.setAttribute('src', syncHov());" onmouseout="this.setAttribute('src', sync());">
                                     </form>
                                     <input id="copy" value="{{api_key}}" type="text">
                                     {% if api_key %}
                                     <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
-                                    <script>
+                                    <script type="text/javascript">
                                         function copyTextFunc() {
                                           var copyText = document.getElementById("copy");
                                           copyText.select();
                                           copyText.setSelectionRange(0, 99999); /*For mobile devices*/
                                           document.execCommand("copy");
+                                        }
+
+                                        function syncHov() {
+                                            return "{{ url_for('static', filename='images/synchov.png') }}"
+                                        }
+
+
+                                        function sync() {
+                                            return "{{ url_for('static', filename='images/sync.png') }}"
                                         }
                                     </script>
                                     {% endif %}
@@ -54,64 +62,129 @@
                     <thead>
                         <tr>
                             <th style="min-width: 40px;">ID</th>
+                            <th style="min-width: 30px;"><input type="checkbox" onclick="checkAll(this)" id="masterselect" name="masterchkbox"></th>
                             <th style="min-width: 95px;">Username</th>
                             <th style="min-width: 80px;">Blocked</th>
                             <th style="min-width: 65px;">Admin</th>
-                            <th style="min-width: 280px;">Functions</th>
+                            <th style="min-width: 100px;">Functions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for result in results %}
                         <tr>
                             <td class="nonscreenshottab">{{result[0]}}</td>
+                            <td id="checkboxtd"><input type="checkbox" onclick="terms_changed(this)" id="select" name="taskchkbox" value="{{result[0]}}"></td>
                             <td class="nonscreenshottab">{{result[1]}}</td>
                             <td class="nonscreenshottab">{{result[3]}}</td>
                             <td class="nonscreenshottab">{{result[4]}}</td>
-                            {% if is_admin %}
-                                <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
-                                    {% if result[3] == True %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="enableuser" value="{{result[0]}}" type=hidden>
-                                        <input class="button-run" type=submit value="Unblock">
-                                    </form>
-                                    {% else %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="disableuser" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to block user number {{result[0]}}?');" class="button-delete" type=submit value="Block">
-                                    </form>
-                                    {% endif %}
-                                    {% if result[4] == True %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="demote" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to demote user number {{result[0]}}?');" class="button-delete" type=submit value="Demote">
-                                    </form>
-                                    {% else %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="promote" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to promote user number {{result[0]}}?');" class="button-run" type=submit value="Promote">
-                                    </form>
-                                    {% endif %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="changeotheruserspassword" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Change Password">
-                                    </form>
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="deleteuser" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to delete user number {{result[0]}}?');" class="button-delete" type=submit value="Delete">
-                                    </form>
-                                </td>
-                            {% endif %}
+                            <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
+                                <form class="task_buttons" action="{{ url_for('change_account_password', account=result[0]) }}" method=post autocomplete="off">
+                                    <input class="button" type=submit value="Change Password">
+                                </form>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <form style="display: none;" id="createuser" class="form_left" action="" method=post autocomplete="off">
-                <input class="button" name="createuser" type=submit value="Create User">
-            </form>
+            <div class="buttons-bottom">
+                <form style="display: none;" id="createuser" class="form_left" action="{{ url_for('new_account') }}" method=post autocomplete="off">
+                    <input class="button" name="createuser" type=submit value="Create User">
+                </form>
+                <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected users: ' + getSelectValues() + '?') && sendRequest('Delete');" disabled="true">Delete User</button>
+                <button id="bottom_block_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to block the selected users: ' + getSelectValues() + '?') && sendRequest('Block');" disabled="true">Block User</button>
+                <button id="bottom_unblock_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to unblock the selected users: ' + getSelectValues() + '?') && sendRequest('Unblock');" disabled="true">Unblock User</button>
+                <button id="bottom_demote_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to demote the selected users: ' + getSelectValues() + '?') && sendRequest('Demote');" disabled="true">Demote User</button>
+                <button id="bottom_promote_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to promote the selected users: ' + getSelectValues() + '?') && sendRequest('Promote');" disabled="true">Promote User</button>
+            </div>
+            <script type="text/javascript">
+            function getSelectValues() {
+               var checkedArray = []
+               document.querySelectorAll('#select:checked').forEach(e => {
+                   checkedArray.push(e.value);
+               });
+               checkedArrayStr = checkedArray.toString();
+               return checkedArrayStr
+            }
+
+            function terms_changed(termsCheckBox){
+                var buttons = [["bottom_delete_button", "Delete"], ["bottom_block_button", "Block"], ["bottom_unblock_button", "Unblock"], ["bottom_demote_button", "Demote"], ["bottom_promote_button", "Promote"]]
+                //If the checkbox has been checked
+                if(termsCheckBox.checked){
+                    //Set the disabled property to FALSE and enable the button.
+                    buttons.forEach(button => {
+                        document.getElementById(button[0]).disabled = false;
+                        document.getElementById(button[0]).className = "button";
+                    });
+                    if($('#select:checked').length >= 2) {
+                        buttons.forEach(button => {
+                            var current_button = "#" + button[0];
+                            document.querySelector(current_button).innerText = button[1] + ' Users'
+                        });      
+                    }
+                } else{
+                    document.getElementById('masterselect').checked = false;
+                    if($('#select:checked').length === 1) {
+                        buttons.forEach(button => {
+                            var current_button = "#" + button[0];
+                            document.querySelector(current_button).innerText = button[1] + ' User'
+                        });                        
+                    }
+                    if($('#select:checked').length === 0) {
+                        buttons.forEach(button => {
+                            document.getElementById(button[0]).disabled = true;
+                            document.getElementById(button[0]).className = "button-disabled";
+                        });
+                    }
+                }
+            }
+
+            function sendRequest(typeOfRequest) {
+                var xhr = new XMLHttpRequest();
+                var selectedValArray = getSelectValues()
+
+                if (arguments[0] === 'Delete') {
+                    var uri = "account/delete/" + selectedValArray
+                } else if (arguments[0] === 'Block') {
+                    var uri = "account/disable/" + selectedValArray
+                } else if (arguments[0] === 'Unblock') {
+                    var uri = "account/enable/" + selectedValArray
+                } else if (arguments[0] === 'Demote') {
+                    var uri = "account/demote/" + selectedValArray
+                } else if (arguments[0] === 'Promote') {
+                    var uri = "account/promote/" + selectedValArray
+                }
+                xhr.open("POST", uri, true);
+                xhr.send();
+                xhr.onreadystatechange = function(e) {
+                    if (xhr.readyState === 4) {
+                        location.reload();
+                    }
+                }
+            }
+
+            function checkAll(ele) {
+                var checkboxes = document.getElementsByTagName('input');
+                if (ele.checked) {
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            checkboxes[i].checked = true;
+                            terms_changed(checkboxes[i]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            checkboxes[i].checked = false;
+                            terms_changed(checkboxes[i]);
+                        }
+                    }
+                }
+            }
+            </script>
             {% if error %}
             <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
-            <script>
+            <script type="text/javascript">
             var myVar;
 
             function myFunction() {
@@ -123,15 +196,20 @@
                 document.getElementById("loader-message").style.display = "none";
                 document.getElementById("msg").style.display = null;
                 document.getElementById("paginate").style.display = null;
+                document.getElementById("bottom_delete_button").style.display = null;
+                document.getElementById("bottom_promote_button").style.display = null;
+                document.getElementById("bottom_demote_button").style.display = null;
+                document.getElementById("bottom_block_button").style.display = null;
+                document.getElementById("bottom_unblock_button").style.display = null;
                 document.getElementById("createuser").style.display = null;
                 document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[3].placeholder='Search';
-                document.getElementsByTagName("INPUT")[3].className='js_search';
+                document.getElementsByTagName("INPUT")[2].placeholder='Search';
+                document.getElementsByTagName("INPUT")[2].className='js_search';
             }
             </script>
             {% elif message %}
             <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
-            <script>
+            <script type="text/javascript">
             var myVar;
 
             function myFunction() {
@@ -143,14 +221,19 @@
                 document.getElementById("loader-message").style.display = "none";
                 document.getElementById("msg").style.display = null;
                 document.getElementById("paginate").style.display = null;
+                document.getElementById("bottom_delete_button").style.display = null;
+                document.getElementById("bottom_promote_button").style.display = null;
+                document.getElementById("bottom_demote_button").style.display = null;
+                document.getElementById("bottom_block_button").style.display = null;
+                document.getElementById("bottom_unblock_button").style.display = null;
                 document.getElementById("createuser").style.display = null;
                 document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[3].placeholder='Search';
-                document.getElementsByTagName("INPUT")[3].className='js_search';
+                document.getElementsByTagName("INPUT")[2].placeholder='Search';
+                document.getElementsByTagName("INPUT")[2].className='js_search';
             }
             </script>
             {% else %}
-            <script>
+            <script type="text/javascript">
             var myVar;
 
             function myFunction() {
@@ -161,10 +244,15 @@
                 document.getElementById("loader").style.display = "none";
                 document.getElementById("loader-message").style.display = "none";
                 document.getElementById("paginate").style.display = null;
+                document.getElementById("bottom_delete_button").style.display = null;
+                document.getElementById("bottom_promote_button").style.display = null;
+                document.getElementById("bottom_demote_button").style.display = null;
+                document.getElementById("bottom_block_button").style.display = null;
+                document.getElementById("bottom_unblock_button").style.display = null;
                 document.getElementById("createuser").style.display = null;
                 document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[3].placeholder='Search';
-                document.getElementsByTagName("INPUT")[3].className='js_search';
+                document.getElementsByTagName("INPUT")[2].placeholder='Search';
+                document.getElementsByTagName("INPUT")[2].className='js_search';
             }
             </script>
             {% endif %}
@@ -175,7 +263,7 @@
                     <div class="field-container">
                         <div style="text-align: center;">
                             <div class="form_div" style="padding: 0px; width: 80%;">
-                                <form class="form" action="" method=post autocomplete="off">
+                                <form class="form" action="{{ url_for('change_account_password', account=current_user_id) }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
                                             <input class="field_textarea" type=password name=New_Password placeholder="New Password">
@@ -184,7 +272,7 @@
                                             <input class="field_textarea" type=password name=New_Password_Retype placeholder="Retype Password">
                                         </dd>
                                     </dl>
-                                    <p style="padding: 10px 0px 20px 0px;"><input class="button" name="changeotheruserspassword" type=submit value="Change Password"></p>
+                                    <p style="padding: 10px 0px 20px 0px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
                                 </form>
                             </div>
                         </div>
@@ -195,7 +283,7 @@
                     <div class="field-container">
                         <div style="text-align: center;">
                             <div class="form_div" style="padding: 0px; width: 80%;">
-                                <form class="form" action="" method=post autocomplete="off">
+                                <form class="form" action="{{ url_for('new_account') }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
                                             <input class="field_textarea" type=text name=Username placeholder="Username">
@@ -233,7 +321,6 @@
                 </div>
             </footer>
             {% endif %}
-        {% else %}
         {% endif %}
         {% else %}
             <div id="nonadmin-jwt-div">
@@ -242,22 +329,30 @@
                         <tr>
                             <td class="apitab" id="admin-apitab">Your API Key</td>
                             <td class="apitab" style="padding: 5px 7px 5px 5px; display: inline-flex;">
-                                <form class="jwt-form" action="" method=post autocomplete="off">
-                                    <input name="newapikey" value="{{current_user_id}}" type=hidden />
-                                    <input type="image" id="sync" src="../static/images/sync.png" onmouseover="this.setAttribute('src', '../static/images/synchov.png');" onmouseout="this.setAttribute('src', '../static/images/sync.png');">
+                                <form class="jwt-form" action="{{ url_for('get_account_apikey', accountid=current_user_id) }}" method=post autocomplete="off">
+                                    <input type="image" id="sync" src="{{ url_for('static', filename='images/sync.png') }}" onmouseover="this.setAttribute('src', syncHov());" onmouseout="this.setAttribute('src', sync());">
                                 </form>
                                 <input id="copy" value="{{api_key}}" type="text">
                                 {% if api_key %}
                                 <div id="copy-div" onclick="copyTextFunc()" alt="Copy to Clipboard"><span class="large-screenshot"><img src="" class="large-image"/></span></div>
-                                <script>
+                                {% endif %}
+                                <script type="text/javascript">
                                     function copyTextFunc() {
                                       var copyText = document.getElementById("copy");
                                       copyText.select();
                                       copyText.setSelectionRange(0, 99999); /*For mobile devices*/
                                       document.execCommand("copy");
                                     }
+
+                                    function syncHov() {
+                                        return "{{ url_for('static', filename='images/synchov.png') }}"
+                                    }
+
+
+                                    function sync() {
+                                        return "{{ url_for('static', filename='images/sync.png') }}"
+                                    }
                                 </script>
-                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
@@ -267,7 +362,7 @@
                 <div class="field-container" style="text-align: center; padding-top: 0px;">
                     <div>
                         <div class="form_div">
-                            <form class="form" action="" method=post autocomplete="off">
+                            <form class="form" action="{{ url_for('change_account_password', account='mine') }}" method=post autocomplete="off">
                                 <dl>
                                     <dd>
                                         <input class="field_textarea" type=password name=Current_Password placeholder="Current Password">

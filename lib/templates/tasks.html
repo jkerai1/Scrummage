@@ -4,18 +4,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Scrummage Tasks.">
-        <link rel="icon" href="static/icons/main.ico" />
-        <link rel="apple-touch-icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
-		<script type="text/javascript" src="static/js/datatables.min.js"></script>
-		<script type="text/javascript" src="static/js/main.js"></script>
+        <link rel="icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
         <title>Scrummage Tasks</title>
     </head>
     <body onload="myFunction()">
 	    {% extends "template.html" %}
         {% block content %}
         {% if edit_task %}
-            {% if is_admin == True %}
+            {% if is_admin %}
                 {% if form_step == 0 %}
                 {% elif form_step == 1 %}
                 <main>
@@ -27,13 +27,16 @@
                         {% endif %}
                         <div style="text-align: center;">
                             <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                                <form class="form" action="" method=post autocomplete="off">
+                                <form class="form" action="{{ url_for('return_task', tasktype='edit') }}" method=post autocomplete="off">
+                                    <input style="display: inline-block; top: 233px;" class="button_prv" name="return" type=submit value="Return">
+                                </form>
+                                <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
                                             <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{results[2]}}">
 
                                             <datalist id="browsers">
-                                                {% for plugin in Valid_Plugins%}
+                                                {% for plugin in Valid_Plugins %}
                                                 <option value="{{plugin}}"></option>
                                                 {% endfor %}
                                             </datalist>
@@ -45,8 +48,7 @@
                                             <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
                                         </dd>
                                     </dl>
-                                    <input style="display: inline-block;" class="button" name="editreturn" type=submit value="Return">
-                                    <input style="display: inline-block;" class="button" name="edittask" type=submit value="Next">
+                                    <input style="display: inline-block;" class="button_next" name="next" type=submit value="Next">
                                 </form>
                             </div>
                         </div>
@@ -67,7 +69,14 @@
                         {% endif %}
                         <div style="text-align: center;">
                             <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                                <form class="form" action="" method=post autocomplete="off">
+                                <form class="form" action="{{ url_for('return_task', tasktype='edit') }}" method=post autocomplete="off">
+                                    {% if use_limit %}
+                                    <input style="display: inline-block; top: 166px;" class="button_prv" name="return" type=submit value="Return">
+                                    {% else %}
+                                    <input style="display: inline-block; top: 99px;" class="button_prv" name="return" type=submit value="Return">
+                                    {% endif %}
+                                </form>
+                                <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         {% if phish_sites %}
                                         <dd>
@@ -90,8 +99,7 @@
                                         </dd>
                                         {% endif %}
                                     </dl>
-                                    <input style="display: inline-block;" class="button" name="editreturn" type=submit value="Return">
-                                    <input style="display: inline-block;" class="button" name="edittask" type=submit value="Update">
+                                    <input style="display: inline-block;" class="button_next" name="update" type=submit value="Update">
                                 </form>
                             </div>
                         </div>
@@ -108,7 +116,7 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-        {% if form_step == 0 %}
+        {% if not edit_task and not new_task and form_step == 0 %}
         <main>
             <div id="loader">&nbsp;</div>
             <noscript>
@@ -128,6 +136,9 @@
                     <thead>
                         <tr>
                             <th style="min-width: 40px;">ID</th>
+                            {% if is_admin %}
+                            <th style="min-width: 30px;"><input type="checkbox" onclick="checkAll(this)" id="masterselect" name="masterchkbox"></th>
+                            {% endif %}
                             <th>Query</th>
                             <th>Plugin</th>
                             <th style="min-width: 105px;">Description</th>
@@ -142,6 +153,9 @@
                         {% for result in results %}
                         <tr>
                             <td class="nonscreenshottab" style="min-width: 40px;">{{result[0]}}</td>
+                            {% if is_admin %}
+                            <td id="checkboxtd"><input type="checkbox" onclick="terms_changed(this)" id="select" name="taskchkbox" value="{{result[0]}}"></td>
+                            {% endif %}
                             <td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{result[1]}}</td>
                             <td class="nonscreenshottab">{{result[2]}}</td>
                             <td class="nonscreenshottab">{{result[3]}}</td>
@@ -150,26 +164,16 @@
                             {% if is_admin %}
                                 <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
                                     {% if result[6] == "Running" %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
+                                    <form class="task_buttons" action="" method=post autocomplete="off" disabled>
                                         <input class="button-disabled" type=submit value="Run" disabled>
                                     </form>
                                     {% else %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="runtask" value="{{result[0]}}" type=hidden>
+                                    <form class="task_buttons" action="{{ url_for('run_task', taskid=result[0]) }}" method=post autocomplete="off">
                                         <input class="button-run" type=submit value="Run">
                                     </form>
                                     {% endif %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="edittask" value="{{result[0]}}" type=hidden>
+                                    <form class="task_buttons" action="{{ url_for('edit_task', taskid=result[0]) }}" method=post autocomplete="off">
                                         <input class="button" type=submit value="Edit">
-                                    </form>
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="dup0" value="{{result[0]}}" type=hidden>
-                                        <input class="button" type=submit value="Duplicate">
-                                    </form>
-                                    <form class="task_buttons" action="" method=post autocomplete="off">
-                                        <input name="delete_id" value="{{result[0]}}" type=hidden>
-                                        <input onclick="return confirm('Are you sure you want to delete task item {{result[0]}}?');" class="button-delete" type=submit value="Delete">
                                     </form>
                                 </td>
                             {% endif %}
@@ -179,16 +183,18 @@
                 </table>
                 {% if is_admin %}
                 <div class="buttons-bottom">
-                    <form action="" method=post autocomplete="off">
+                    <form action="{{ url_for('new_task') }}" method=post autocomplete="off">
                         <input name="newtask" class="button" type=submit value="New Task">
                     </form>
-                    <form class="form_vo" action="/verify_output" method=post autocomplete="off">
-                        <input name="verify" class="button"  type=submit value="Verify Output">
+                    <form class="form_vo" action="{{ url_for('verify_output') }}" method=post autocomplete="off">
+                        <input name="verify" class="button" type=submit value="Verify Output">
                     </form>
+                    <button id="bottom_delete_button" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected task items: ' + getSelectValues() + '?') && sendRequest('Delete');" disabled="true">Delete Task</button>
+                    <button id="bottom_duplicate_button" class="button-disabled" onclick="return confirm('Are you sure you want to duplicate the selected task items: ' + getSelectValues() + '?') && sendRequest('Duplicate');" disabled="true">Duplicate Task</button>
                 </div>
                 {% endif %}
             </div>
-            <script>
+            <script type="text/javascript">
             var myVar;
 
             function myFunction() {
@@ -204,6 +210,83 @@
                 document.getElementsByTagName("INPUT")[0].className='js_search';
             }
             </script>
+            {% if is_admin %}
+            <script type="text/javascript">
+            function getSelectValues() {
+               var checkedArray = []
+               document.querySelectorAll('#select:checked').forEach(e => {
+                   checkedArray.push(e.value);
+               });
+               checkedArrayStr = checkedArray.toString();
+               return checkedArrayStr
+            }
+
+            function sendRequest() {
+                var xhr = new XMLHttpRequest();
+                var selectedValArray = getSelectValues()
+
+                if (arguments[0] === 'Delete') {
+                    var uri = "tasks/delete/" + selectedValArray
+                } else if (arguments[0] === 'Duplicate') {
+                    var uri = "tasks/duplicate/" + selectedValArray
+                }
+                xhr.open("POST", uri, true);
+                xhr.send();
+                xhr.onreadystatechange = function(e) {
+                    if (xhr.readyState === 4) {
+                        location.reload();
+                    }
+                }
+            }
+
+            function terms_changed(termsCheckBox){
+                //If the checkbox has been checked
+                if(termsCheckBox.checked){
+                    //Set the disabled property to FALSE and enable the button.
+                    document.getElementById("bottom_delete_button").disabled = false;
+                    document.getElementById("bottom_delete_button").className = "button";
+                    document.getElementById("bottom_duplicate_button").disabled = false;
+                    document.getElementById("bottom_duplicate_button").className = "button";
+                    if($('#select:checked').length >= 2) {
+                        document.querySelector("#bottom_delete_button").innerText = 'Delete Tasks'
+                        document.querySelector("#bottom_duplicate_button").innerText = 'Duplicate Tasks'
+                    }
+                } else{
+                    document.getElementById('masterselect').checked = false;
+                    if($('#select:checked').length === 1) {
+                        document.querySelector("#bottom_delete_button").innerText = 'Delete Task'
+                        document.querySelector("#bottom_duplicate_button").innerText = 'Duplicate Task'
+                    }
+                    if($('#select:checked').length === 0) {
+                    //Otherwise, disable the submit button.
+                        document.getElementById("bottom_delete_button").disabled = true;
+                        document.getElementById("bottom_delete_button").className = "button-disabled";
+                        document.getElementById("bottom_duplicate_button").disabled = true;
+                        document.getElementById("bottom_duplicate_button").className = "button-disabled";
+                    }
+                }
+            }
+
+            function checkAll(ele) {
+                var checkboxes = document.getElementsByTagName('input');
+                if (ele.checked) {
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            checkboxes[i].checked = true;
+                            terms_changed(checkboxes[i]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            checkboxes[i].checked = false;
+                            terms_changed(checkboxes[i]);
+                        }
+                    }
+                }
+            }
+            </script>
+            {% endif %}
         </main>
         {% endif %}
         {% if new_task %}
@@ -219,7 +302,10 @@
                 {% elif form_step == 1 %}
                 <div style="text-align: center;">
                     <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                        <form class="form" action="" method=post autocomplete="off">
+                        <form class="form" action="{{ url_for('return_task', tasktype='new') }}" method=post autocomplete="off">
+                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
+                        </form>
+                        <form class="form" action="{{ url_for('new_task') }}" method=post autocomplete="off">
                             <dl>
                                 <dd>
                                     {% if task_type_field %}
@@ -248,8 +334,7 @@
                                     {% endif %}
                                 </dd>
                             </dl>
-                            <input style="display: inline-block;" class="button" name="newreturn" type=submit value="Return">
-                            <input style="display: inline-block;" class="button" name="newtask" type=submit value="Next">
+                            <input style="display: inline-block;" class="button_next" name="next" type=submit value="Next">
                         </form>
                     </div>
                 </div>
@@ -261,7 +346,14 @@
                 {% endif %}
                 <div style="text-align: center;">
                     <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                        <form class="form" action="" method=post autocomplete="off">
+                        <form class="form" action="{{ url_for('return_task', tasktype='new') }}" method=post autocomplete="off">
+                            {% if use_limit %}
+                            <input style="display: inline-block; top: 166px;" class="button_prv" name="return" type=submit value="Return">
+                            {% else %}
+                            <input style="display: inline-block; top: 99px;" class="button_prv" name="return" type=submit value="Return">
+                            {% endif %}
+                        </form>
+                        <form class="form" action="{{ url_for('new_task') }}" method=post autocomplete="off">
                             <dl>
                                 {% if phish_sites %}
                                 <dd>
@@ -283,8 +375,7 @@
                                 </dd>
                                 {% endif %}
                             </dl>
-                            <input style="display: inline-block;" class="button" name="newreturn" type=submit value="Return">
-                            <input style="display: inline-block;" class="button" name="newtask" type=submit value="Finish">
+                            <input style="display: inline-block;" class="button_next" name="finish" type=submit value="Finish">
                         </form>
                     </div>
                 </div>

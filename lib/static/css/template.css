@@ -689,8 +689,43 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #000;
+	background-color: #303030;
 	border: 1px solid #303030;
+}
+
+.button_next {
+	text-decoration: none;
+	color: #fff;
+	padding: 7px;
+	font-size: 11pt;
+	border-radius: 0px;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	outline: none;
+	border: 0;
+	background-color: #303030;
+	border: 1px solid #303030;
+	position: relative;
+	left: 30px;
+}
+
+.button_prv {
+	text-decoration: none;
+	color: #fff;
+	padding: 7px;
+	font-size: 11pt;
+	border-radius: 0px;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	outline: none;
+	border: 0;
+	background-color: #303030;
+	border: 1px solid #303030;
+	position: relative;
+	top: 233px;
+	right: 30px;
 }
 
 .button-red {
@@ -698,8 +733,9 @@ table.dataTable,table.dataTable th,table.dataTable td
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
-	background-color: #000;
+	background-color: #303030;
 	color: #fff;
+	border: 1px solid #000;
 }
 
 .button-red:hover {
@@ -718,7 +754,7 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #000;
+	background-color: #303030;
 	border: 1px solid #303030;
 }
 
@@ -733,13 +769,13 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: #000;
+	background-color: #303030;
 	border: 1px solid #303030;
 }
 
 .button-disabled {
 	text-decoration: none;
-	color: lightgrey;
+	color: #303030;
 	padding: 7px;
 	font-size: 11pt;
 	border-radius: 0px;
@@ -748,7 +784,8 @@ table.dataTable,table.dataTable th,table.dataTable td
 	-moz-box-shadow: none;
 	outline: none;
 	border: 0;
-	background-color: grey;
+	background-color: #000;
+	border: 1px solid #303030;
 }
 
 .button-run:hover {
@@ -760,6 +797,14 @@ table.dataTable,table.dataTable th,table.dataTable td
 }
 
 .button:hover {
+	background-color: grey;
+}
+
+.button_next:hover {
+	background-color: grey;
+}
+
+.button_prv:hover {
 	background-color: grey;
 }
 
@@ -1108,6 +1153,19 @@ table.dataTable,table.dataTable th,table.dataTable td
   padding: 10px;
 }
 
+#interval {
+	border: 1px solid #000;
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+}
+
+#interval:hover {
+	border: 1px solid #DC143C;
+	box-shadow: 0 0 5px rgba(255, 0, 0, 1)
+}
+
 #mobile-a {
     display: none;
 }
@@ -1157,6 +1215,11 @@ table.dataTable,table.dataTable th,table.dataTable td
     width: 125px;
     text-align: center;
     padding: 10px 0px 10px 0px;
+}
+
+#checkboxtd {
+	width: 30px;
+	padding: 10px;
 }
 
 #jwt-table {
@@ -1347,10 +1410,9 @@ input[type="search"]:focus {
 }
 
 select {
-	padding: 5px 5px 5px 5px;
 	border: 1px solid #303030;
 	color: #fff;
-	background-color: #000;
+	background-color: #303030;
 	border-radius: 0px;
 	-webkit-transition: all 0.30s ease-in-out;
 	-moz-transition: all 0.30s ease-in-out;
@@ -1358,7 +1420,6 @@ select {
 	-o-transition: all 0.30s ease-in-out;
 	outline: none;
 	padding: 6px;
-	border: 1px solid #303030;
 }
 
 select:focus {

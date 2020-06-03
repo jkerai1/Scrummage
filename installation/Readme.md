@@ -54,8 +54,8 @@ user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyou
 ```
 8. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
 ```console
-user@linux:~$ cd ../bin
-user@linux:~$ python3 main.py
+user@linux:~$ cd ../lib
+user@linux:~$ python3 Scrummage.py
 ```
 
 # Tasks and APIs  
