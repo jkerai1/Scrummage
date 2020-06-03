@@ -3,7 +3,7 @@
 
 # Scrummage  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
-**NEW VERSION 2.2**
+**NEW VERSION 2.3**
 - Significant UI Improvements.
 - Simplified new code that retains the same look and feel as before with a few improvements.
 - Bug fixes for task management functions. 
