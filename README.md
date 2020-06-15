@@ -3,18 +3,18 @@
 
 # Scrummage  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
-**NEW VERSION 2.3**
+**VERSION 2.3**
 - Significant UI Improvements.
 - Simplified new code that retains the same look and feel as before with a few improvements.
 - Bug fixes for task management functions. 
 
-Scrummage is an OSINT tool that centralises your OSINT scans, leveraging powerful yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
-- The https://github.com/Netflix-Skunkworks/Scumblr project, which while is now deprecated, had a simple yet powerful concept.
+Scrummage is an OSINT tool that centralises search functionality from powerful, yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
+- The https://github.com/Netflix-Skunkworks/Scumblr project, which while is now deprecated, inspired this concept.
 - The OSINT framework, a high-level overview of a range of sites that can be used to search for a variety of things, which can be found at https://osintframework.com/ or https://github.com/lockfale/OSINT-Framework.
 
-While at first glance the web application may not look that original when compared to Scumblr, the plugins this tool uses is what makes this project unique, the web application is mainly just a simple, lightweight, and scalable way of bringing all the results together in one simple console, built on python's flask library for simplicity and scalability.
+While at first glance the web application may not look that original when compared to Scumblr, the plugins this tool uses is mainly what makes this project unique, where the provided Python/Flask web application is just a simple, lightweight, and scalable way of providing users with the ability to manage large pools of results. The other main benefit this projects brags is a simpler, up-to-date installation process. 
 
-All feedback is welcome.
+Any feedback is welcome.
 
 **FOR INSTRUCTIONS REFER TO THE [WIKI](https://github.com/matamorphosis/Scrummage/wiki)**
 
@@ -26,6 +26,7 @@ All feedback is welcome.
 * Twitter Scraper
 * Instagram Search
 * Have I Been Pwned Search
+* Ahmia Darkweb Search
 * Many more... Refer to the "Long List of Tasks" Wiki file for the full list.
 
 ---
