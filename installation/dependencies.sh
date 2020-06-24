@@ -9,6 +9,7 @@ fi
 if [ -f /etc/lsb-release ]; then
 	apt update
 	apt install -y python3 python3-pip python3-psycopg2 postgresql postgresql-contrib ruby rubygems build-essential wget unzip git openssl
+	service postgresql start
 fi
 
 if [ -e /etc/os-release ]; then
