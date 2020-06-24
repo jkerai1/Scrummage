@@ -1846,11 +1846,11 @@ if __name__ == '__main__':
 
                     if status == "open":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Open", str(General.Date()), resultid,))
-                        Message = f"Result ID {str(resultid)} closed by {session.get('user')}."
+                        Message = f"Result ID {str(resultid)} re-opened by {session.get('user')}."
 
                     elif status == "close":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Closed", str(General.Date()), resultid,))
-                        Message = f"Result ID {str(resultid)} re-opened by {session.get('user')}."
+                        Message = f"Result ID {str(resultid)} closed by {session.get('user')}."
 
                     elif status == "inspect":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Inspecting", str(General.Date()), resultid,))
