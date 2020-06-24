@@ -48,7 +48,11 @@ user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyou
         "host": "127.0.0.1",
         "port": 5000,
         "certificate-file": "../certs/certificate.crt",
-        "key-file": "../certs/privateKey.key"
+        "key-file": "../certs/privateKey.key",
+        "api-secret": "",
+        "api-validity-minutes": 60,
+        "api-max-calls": 10,
+        "api-period-in-seconds": 60
     }
 ],
 ```
