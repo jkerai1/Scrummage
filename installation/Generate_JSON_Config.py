@@ -75,12 +75,6 @@ if Arguments.database and Arguments.username and Arguments.password:
                     "port": 9200
                 }
             ],
-            "facebook": [
-                {
-                    "application_id": "",
-                    "application_secret": ""
-                }
-            ],
             "general": [
                 {
                     "location": "au"
