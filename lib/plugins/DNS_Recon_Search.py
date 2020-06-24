@@ -36,7 +36,7 @@ def Search(Query_List, Task_ID):
                 Query = DNS_Item['base_domain']
                 Output_Dict = json.dumps(DNS_Item, indent=4, sort_keys=True)
                 Link = "https://www." + Query
-                Title = "DNS Information for " + DNS_Info['base_domain']
+                Title = "DNS Information for " + DNS_Item['base_domain']
 
                 if Link not in Data_to_Cache and Link not in Cached_Data:
                     Output_file = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extension)
