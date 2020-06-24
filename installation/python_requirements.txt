@@ -23,3 +23,5 @@ flask_compress
 flask_jwt
 tweepy
 ratelimiter
+pyleri
+publicsuffix2
