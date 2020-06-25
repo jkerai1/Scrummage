@@ -274,6 +274,9 @@
                                     </dl>
                                     <p style="padding: 10px 0px 20px 0px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
                                 </form>
+                                <form class="form_prv" action="{{ url_for('account') }}" method=get autocomplete="off">
+                                    <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -300,6 +303,9 @@
                                         </dd>
                                     </dl>
                                     <p style="padding: 10px 0px 20px 0px;"><input class="button" name="createuser" type=submit value="Create User"></p>
+                                </form>
+                                <form class="form_prv" action="{{ url_for('account') }}" method=get autocomplete="off">
+                                    <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
                                 </form>
                             </div>
                         </div>
@@ -375,6 +381,9 @@
                                     </dd>
                                 </dl>
                                 <p style="padding-top: 10px;"><input class="button" name="change_password" type=submit value="Change Password"></p>
+                            </form>
+                            <form class="form_prv" action="{{ url_for('account') }}" method=get autocomplete="off">
+                                <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
                             </form>
                         </div>
                     </div>

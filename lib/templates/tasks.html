@@ -26,10 +26,7 @@
                         <p class="message"><strong>Message:</strong> {{ message }}</p>
                         {% endif %}
                         <div style="text-align: center;">
-                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                                <form class="form" action="{{ url_for('return_task', tasktype='edit') }}" method=post autocomplete="off">
-                                    <input style="display: inline-block; top: 233px;" class="button_prv" name="return" type=submit value="Return">
-                                </form>
+                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">                                    
                                 <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
@@ -50,6 +47,9 @@
                                     </dl>
                                     <input style="display: inline-block;" class="button_next" name="next" type=submit value="Next">
                                 </form>
+                                <form class="form_prv" action="{{ url_for('return_task', tasktype='edit') }}" method=get autocomplete="off">
+                                    <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -69,13 +69,6 @@
                         {% endif %}
                         <div style="text-align: center;">
                             <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                                <form class="form" action="{{ url_for('return_task', tasktype='edit') }}" method=post autocomplete="off">
-                                    {% if use_limit %}
-                                    <input style="display: inline-block; top: 166px;" class="button_prv" name="return" type=submit value="Return">
-                                    {% else %}
-                                    <input style="display: inline-block; top: 99px;" class="button_prv" name="return" type=submit value="Return">
-                                    {% endif %}
-                                </form>
                                 <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         {% if phish_sites %}
@@ -100,6 +93,9 @@
                                         {% endif %}
                                     </dl>
                                     <input style="display: inline-block;" class="button_next" name="update" type=submit value="Update">
+                                </form>
+                                <form class="form_prv" action="{{ url_for('return_task', tasktype='edit') }}" method=get autocomplete="off">
+                                    <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
                                 </form>
                             </div>
                         </div>
@@ -302,9 +298,6 @@
                 {% elif form_step == 1 %}
                 <div style="text-align: center;">
                     <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                        <form class="form" action="{{ url_for('return_task', tasktype='new') }}" method=post autocomplete="off">
-                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
-                        </form>
                         <form class="form" action="{{ url_for('new_task') }}" method=post autocomplete="off">
                             <dl>
                                 <dd>
@@ -336,6 +329,9 @@
                             </dl>
                             <input style="display: inline-block;" class="button_next" name="next" type=submit value="Next">
                         </form>
+                        <form class="form_prv" action="{{ url_for('return_task', tasktype='new') }}" method=get autocomplete="off">
+                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
+                        </form>
                     </div>
                 </div>
                 {% elif form_step == 2%}
@@ -346,13 +342,6 @@
                 {% endif %}
                 <div style="text-align: center;">
                     <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                        <form class="form" action="{{ url_for('return_task', tasktype='new') }}" method=post autocomplete="off">
-                            {% if use_limit %}
-                            <input style="display: inline-block; top: 166px;" class="button_prv" name="return" type=submit value="Return">
-                            {% else %}
-                            <input style="display: inline-block; top: 99px;" class="button_prv" name="return" type=submit value="Return">
-                            {% endif %}
-                        </form>
                         <form class="form" action="{{ url_for('new_task') }}" method=post autocomplete="off">
                             <dl>
                                 {% if phish_sites %}
@@ -376,6 +365,9 @@
                                 {% endif %}
                             </dl>
                             <input style="display: inline-block;" class="button_next" name="finish" type=submit value="Finish">
+                        </form>
+                        <form class="form_prv" action="{{ url_for('return_task', tasktype='new') }}" method=get autocomplete="off">
+                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
                         </form>
                     </div>
                 </div>

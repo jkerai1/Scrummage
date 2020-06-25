@@ -45,14 +45,22 @@
                             <td style="padding-left: 10px;"><a href="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><div class="arrow-up"></div><img src="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
                             {% else %}
                                 {% if is_admin %}
-                                    {% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
-                                        <td class="buttons_in_table">
-                                            <form class="task_buttons" action="{{ url_for('screenshot', resultid=results[0]) }}" method=post autocomplete="off">
-                                                <input class="button" type=submit value="Generate">
-                                            </form>
-                                        </td>
+                                    {% if not results[12]%}
+                                        {% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
+                                            {% if Screenshot_Permitted %}
+                                            <td class="buttons_in_table">
+                                                <form class="task_buttons" action="{{ url_for('screenshot', resultid=results[0]) }}" method=post autocomplete="off">
+                                                    <input class="button" type=submit value="Generate">
+                                                </form>
+                                            </td>
+                                            {% else %}
+                                            <td class="nonscreenshottab">Functionality Not Configured</td>
+                                            {% endif %}
+                                        {% else %}
+                                            <td class="nonscreenshottab">Screenshot Disabled</td>
+                                        {% endif %}
                                     {% else %}
-                                        <td class="nonscreenshottab">Screenshot Disabled</td>
+                                        <td class="nonscreenshottab">Screenshot Requested</td>
                                     {% endif %}
                                 {% else %}
                                     <td class="nonscreenshottab">Not Available</td>
@@ -348,9 +356,6 @@
                 {% endif %}
                 <div style="text-align: center;">
                     <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">
-                        <form class="form" action="{{url_for('results')}}" method=post autocomplete="off">
-                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
-                        </form>
                         <form class="form" action="{{url_for('new_result')}}" method=post autocomplete="off">
                             <dl>
                                 <dd>
@@ -372,6 +377,9 @@
                                 </dd>
                             </dl>
                             <input style="display: inline-block;" class="button_next" name="newresult" type=submit value="Finish">
+                        </form>
+                        <form class="form_prv" action="{{url_for('results')}}" method=get autocomplete="off">
+                            <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
                         </form>
                     </div>
                 </div>
