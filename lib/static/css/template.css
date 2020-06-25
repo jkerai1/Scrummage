@@ -706,8 +706,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	border: 0;
 	background-color: #303030;
 	border: 1px solid #303030;
-	position: relative;
-	left: 30px;
 }
 
 .button_prv {
@@ -723,9 +721,6 @@ table.dataTable,table.dataTable th,table.dataTable td
 	border: 0;
 	background-color: #303030;
 	border: 1px solid #303030;
-	position: relative;
-	top: 233px;
-	right: 30px;
 }
 
 .button-red {
@@ -1102,6 +1097,11 @@ table.dataTable,table.dataTable th,table.dataTable td
 
 .form {
 	text-align: center;
+}
+
+.form_prv {
+	text-align: center;
+	padding-top: 5px;
 }
 
 .form_left {
