@@ -265,4 +265,4 @@ def Rotor_Combinations(Rotor_Word):
             Rotor_Word_Appender(Newer_List)
 
     else:
-        logging.warning(Date() + " [-] The word entered was either over 15 characters in length or had no characters, this function only permits words with character lengths between 1 and 15.")
+        logging.warning(f"{Date()} [-] The word entered was either over 15 characters in length or had no characters, this function only permits words with character lengths between 1 and 15.")
