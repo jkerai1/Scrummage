@@ -51,8 +51,7 @@ if __name__ == '__main__':
 
             with open(Configuration_File) as JSON_File:
                 Configuration_Data = json.load(JSON_File)
-
-            for WA_Details in Configuration_Data['web-app']:
+                WA_Details = Configuration_Data['web-app']
                 WA_Debug = WA_Details['debug']
                 WA_Host = WA_Details['host']
                 WA_Port = WA_Details['port']
@@ -63,14 +62,14 @@ if __name__ == '__main__':
                 WA_API_Max_Calls = int(WA_Details['api-max-calls'])
                 WA_API_Period = int(WA_Details['api-period-in-seconds'])
 
-                if WA_API_Validity_Limit < 60:
-                    sys.exit("[-] API Key Validity Limit too short. Minimum should be 60 minutes.")
+            if WA_API_Validity_Limit < 60:
+                sys.exit("[-] API Key Validity Limit too short. Minimum should be 60 minutes.")
 
-                if WA_Host and WA_Port and WA_Cert_File and WA_Key_File and WA_API_Secret and WA_API_Validity_Limit and WA_API_Max_Calls and WA_API_Period:
-                    return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File, WA_API_Secret, WA_API_Validity_Limit, WA_API_Max_Calls, WA_API_Period]
+            if WA_Host and WA_Port and WA_Cert_File and WA_Key_File and WA_API_Secret and WA_API_Validity_Limit and WA_API_Max_Calls and WA_API_Period:
+                return [WA_Debug, WA_Host, WA_Port, WA_Cert_File, WA_Key_File, WA_API_Secret, WA_API_Validity_Limit, WA_API_Max_Calls, WA_API_Period]
 
-                else:
-                    return None
+            else:
+                return None
 
         except Exception as e:
             logging.warning(f"{General.Date()} {str(e)}")
@@ -579,7 +578,7 @@ if __name__ == '__main__':
 
             if session.get('user') and session.get('is_admin'):
 
-                def grab_screenshot(screenshot_id, user):
+                def grab_screenshot(screenshot_id, user, Chrome_Config):
                     Cursor.execute('SELECT link FROM results WHERE result_id = %s', (screenshot_id,))
                     result = Cursor.fetchone()
                     Cursor.execute('SELECT screenshot_url FROM results WHERE result_id = %s', (screenshot_id,))
@@ -610,16 +609,34 @@ if __name__ == '__main__':
                         for replaceable_item in ['/', '?', '#', '&', '%', '$', '@', '*', '=']:
                             screenshot_file = screenshot_file.replace(replaceable_item, '-')
 
+                        CHROME_PATH = Chrome_Config[0]
+                        CHROMEDRIVER_PATH = Chrome_Config[1]
                         screenshot_file = f"{screenshot_file}.png"
-                        CHROME_PATH = '/usr/bin/google-chrome'
-                        CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
                         chrome_options = Options()
                         chrome_options.add_argument("--headless")
                         chrome_options.binary_location = CHROME_PATH
-                        driver = webdriver.Chrome(
-                            executable_path=CHROMEDRIVER_PATH,
-                            options=chrome_options
-                        )
+
+                        try:
+                            driver = webdriver.Chrome(
+                                executable_path=CHROMEDRIVER_PATH,
+                                options=chrome_options
+                            )
+
+                        except Exception as e:
+
+                            if "session not created" in str(e):
+                                e = str(e).strip('\n')
+                                Message = f"Screenshot request terminated for result number {str(screenshot_id)} by application, please refer to the log."
+                                Message_E = e.replace("Message: session not created: ", "")
+                                Message_E = Message_E.replace("This version of", "The installed version of")
+                                app.logger.warning(f"Screenshot Request Error: {Message_E}.")
+                                app.logger.warning(f"Kindly replace the Chrome Web Driver, located at {Chrome_Config[1]}, with the latest one from http://chromedriver.chromium.org/downloads that matches the version of Chrome installed on your system.")
+                                Create_Event(Message)
+                                Cursor.execute('UPDATE results SET screenshot_requested = %s WHERE result_id = %s', (False, screenshot_id,))
+                                Connection.commit()
+                            
+                            return 0
+
                         driver.implicitly_wait(5)
                         driver.get(result[0])
                         total_height = driver.execute_script("return document.body.scrollHeight")
@@ -629,15 +646,18 @@ if __name__ == '__main__':
                         Cursor.execute('UPDATE results SET screenshot_url = %s WHERE result_id = %s', (screenshot_file, screenshot_id,))
                         Connection.commit()
 
-                ss_id = int(resultid)
+                    else:
+                        app.logger.warning(f"Screenshot already requested for result id {str(ss_id)}.")
 
-                if not session.get('screenshot_in_progress') == ss_id:
-                    session['screenshot_in_progress'] = ss_id
-                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id, str(session.get('user'))))
+                ss_id = int(resultid)
+                Chrome_Config = Connectors.Load_Chrome_Configuration()
+
+                if all(os.path.exists(Config) for Config in Chrome_Config):
+                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id, str(session.get('user')), Chrome_Config))
                     Thread_1.start()
 
                 else:
-                    app.logger.warning(f"Screenshot already requested for result id {str(ss_id)}.")
+                    app.logger.warning(f"Either Google Chrome or Chrome Driver have not been installed / configured. Screenshot request terminated.")                    
 
                 return redirect(url_for('results'))
 
@@ -1846,11 +1866,11 @@ if __name__ == '__main__':
 
                     if status == "open":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Open", str(General.Date()), resultid,))
-                        Message = f"Result ID {str(resultid)} re-opened by {session.get('user')}."
+                        Message = f"Result ID {str(resultid)} closed by {session.get('user')}."
 
                     elif status == "close":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Closed", str(General.Date()), resultid,))
-                        Message = f"Result ID {str(resultid)} closed by {session.get('user')}."
+                        Message = f"Result ID {str(resultid)} re-opened by {session.get('user')}."
 
                     elif status == "inspect":
                         Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Inspecting", str(General.Date()), resultid,))
@@ -1888,11 +1908,19 @@ if __name__ == '__main__':
 
             if session.get('user'):
                 resultid = int(resultid)
+                Chrome_Config = Connectors.Load_Chrome_Configuration()
+
+                if all(os.path.exists(Config) for Config in Chrome_Config):
+                    Screenshot_Permitted = True
+
+                else:
+                    Screenshot_Permitted = False
+
                 Cursor.execute("SELECT * FROM results WHERE result_id = %s", (resultid,))
                 Result_Table_Results = Cursor.fetchone()
                 Cursor.execute("SELECT * FROM tasks WHERE task_id = %s", (Result_Table_Results[1],))
                 Task_Table_Results = Cursor.fetchone()
-                return render_template('results.html', username=session.get('user'), form_step=session.get('form_step'), details=True, is_admin=session.get('is_admin'), results=Result_Table_Results, task_results=Task_Table_Results)
+                return render_template('results.html', username=session.get('user'), form_step=session.get('form_step'), details=True, is_admin=session.get('is_admin'), results=Result_Table_Results, task_results=Task_Table_Results, Screenshot_Permitted=Screenshot_Permitted)
 
             else:
                 session["next_page"] = "results"
