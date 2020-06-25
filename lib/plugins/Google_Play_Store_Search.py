@@ -13,7 +13,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -42,33 +42,33 @@ def Search(Query_List, Task_ID, **kwargs):
 
     for Query in Query_List:
 
-        try:
-            Play_Store_Response = play_scraper.developer(Query, results=Limit)
-            Play_Store_Response_JSON = json.dumps(Play_Store_Response, indent=4, sort_keys=True)
-            General.Main_File_Create(Plugin_Name, Play_Store_Response_JSON, Query, ".json")
-            Output_Connections = General.Connections(Query, Plugin_Name, "play.google.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
+        # try:
+        Play_Store_Response = play_scraper.developer(Query, results=Limit)
+        Play_Store_Response_JSON = json.dumps(Play_Store_Response, indent=4, sort_keys=True)
+        General.Main_File_Create(Plugin_Name, Play_Store_Response_JSON, Query, ".json")
+        Output_Connections = General.Connections(Query, Plugin_Name, "play.google.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
 
-            for Result_Details in Play_Store_Response:
-                Result_URL = Result_Details['url']
+        for Result_Details in Play_Store_Response:
+            Result_URL = Result_Details['url']
 
-                if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
-                    Win_Store_Regex = re.search(r"https\:\/\/play\.google\.com\/store\/apps\/details\?id\=([\w\d\_\-\.]+)", Result_URL)
+            if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
+                Win_Store_Regex = re.search(r"https\:\/\/play\.google\.com\/store\/apps\/details\?id\=([\w\d\_\-\.]+)", Result_URL)
 
-                    if Win_Store_Regex:
-                        headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
-                        Play_Store_Response = requests.get(Result_URL, headers=headers).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extension)
+                if Win_Store_Regex:
+                    headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+                    Play_Store_Response = requests.get(Result_URL, headers=headers).text
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extension)
 
-                        if Output_file:
-                            Output_Connections.Output(Output_file, Result_URL, General.Get_Title(Result_URL))
+                    if Output_file:
+                        Output_Connections.Output(Output_file, Result_URL, General.Get_Title(Result_URL))
 
-                    else:
-                        logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
+                else:
+                    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
-                    Data_to_Cache.append(Result_URL)
+                Data_to_Cache.append(Result_URL)
 
-        except:
-            logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to get results, this may be due to the query provided.")
+        # except:
+        #     logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results, this may be due to the query provided.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

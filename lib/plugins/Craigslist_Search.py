@@ -15,17 +15,16 @@ def Load_Configuration():
 
         with open(Configuration_File) as JSON_File:
             Configuration_Data = json.load(JSON_File)
+            Craigslist_Details = Configuration_Data[Plugin_Name.lower()]
 
-            for Craigslist_Details in Configuration_Data[Plugin_Name.lower()]:
+            if Craigslist_Details['city']:
+                return Craigslist_Details['city']
 
-                if Craigslist_Details['city']:
-                    return Craigslist_Details['city']
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -34,7 +33,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10

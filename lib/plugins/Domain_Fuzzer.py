@@ -3,7 +3,6 @@
 
 import re, os, logging, socket, plugins.common.Rotor as Rotor, plugins.common.General as General, multiprocessing, multiprocessing.pool as mpool
 
-
 class Fuzzer:
 
     def __init__(self, Query_List, Task_ID):

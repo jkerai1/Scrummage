@@ -51,7 +51,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ABN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for ABN Search.")
 
             elif Type == "ACN":
                 Main_URL = 'https://abr.business.gov.au/Search/Run'
@@ -61,7 +61,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if kwargs.get('Limit'):
 
                     if int(kwargs["Limit"]) > 0:
-                        Limit = kwargs["Limit"]
+                        Limit = int(kwargs["Limit"])
+
+                    else:
+                        Limit = 10
 
                 else:
                     Limit = 10
@@ -83,27 +86,28 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 if Full_ABN_URL not in Cached_Data and Full_ABN_URL not in Data_to_Cache and Current_Step < int(Limit):
                                     ACN = ACN.rstrip()
                                     Current_Response = requests.get(Full_ABN_URL).text
+                                    print(Full_ABN_URL)
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
 
                                     if Output_file:
-                                        Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
+                                        Output_Connections.Output(Output_file, Full_ABN_URL, General.Get_Title(Full_ABN_URL))
                                         Data_to_Cache.append(Full_ABN_URL)
                                         Current_Step += 1
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Response did not match regular expression.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query did not match regular expression.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ACN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for ACN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

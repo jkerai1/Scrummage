@@ -14,7 +14,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -73,13 +73,13 @@ def Search(Query_List, Task_ID, **kwargs):
                             Data_to_Cache.append(Item_URL)
                             Current_Step += 1
                     except:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to generate output, may have a blank detailed response.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to generate output, may have a blank detailed response.")
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression for current result.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression for current result.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression for Query.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression for Query.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

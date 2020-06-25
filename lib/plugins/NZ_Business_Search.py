@@ -51,14 +51,17 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for NZBN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for NZBN Search.")
 
             elif Type == "NZCN":
 
                 if kwargs.get('Limit'):
 
                     if int(kwargs["Limit"]) > 0:
-                        Limit = kwargs["Limit"]
+                        Limit = int(kwargs["Limit"])
+
+                    else:
+                        Limit = 10
 
                 else:
                     Limit = 10
@@ -72,7 +75,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                     if NZCN_Regex:
                         General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
-                        NZBNs_Regex = re.findall(r"\<span\sclass\=\"entityName\"\>([\w\d\s\-\_\&\|\!\@\#\$\%\^\*\(\)\.\,]+)\<\/span\>\s<span\sclass\=\"entityInfo\"\>\((\d{6})\)\s\(NZBN\:\s(\d{13})\)", Response)
+                        NZBNs_Regex = re.findall(r"\<span\sclass\=\"entityName\"\>([\w\d\s\-\_\&\|\!\@\#\$\%\^\*\(\)\.\,]+)\<\/span\>\s<span\sclass\=\"entityInfo\"\>\((\d+)\)\s\(NZBN\:\s(\d+)\)", Response)
 
                         if NZBNs_Regex:
                             Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
@@ -89,19 +92,19 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                         Data_to_Cache.append(Full_NZBN_URL)
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Response did not match regular expression.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Response did not match regular expression.")
 
                     else:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query did not match regular expression.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Query did not match regular expression.")
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for NZCN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for NZCN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -57,7 +57,7 @@ def Search(Query_List, Task_ID):
                     Data_to_Cache.append(Item_URL)
 
             except:
-                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - No result found for given query " + Query + " for state " + State + ".")
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - No result found for given query " + Query + " for state " + State + ".")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -8,27 +8,26 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
+            Google_Details = Configuration_Data[Plugin_Name.lower()]
+            Google_CX = Google_Details['cx']
+            Google_Developer_Key = Google_Details['developer_key']
+            Google_Application_Name = Google_Details['application_name']
+            Google_Application_Version = Google_Details['application_version']
 
-            for Google_Details in Configuration_Data[Plugin_Name.lower()]:
-                Google_CX = Google_Details['cx']
-                Google_Developer_Key = Google_Details['developer_key']
-                Google_Application_Name = Google_Details['application_name']
-                Google_Application_Version = Google_Details['application_version']
+            if Google_CX and Google_Developer_Key and Google_Application_Name and Google_Application_Version:
+                return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
 
-                if Google_CX and Google_Developer_Key and Google_Application_Name and Google_Application_Version:
-                    return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load API details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load API details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -37,7 +36,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -95,7 +94,7 @@ def Search(Query_List, Task_ID, **kwargs):
                                 Output_Connections.Output(Output_file, Google_Item_URL, General.Get_Title(Google_Item_URL))
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
                         Data_to_Cache.append(Google_Item_URL)
 

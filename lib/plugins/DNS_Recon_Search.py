@@ -63,7 +63,7 @@ def Search(Query_List, Task_ID):
                 Data_to_Cache.append(Link)
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Error retrieving DNS details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Error retrieving DNS details.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

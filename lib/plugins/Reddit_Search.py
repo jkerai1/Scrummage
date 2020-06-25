@@ -8,27 +8,26 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
+            Reddit_Details = Configuration_Data[Plugin_Name.lower()]
+            Reddit_Client_ID = Reddit_Details['client_id']
+            Reddit_Client_Secret = Reddit_Details['client_secret']
+            Reddit_User_Agent = Reddit_Details['user_agent']
+            Reddit_Username = Reddit_Details['username']
+            Reddit_Password = Reddit_Details['password']
+            Subreddit_to_Search = Reddit_Details["subreddits"]
 
-            for Reddit_Details in Configuration_Data[Plugin_Name.lower()]:
-                Reddit_Client_ID = Reddit_Details['client_id']
-                Reddit_Client_Secret = Reddit_Details['client_secret']
-                Reddit_User_Agent = Reddit_Details['user_agent']
-                Reddit_Username = Reddit_Details['username']
-                Reddit_Password = Reddit_Details['password']
-                Subreddit_to_Search = Reddit_Details["subreddits"]
+            if Reddit_Client_ID and Reddit_Client_Secret and Reddit_User_Agent and Reddit_Username and Reddit_Password and Subreddit_to_Search:
+                return [Reddit_Client_ID, Reddit_Client_Secret, Reddit_User_Agent, Reddit_Username, Reddit_Password, Subreddit_to_Search]
 
-                if Reddit_Client_ID and Reddit_Client_Secret and Reddit_User_Agent and Reddit_Username and Reddit_Password and Subreddit_to_Search:
-                    return [Reddit_Client_ID, Reddit_Client_Secret, Reddit_User_Agent, Reddit_Username, Reddit_Password, Subreddit_to_Search]
-
-                else:
-                    return None
+            else:
+                return None
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load Reddit details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load Reddit details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -36,7 +35,7 @@ def Search(Query_List, Task_ID, **kwargs):
     Results = []
 
     if int(kwargs["Limit"]) > 0:
-        Limit = kwargs["Limit"]
+        Limit = int(kwargs["Limit"])
 
     else:
         Limit = 10
@@ -64,12 +63,7 @@ def Search(Query_List, Task_ID, **kwargs):
     for Query in Query_List:
 
         try:
-            Reddit_Connection = praw.Reddit(client_id=Reddit_Details[0], \
-                                            client_secret=Reddit_Details[1], \
-                                            user_agent=Reddit_Details[2], \
-                                            username=Reddit_Details[3], \
-                                            password=Reddit_Details[4])
-
+            Reddit_Connection = praw.Reddit(client_id=Reddit_Details[0], client_secret=Reddit_Details[1], user_agent=Reddit_Details[2], username=Reddit_Details[3], password=Reddit_Details[4])
             All_Subreddits = Reddit_Connection.subreddit(Reddit_Details[5])
 
             for Subreddit in All_Subreddits.search(Query, limit=Limit): # Limit, subreddit and search to be controlled by the web app.
@@ -79,9 +73,9 @@ def Search(Query_List, Task_ID, **kwargs):
                 Results.append(Current_Result)
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to get results. Are you connected to the internet?")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
 
-        Output_Connections = General.Connections(Query, Plugin_Name, "phishtank.com", "Phishing", Task_ID, Plugin_Name.lower())
+        Output_Connections = General.Connections(Query, Plugin_Name, "reddit.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
         for Result in Results:
 
@@ -97,7 +91,7 @@ def Search(Query_List, Task_ID, **kwargs):
                             Output_Connections.Output(Output_file, Result[0], General.Get_Title(Result[0]))
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to create file.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create file.")
 
                 Data_to_Cache.append(Result[0])
 

@@ -7,23 +7,22 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:
             Configuration_Data = json.load(JSON_File)
+            Flickr_Details = Configuration_Data[Plugin_Name.lower()]
 
-            for Flickr_Details in Configuration_Data[Plugin_Name.lower()]:
+            if Flickr_Details['api_key'] and Flickr_Details['api_secret']:
+                return [Flickr_Details['api_key'], Flickr_Details['api_secret']]
 
-                if Flickr_Details['api_key'] and Flickr_Details['api_secret']:
-                    return [Flickr_Details['api_key'], Flickr_Details['api_secret']]
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -32,7 +31,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -64,7 +63,7 @@ def Search(Query_List, Task_ID, **kwargs):
         flickr_api.set_keys(api_key=Flickr_Details[0], api_secret=Flickr_Details[1])
 
     except:
-        logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to establish API identity.")
+        logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to establish API identity.")
 
     for Query in Query_List:
         Email_Regex = re.search(r"[^@]+@[^\.]+\..+", Query)
@@ -93,7 +92,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
             except:
-                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make API call.")
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
 
         else:
 
@@ -119,7 +118,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
             except:
-                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make API call.")
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

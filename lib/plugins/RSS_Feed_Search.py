@@ -11,7 +11,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Current_File.close()
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Please provide a valid file, failed to open the file which contains the data to search for.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Please provide a valid file, failed to open the file which contains the data to search for.")
 
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
@@ -77,7 +77,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Current_Step += 1
 
                 else:
-                    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Query not found.")
+                    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Query not found.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

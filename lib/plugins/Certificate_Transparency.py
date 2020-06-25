@@ -10,16 +10,15 @@ def Load_Configuration():
 
     with open(Configuration_File) as JSON_File:  
         Configuration_Data = json.load(JSON_File)
+        SSLMate_Details = Configuration_Data[Plugin_Name.lower()]
+        SSLMate_API = SSLMate_Details['api_key']
+        SSLMate_Subdomains = SSLMate_Details['search_subdomain']
 
-        for SSLMate_Details in Configuration_Data[Plugin_Name.lower()]:
-            SSLMate_API = SSLMate_Details['api_key']
-            SSLMate_Subdomains = SSLMate_Details['search_subdomain']
+        if SSLMate_API:
+            return [SSLMate_API, SSLMate_Subdomains]
 
-            if SSLMate_API:
-                return [SSLMate_API, SSLMate_Subdomains]
-
-            else:
-                return None
+        else:
+            return None
 
 def Search(Query_List, Task_ID):
     Data_to_Cache = []
@@ -73,18 +72,18 @@ def Search(Query_List, Task_ID):
                                 Output_Connections.Output(Output_file, Request, General.Get_Title(Request))
 
                         else:
-                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to match regular expression.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to create file.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create file.")
 
                     Data_to_Cache.append(Request)
 
             else:
-                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - No response.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - No response.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Query does not exist.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Query does not exist.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

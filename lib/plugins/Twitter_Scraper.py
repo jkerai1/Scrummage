@@ -9,27 +9,26 @@ The_File_Extension = ".txt"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
+            Twitter_Details = Configuration_Data[Plugin_Name.lower()]
+            Consumer_Key = Twitter_Details['CONSUMER_KEY']
+            Consumer_Secret = Twitter_Details['CONSUMER_SECRET']
+            Access_Key = Twitter_Details['ACCESS_KEY']
+            Access_Secret = Twitter_Details['ACCESS_SECRET']
 
-            for Twitter_Details in Configuration_Data[Plugin_Name.lower()]:
-                Consumer_Key = Twitter_Details['CONSUMER_KEY']
-                Consumer_Secret = Twitter_Details['CONSUMER_SECRET']
-                Access_Key = Twitter_Details['ACCESS_KEY']
-                Access_Secret = Twitter_Details['ACCESS_SECRET']
+            if Consumer_Key and Consumer_Secret and Access_Key and Access_Secret:
+                return [Consumer_Key, Consumer_Secret, Access_Key, Access_Secret]
 
-                if Consumer_Key and Consumer_Secret and Access_Key and Access_Secret:
-                    return [Consumer_Key, Consumer_Secret, Access_Key, Access_Secret]
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load Twitter details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
     Data_to_Cache = []
@@ -70,7 +69,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             Link = JSON_Item['url']
 
             if Link not in Cached_Data and Link not in Data_to_Cache:
-                logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - " + Link)
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - " + Link)
                 Item_Response = requests.get(Link).text
                 Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), ".html")
 
@@ -78,10 +77,10 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
                     Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Output file not returned.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Output file not returned.")
 
         else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Insufficient parameters provided.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Insufficient parameters provided.")
 
         Data_to_Cache.append(Link)
 
@@ -98,7 +97,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -130,4 +129,4 @@ def Search(Query_List, Task_ID, **kwargs):
             General_Pull(Query, Limit, Directory, API, Task_ID)
 
         except:
-            logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to get results. Are you connected to the internet?")
+            logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")

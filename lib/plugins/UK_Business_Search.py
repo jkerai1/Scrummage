@@ -9,25 +9,24 @@ The_File_Extension = ".html"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:
             Configuration_Data = json.load(JSON_File)
+            API_Details = Configuration_Data[Concat_Plugin_Name]
+            API_Key = API_Details['api_key']
 
-            for API_Details in Configuration_Data[Concat_Plugin_Name]:
-                API_Key = API_Details['api_key']
+            if API_Key:
+                API_Key = base64.b64encode(API_Key.encode('ascii'))
+                return API_Key
 
-                if API_Key:
-                    API_Key = base64.b64encode(API_Key.encode('ascii'))
-                    return API_Key
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
 
 def Search(Query_List, Task_ID, Type, **kwargs):
@@ -84,10 +83,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Data_to_Cache.append(Main_URL)
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for UKBN Search.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKBN Search.")
 
                 else:
-                    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to retrieve API key.")
+                    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
 
             elif Type == "UKCN":
                 Authorization_Key = Load_Configuration()
@@ -98,7 +97,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     if kwargs.get('Limit'):
 
                         if int(kwargs["Limit"]) > 0:
-                            Limit = kwargs["Limit"]
+                            Limit = int(kwargs["Limit"])
+
+                        else:
+                            Limit = 10
 
                     else:
                         Limit = 10
@@ -130,19 +132,19 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                             Data_to_Cache.append(Full_UKBN_URL)
 
                         except:
-                            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Error during UKCN Search, perhaps the rate limit has been exceeded.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Error during UKCN Search, perhaps the rate limit has been exceeded.")
 
                     except:
-                        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for UKCN Search.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKCN Search.")
 
                 else:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to retrieve API key.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

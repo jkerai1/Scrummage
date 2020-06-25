@@ -8,23 +8,22 @@ Plugin_Name = "Vulners"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:
             Configuration_Data = json.load(JSON_File)
+            Vulners_Details = Configuration_Data[Plugin_Name.lower()]
 
-            for Vulners_Details in Configuration_Data[Plugin_Name.lower()]:
+            if Vulners_Details['api_key']:
+                return Vulners_Details['api_key']
 
-                if Vulners_Details['api_key']:
-                    return Vulners_Details
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load location details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -33,7 +32,7 @@ def Search(Query_List, Task_ID, **kwargs):
     if kwargs.get('Limit'):
 
         if int(kwargs["Limit"]) > 0:
-            Limit = kwargs["Limit"]
+            Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10

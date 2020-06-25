@@ -54,7 +54,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Data_to_Cache.append(Main_URL)
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for ABN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for ABN Search.")
 
             elif Type == "CCN":
                 Main_URL = 'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B' + urllib.parse.quote(Query) + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
@@ -65,7 +65,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if kwargs.get('Limit'):
 
                     if int(kwargs["Limit"]) > 0:
-                        Limit = kwargs["Limit"]
+                        Limit = int(kwargs["Limit"])
+
+                    else:
+                        Limit = 10
 
                 else:
                     Limit = 10
@@ -93,13 +96,13 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Current_Step += 1
 
                 except:
-                    logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid query provided for CCN Search.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for CCN Search.")
 
             else:
-                logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid request type.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to make request.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

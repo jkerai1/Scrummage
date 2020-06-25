@@ -10,24 +10,23 @@ The_File_Extension = ".json"
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
     Configuration_File = os.path.join(File_Dir, 'plugins/common/config/config.json')
-    logging.info(General.Date() + " - " + __name__.strip('plugins.') + " - Loading configuration data.")
+    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Loading configuration data.")
 
     try:
 
         with open(Configuration_File) as JSON_File:
             Configuration_Data = json.load(JSON_File)
+            HIBP_Details = Configuration_Data[Concat_Plugin_Name]
+            API_Key = HIBP_Details['api_key']
 
-            for HIBP_Details in Configuration_Data[Concat_Plugin_Name]:
-                API_Key = HIBP_Details['api_key']
+            if API_Key:
+                return API_Key
 
-                if API_Key:
-                    return API_Key
-
-                else:
-                    return None
+            else:
+                return None
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to load API details.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load API details.")
 
 def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
     Data_to_Cache = []
@@ -38,7 +37,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
         if kwargs.get('Limit'):
 
             if int(kwargs["Limit"]) > 0:
-                Limit = kwargs["Limit"]
+                Limit = int(kwargs["Limit"])
 
         else:
             Limit = 10
@@ -59,7 +58,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             pyhibp.set_api_key(key=Load_Configuration())
 
         except:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Failed to set API key, make sure it is set in the configuration file.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to set API key, make sure it is set in the configuration file.")
 
         Query_List = General.Convert_to_List(Query_List)
 
@@ -189,7 +188,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                 General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "w")
 
         else:
-            logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Invalid type provided.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid type provided.")
 
     except:
-        logging.warning(General.Date() + " - " + __name__.strip('plugins.') + " - Execution error.")
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Execution error.")
