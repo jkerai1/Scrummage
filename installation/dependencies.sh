@@ -63,15 +63,13 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DATABASE TO $USER;"
 echo "Database has been created with the following details, please retain these for later."
 
 echo "{" > db.json
-echo "    \"postgresql\": [" >> db.json
-echo "        {" >> db.json
-echo "            \"host\": \"127.0.0.1\"," >> db.json
-echo "            \"port\": 5432," >> db.json
-echo "            \"database\": \"$DATABASE\"," >> db.json
-echo "            \"user\": \"$USER\"," >> db.json
-echo "            \"password\": \"$PASSWD\"" >> db.json
-echo "        }" >> db.json
-echo "    ]" >> db.json
+echo "    \"postgresql\": {" >> db.json
+echo "        \"host\": \"127.0.0.1\"," >> db.json
+echo "        \"port\": 5432," >> db.json
+echo "        \"database\": \"$DATABASE\"," >> db.json
+echo "        \"user\": \"$USER\"," >> db.json
+echo "        \"password\": \"$PASSWD\"" >> db.json
+echo "    }" >> db.json
 echo "}" >> db.json
 
 python3 Generate_JSON_Config.py -u $USER -p $PASSWD -d $DATABASE
