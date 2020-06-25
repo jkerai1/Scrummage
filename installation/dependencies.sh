@@ -24,9 +24,9 @@ if [[ "$ID_LIKE" = *"suse"* ]]; then
 	zypper install -n -t pattern devel_basis
 fi
 
-mkdir ../bin/static/protected
-mkdir ../bin/static/protected/output
-mkdir ../bin/static/protected/screenshots
+mkdir ../lib/static/protected
+mkdir ../lib/static/protected/output
+mkdir ../lib/static/protected/screenshots
 mkdir chrome_dev
 cd chrome_dev
 wget https://chromedriver.storage.googleapis.com/76.0.3809.12/chromedriver_linux64.zip
