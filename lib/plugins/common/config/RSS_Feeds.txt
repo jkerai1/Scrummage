@@ -32,3 +32,4 @@ http://www.euronews.com/rss?level=theme&name=news
 http://www.washingtontimes.com/rss/headlines/news/world
 http://www.dailytelegraph.com.au/news/world/rss
 https://www.huffingtonpost.com/section/front-page/feed
+https://openphish.com/feed.txt
