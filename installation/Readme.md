@@ -42,21 +42,27 @@ user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyou
 ```
 7. Next, navigate to "/lib/plugins/common/config", and verify the web application details are correct under "web-app". Ensure the certificates are set correctly. Using the path "../certs/*FILE*":
 ```
-"web-app": [
-    {
-        "debug": false,
-        "host": "127.0.0.1",
-        "port": 5000,
-        "certificate-file": "../certs/certificate.crt",
-        "key-file": "../certs/privateKey.key",
-        "api-secret": "",
-        "api-validity-minutes": 60,
-        "api-max-calls": 10,
-        "api-period-in-seconds": 60
-    }
-],
+"web-app": {
+    "debug": false,
+    "host": "127.0.0.1",
+    "port": 5000,
+    "certificate-file": "../certs/certificate.crt",
+    "key-file": "../certs/privateKey.key",
+    "api-secret": "",
+    "api-validity-minutes": 60,
+    "api-max-calls": 10,
+    "api-period-in-seconds": 60
+},
 ```
-8. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
+8. Next, ensure the path of both Google Chrome and Chromedriver are valid, without these installed, and listed in the config.json file, screenshot functionality won't work. Please also ensure the version of your Chromedriver is in line with your current version of Google Chrome. Requesting a screenshot will tell you if they aren't compatible.
+```
+"google-chrome": {
+    "application-path": "/usr/bin/google-chrome",
+    "chromedriver-path": "/usr/bin/chromedriver"
+},
+```
+
+9. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
 ```console
 user@linux:~$ cd ../lib
 user@linux:~$ python3 Scrummage.py
