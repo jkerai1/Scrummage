@@ -62,7 +62,7 @@
                     <thead>
                         <tr>
                             <th style="min-width: 40px;">ID</th>
-                            <th style="min-width: 30px;"><input type="checkbox" onclick="checkAll(this)" id="masterselect" name="masterchkbox"></th>
+                            <th></th>
                             <th style="min-width: 95px;">Username</th>
                             <th style="min-width: 80px;">Blocked</th>
                             <th style="min-width: 65px;">Admin</th>
@@ -91,6 +91,8 @@
                 <form style="display: none;" id="createuser" class="form_left" action="{{ url_for('new_account') }}" method=post autocomplete="off">
                     <input class="button" name="createuser" type=submit value="Create User">
                 </form>
+                <button id="select_all_button" style="display: none;" class="button" onclick="checkAll(this)">Select All</button>
+                <button id="deselect_all_button" style="display: none;" class="button-disabled" onclick="checkAll(this)" disabled="true">Deselect All</button>
                 <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected users: ' + getSelectValues() + '?') && sendRequest('Delete');" disabled="true">Delete User</button>
                 <button id="bottom_block_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to block the selected users: ' + getSelectValues() + '?') && sendRequest('Block');" disabled="true">Block User</button>
                 <button id="bottom_unblock_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to unblock the selected users: ' + getSelectValues() + '?') && sendRequest('Unblock');" disabled="true">Unblock User</button>
@@ -110,6 +112,22 @@
             function terms_changed(termsCheckBox){
                 var buttons = [["bottom_delete_button", "Delete"], ["bottom_block_button", "Block"], ["bottom_unblock_button", "Unblock"], ["bottom_demote_button", "Demote"], ["bottom_promote_button", "Promote"]]
                 //If the checkbox has been checked
+                if (checkAny("Checked") == true && checkAny("Unchecked") == false) {
+                    document.getElementById("deselect_all_button").disabled = false;
+                    document.getElementById("deselect_all_button").className = "button";
+                    document.getElementById("select_all_button").disabled = true;
+                    document.getElementById("select_all_button").className = "button-disabled";
+                } else if (checkAny("Checked") == false && checkAny("Unchecked") == true) {
+                    document.getElementById("select_all_button").disabled = false;
+                    document.getElementById("select_all_button").className = "button";
+                    document.getElementById("deselect_all_button").disabled = true;
+                    document.getElementById("deselect_all_button").className = "button-disabled";
+                } else if (checkAny("Checked") == true && checkAny("Unchecked") == true) {
+                    document.getElementById("select_all_button").disabled = false;
+                    document.getElementById("select_all_button").className = "button";
+                    document.getElementById("deselect_all_button").disabled = false;
+                    document.getElementById("deselect_all_button").className = "button";
+                }
                 if(termsCheckBox.checked){
                     //Set the disabled property to FALSE and enable the button.
                     buttons.forEach(button => {
@@ -123,7 +141,6 @@
                         });      
                     }
                 } else{
-                    document.getElementById('masterselect').checked = false;
                     if($('#select:checked').length === 1) {
                         buttons.forEach(button => {
                             var current_button = "#" + button[0];
@@ -163,9 +180,34 @@
                 }
             }
 
+            function checkAny(type) {
+                var checkboxes = document.getElementsByTagName('input');
+                if (type == "Checked") {
+                    var ischecked = false;
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            if (checkboxes[i].checked == true) {
+                                ischecked = true;
+                            }
+                        }
+                    }
+                    return ischecked;
+                } else if (type == "Unchecked") {
+                    var unchecked = false;
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            if (checkboxes[i].checked == false) {
+                                unchecked = true;
+                            }
+                        }
+                    }
+                    return unchecked;
+                }
+            }
+
             function checkAll(ele) {
                 var checkboxes = document.getElementsByTagName('input');
-                if (ele.checked) {
+                if (ele.innerText == "Select All") {
                     for (var i = 0; i < checkboxes.length; i++) {
                         if (checkboxes[i].type == 'checkbox') {
                             checkboxes[i].checked = true;
@@ -184,78 +226,30 @@
             </script>
             {% if error %}
             <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Error:</strong> {{error}}</p></section>
-            <script type="text/javascript">
-            var myVar;
-
-            function myFunction() {
-              myVar = setTimeout(showPage, 1000);
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("loader-message").style.display = "none";
-                document.getElementById("msg").style.display = null;
-                document.getElementById("paginate").style.display = null;
-                document.getElementById("bottom_delete_button").style.display = null;
-                document.getElementById("bottom_promote_button").style.display = null;
-                document.getElementById("bottom_demote_button").style.display = null;
-                document.getElementById("bottom_block_button").style.display = null;
-                document.getElementById("bottom_unblock_button").style.display = null;
-                document.getElementById("createuser").style.display = null;
-                document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[2].placeholder='Search';
-                document.getElementsByTagName("INPUT")[2].className='js_search';
-            }
-            </script>
             {% elif message %}
             <section id="msg" style="display: none;"><p class="message" style="padding-top: 30px;"><strong>Message:</strong> {{message}}</p></section>
-            <script type="text/javascript">
-            var myVar;
-
-            function myFunction() {
-              myVar = setTimeout(showPage, 1000);
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("loader-message").style.display = "none";
-                document.getElementById("msg").style.display = null;
-                document.getElementById("paginate").style.display = null;
-                document.getElementById("bottom_delete_button").style.display = null;
-                document.getElementById("bottom_promote_button").style.display = null;
-                document.getElementById("bottom_demote_button").style.display = null;
-                document.getElementById("bottom_block_button").style.display = null;
-                document.getElementById("bottom_unblock_button").style.display = null;
-                document.getElementById("createuser").style.display = null;
-                document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[2].placeholder='Search';
-                document.getElementsByTagName("INPUT")[2].className='js_search';
-            }
-            </script>
-            {% else %}
-            <script type="text/javascript">
-            var myVar;
-
-            function myFunction() {
-              myVar = setTimeout(showPage, 1000);
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("loader-message").style.display = "none";
-                document.getElementById("paginate").style.display = null;
-                document.getElementById("bottom_delete_button").style.display = null;
-                document.getElementById("bottom_promote_button").style.display = null;
-                document.getElementById("bottom_demote_button").style.display = null;
-                document.getElementById("bottom_block_button").style.display = null;
-                document.getElementById("bottom_unblock_button").style.display = null;
-                document.getElementById("createuser").style.display = null;
-                document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[2].placeholder='Search';
-                document.getElementsByTagName("INPUT")[2].className='js_search';
-            }
-            </script>
             {% endif %}
+            <script type="text/javascript">
+            var myVar;
+            var ButtonArr = ['bottom_delete_button', 'bottom_promote_button', 'bottom_demote_button', 'bottom_block_button', 'bottom_unblock_button', 'select_all_button', 'deselect_all_button'];
+
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("paginate").style.display = null;
+                ButtonArr.forEach(function(item) {
+                    document.getElementById(item).style.display = null;
+                });
+                document.getElementById("createuser").style.display = null;
+                document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[2].placeholder='Search';
+                document.getElementsByTagName("INPUT")[2].className='js_search';
+            }
+            </script>
         </main>
         {% elif form_step == 1 %}
             {% if form_type == "ChangePassword" %}

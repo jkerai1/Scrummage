@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-import re, os, logging, socket, plugins.common.Rotor as Rotor, plugins.common.General as General, multiprocessing, multiprocessing.pool as mpool
+import re, os, logging, socket, requests, plugins.common.Rotor as Rotor, plugins.common.General as General, multiprocessing, multiprocessing.pool as mpool
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0"}
 
 class Fuzzer:
 
@@ -39,37 +41,43 @@ class Fuzzer:
                                   ".com.vc", ".com.ve"]
         self.Plugin_Name = "Domain-Fuzzer"
         self.Concat_Plugin_Name = "urlfuzzer"
-        self.The_File_Extension = ".csv"
+        self.The_File_Extensions = {"Main": ".csv", "Query": ".html"}
 
     def Query_URL(self, URL, Extension):
 
         try:
             Query = URL + Extension
+            Response = socket.gethostbyname(Query)
+            logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Successfully resolved hostname {Query} to IP address {Response}.")
 
-            if self.URL_Prefix:
-                Web_Host = self.URL_Prefix.replace("s", "") + Query
+            if Response:
+                Cache = Query + ":" + Response
 
-            else:
-                Web_Host = 'http://' + Query
+                if Cache not in self.Cached_Data and Cache not in self.Data_to_Cache:
 
-            try:
-                Response = socket.gethostbyname(Query)
+                    try:
+                        HTTP_Web_Host = 'http://' + Query
+                        Web_Host = HTTP_Web_Host
+                        requests.get(Web_Host, headers=headers, verify=False)
 
-                if Response:
-                    Cache = Query + ":" + Response
+                    except requests.exceptions.ConnectionError as ConnErr:
 
-                    if Cache not in self.Cached_Data and Cache not in self.Data_to_Cache:
-                        self.Valid_Results.append(Query + "," + Response)
-                        self.Data_to_Cache.append(Cache)
-                        self.Valid_Hosts.append(Web_Host)
+                        try:
+                            HTTPS_Web_Host = Web_Host.replace("http://", "https://")
+                            requests.get(HTTPS_Web_Host, headers=headers, verify=False)
+                            Web_Host = HTTPS_Web_Host
 
-            except:
-                logging.info(f'{General.Date()} Failed to resolve hostname {Query} to IP address.')
+                        except requests.exceptions.ConnectionError as ConnErr:
+                            logging.warning(f"{General.Date()} {__name__.strip('plugins.')} - Unable to connect to a valid host neither via HTTP nor HTTPS. Result will still be created.")
 
-        except Exception as e:
-            logging.warning(f'{General.Date()} {str(e)}')
+                    self.Valid_Results.append(f"{Query},{Response}")
+                    self.Data_to_Cache.append(Cache)
+                    self.Valid_Hosts.append([Web_Host, Response])
 
-    def Character_Switch(self):
+        except:
+            logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Failed to resolve hostname {Query} to IP address.")
+
+    def Character_Switch(self, Comprehensive_Search):
         Local_Plugin_Name = self.Plugin_Name + "-Character-Switch"
         Directory = General.Make_Directory(self.Concat_Plugin_Name)
 
@@ -110,10 +118,28 @@ class Fuzzer:
             else:
                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Please provide valid URLs.")
 
-            logging.info(f'{General.Date()} {self.URL_Body}')
-            URL_List = list(self.URL_Body)
-            Altered_URLs = Rotor.Search(URL_List, True, False, False, False, True, True, True)
-            logging.info(f'{General.Date()} {", ".join(Altered_URLs)}')
+            logging.info(f'{General.Date()} - Provided domain body - {self.URL_Body}')
+            URL_List = list(self.URL_Body.lower())
+
+            if not Comprehensive_Search:
+
+                if len(Query) > 15:
+                    logging.error(f"{General.Date()} - The length of the provided query: {Query} is greater than 10 characters in length. Condensed punycode domain fuzzing only allows a maximum of 10 characters.")
+                    return None
+
+                else:
+                    Altered_URLs = Rotor.Search(URL_List, English_Lower=True, English_Upper=False, Numbers=False, Special_Characters=False, Cyrillic=True, Greek=True, Phoenetic_Alternatives=False, Comprehensive=False)
+
+            else:
+
+                if len(Query) > 10:
+                    logging.error(f"{General.Date()} - The length of the provided query: {Query} is greater than 10 characters in length. Comprehensive punycode domain fuzzing searching only allows a maximum of 10 characters.")
+                    return None
+
+                else:
+                    Altered_URLs = Rotor.Search(URL_List, English_Lower=True, English_Upper=False, Numbers=False, Special_Characters=False, Cyrillic=True, Greek=True, Phoenetic_Alternatives=True, Comprehensive=True)
+
+            logging.info(f'{General.Date()} - Generated domain combinations - {", ".join(Altered_URLs)}')
             Pool = mpool.ThreadPool(int(multiprocessing.cpu_count())*int(multiprocessing.cpu_count()))
             Pool_Threads = []
 
@@ -126,13 +152,28 @@ class Fuzzer:
             [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
             logging.info(f'{General.Date()} {Directory}')
             URL_Domain = self.URL_Body + self.URL_Extension
-            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+            logging.info(URL_Domain)
+            Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extensions["Main"])
+            logging.info(Main_File)
 
-            if Output_File:
+            if Main_File:
 
                 for Host in self.Valid_Hosts:
-                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+                    Current_Domain = Host[0].strip('https://').strip('http://')
+
+                    try:
+                        Current_Response = requests.get(Host[0], headers=headers, verify=False).text
+                        Output_File = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Current_Response, Current_Domain, self.The_File_Extensions["Query"])
+
+                        if Main_File and Output_File:
+                            Output_File_List = [Main_File, Output_File]
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+
+                    except requests.exceptions.ConnectionError as ConnErr:
+                        Output_File_List = [Main_File]
+                        Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
         if self.Cached_Data:
             General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
@@ -155,10 +196,10 @@ class Fuzzer:
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-        Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+        self.Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
-        if not Cached_Data:
-            Cached_Data = []
+        if not self.Cached_Data:
+            self.Cached_Data = []
 
         logging.info(f"{General.Date()} {__name__.strip('plugins.')} - Regular Extensions Selected.")
         self.Query_List = General.Convert_to_List(self.Query_List)
@@ -193,15 +234,28 @@ class Fuzzer:
 
             [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
             URL_Domain = self.URL_Body + self.URL_Extension
-            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+            Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extensions["Main"])
 
-            if Output_File:
+            if Main_File:
 
                 for Host in self.Valid_Hosts:
-                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+                    Current_Domain = Host[0].strip('https://').strip('http://')
 
-        if Cached_Data:
+                    try:
+                        Current_Response = requests.get(Host[0], headers=headers, verify=False).text
+                        Output_File = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Current_Response, Current_Domain, self.The_File_Extensions["Query"])
+
+                        if Main_File and Output_File:
+                            Output_File_List = [Main_File, Output_File]
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+
+                    except requests.exceptions.ConnectionError as ConnErr:
+                        Output_File_List = [Main_File]
+                        Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
+
+        if self.Cached_Data:
             General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
 
         else:
@@ -260,13 +314,26 @@ class Fuzzer:
 
             [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
             URL_Domain = self.URL_Body + self.URL_Extension
-            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+            Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extensions["Main"])
 
-            if Output_File:
+            if Main_File:
 
                 for Host in self.Valid_Hosts:
-                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+                    Current_Domain = Host[0].strip('https://').strip('http://')
+
+                    try:
+                        Current_Response = requests.get(Host[0], headers=headers, verify=False).text
+                        Output_File = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Current_Response, Current_Domain, self.The_File_Extensions["Query"])
+
+                        if Main_File and Output_File:
+                            Output_File_List = [Main_File, Output_File]
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+
+                    except requests.exceptions.ConnectionError as ConnErr:
+                        Output_File_List = [Main_File]
+                        Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
         if self.Data_to_Cache:
 
@@ -291,10 +358,10 @@ class Fuzzer:
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-        Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
+        self.Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
-        if not Cached_Data:
-            Cached_Data = []
+        if not self.Cached_Data:
+            self.Cached_Data = []
 
         logging.info(f"{General.Date()} {__name__.strip('plugins.')} - All Extensions Selected.")
         self.Query_List = General.Convert_to_List(self.Query_List)
@@ -333,17 +400,30 @@ class Fuzzer:
 
             [Pool_Thread.wait() for Pool_Thread in Pool_Threads]
             URL_Domain = self.URL_Body + self.URL_Extension
-            Output_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extension)
+            Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, "\n".join(self.Valid_Results), self.URL_Body, self.The_File_Extensions["Main"])
 
-            if Output_File:
+            if Main_File:
 
                 for Host in self.Valid_Hosts:
-                    Output_Connections = General.Connections(Query, Local_Plugin_Name, Host.strip('http://'), "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                    Output_Connections.Output(Output_File, Host, f"Domain Spoof for provided domain {URL_Domain} - {Host.strip('http://')}")
+                    Current_Domain = Host[0].strip('https://').strip('http://')
+
+                    try:
+                        Current_Response = requests.get(Host[0], headers=headers, verify=False).text
+                        Output_File = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Current_Response, Current_Domain, self.The_File_Extensions["Query"])
+
+                        if Main_File and Output_File:
+                            Output_File_List = [Main_File, Output_File]
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+
+                    except requests.exceptions.ConnectionError as ConnErr:
+                        Output_File_List = [Main_File]
+                        Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
+                        Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
             if self.Data_to_Cache:
 
-                if Cached_Data:
+                if self.Cached_Data:
                     General.Write_Cache(Directory, self.Data_to_Cache, Local_Plugin_Name, "a")
 
                 else:

@@ -4,7 +4,7 @@ import os, logging, requests, json, urllib.parse, plugins.common.General as Gene
 
 Plugin_Name = "Canadian-Business"
 Concat_Plugin_Name = "canadianbusiness"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
@@ -34,7 +34,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
         try:
 
             if Type == "CBN":
-                Main_API_URL = 'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B' + Query + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
+                Main_API_URL = f'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B{Query}%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
                 Response = requests.get(Main_API_URL).text
                 JSON_Response = json.loads(Response)
 
@@ -42,15 +42,15 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                     if JSON_Response['count'] != 0:
                         Query = str(int(Query))
-                        Main_URL = 'https://beta.canadasbusinessregistries.ca/search/results?search=%7B' + Query + '%7D&status=Active'
+                        Main_URL = f'https://beta.canadasbusinessregistries.ca/search/results?search=%7B{Query}%7D&status=Active'
                         Response = requests.get(Main_URL).text
 
                         if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extensions["Query"])
 
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
-                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
+                                Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
                                 Data_to_Cache.append(Main_URL)
 
                 except:
@@ -74,7 +74,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     Limit = 10
 
                 try:
-                    General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, ".json")
+                    Main_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
                     Current_Step = 0
                     Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
 
@@ -84,14 +84,14 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             CCN = JSON_Item['Company_Name']
                             CBN = JSON_Item['BN']
 
-                            Full_ABN_URL = 'https://beta.canadasbusinessregistries.ca/search/results?search=%7B' + CBN + '%7D&status=Active'
+                            Full_ABN_URL = f'https://beta.canadasbusinessregistries.ca/search/results?search=%7B{CBN}%7D&status=Active'
 
                             if Full_ABN_URL not in Cached_Data and Full_ABN_URL not in Data_to_Cache and Current_Step < int(Limit):
                                 Current_Response = requests.get(Full_ABN_URL).text
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), CCN.replace(' ', '-'), The_File_Extension)
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), CCN.replace(' ', '-'), The_File_Extensions["Query"])
 
-                                if Output_file:
-                                    Output_Connections.Output(Output_file, Full_ABN_URL, General.Get_Title(Full_ABN_URL))
+                                if Main_File and Output_file:
+                                    Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, General.Get_Title(Full_ABN_URL), Concat_Plugin_Name)
                                     Data_to_Cache.append(Full_ABN_URL)
                                     Current_Step += 1
 

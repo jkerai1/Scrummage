@@ -2,7 +2,7 @@
 import plugins.common.General as General, requests, json, os, logging
 from googleapiclient import discovery
 
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 Plugin_Name = "YouTube"
 
 def Load_Configuration():
@@ -74,7 +74,7 @@ def Search(Query_List, Task_ID, **kwargs):
         part='id,snippet',
         maxResults=Limit,
         ).execute()
-        General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, ".json")
+        Main_File = General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
         Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
         for Search_Result in Search_Response.get('items', []):
@@ -82,10 +82,10 @@ def Search(Query_List, Task_ID, **kwargs):
             Search_Video_Response = requests.get(Full_Video_URL).text
 
             if Full_Video_URL not in Cached_Data and Full_Video_URL not in Data_to_Cache:
-                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extension)
+                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extensions["Query"])
 
-                if Output_file:
-                    Output_Connections.Output(Output_file, Full_Video_URL, General.Get_Title(Full_Video_URL))
+                if Main_File and Output_file:
+                    Output_Connections.Output([Main_File, Output_file], Full_Video_URL, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
 
                 Data_to_Cache.append(Full_Video_URL)
 

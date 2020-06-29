@@ -84,7 +84,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                            Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
+                            Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
 
                         Data_to_Cache.append(Link)
 
@@ -114,7 +114,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                            Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
+                            Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
 
                         Data_to_Cache.append(Link)
 
@@ -143,7 +143,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                            Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
+                            Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
 
                         Data_to_Cache.append(Link)
 
@@ -176,7 +176,7 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
 
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Response['Domain'], "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                                Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
+                                Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
 
                             Data_to_Cache.append(Current_Response['Domain'])
                             Current_Step += 1

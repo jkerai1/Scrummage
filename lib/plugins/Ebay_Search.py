@@ -3,7 +3,7 @@ import requests, logging, os, re, plugins.common.General as General, json
 from ebaysdk.finding import Connection
 
 Plugin_Name = "Ebay"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -68,7 +68,7 @@ def Search(Query_List, Task_ID, **kwargs):
             JSON_Output_Response = json.dumps(API_Response.dict(), indent=4, sort_keys=True)
             JSON_Response = json.dumps(API_Response.dict())
             JSON_Response = json.loads(JSON_Response)
-            General.Main_File_Create(Directory, Plugin_Name, JSON_Output_Response, Query, ".json")
+            Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Output_Response, Query, The_File_Extensions["Main"])
 
             if JSON_Response["ack"] == "Success":
                 Output_Connections = General.Connections(Query, Plugin_Name, "ebay.com", "Data Leakage", Task_ID, Plugin_Name.lower())
@@ -81,10 +81,10 @@ def Search(Query_List, Task_ID, **kwargs):
                         Ebay_Item_Regex = re.search(r"http\:\/\/www\.ebay\.com\/itm\/([\w\d\-]+)\-\/\d+", Ebay_Item_URL)
                         headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
                         Ebay_Item_Response = requests.get(Ebay_Item_URL, headers=headers).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Ebay_Item_Response, Ebay_Item_Regex.group(1), The_File_Extension)
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Ebay_Item_Response, Ebay_Item_Regex.group(1), The_File_Extensions["Query"])
 
-                        if Output_file:
-                            Output_Connections.Output(Output_file, Ebay_Item_URL, General.Get_Title(Ebay_Item_URL))
+                        if Main_File and Output_file:
+                            Output_Connections.Output([Main_File, Output_file], Ebay_Item_URL, General.Get_Title(Ebay_Item_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Ebay_Item_URL)
                         Current_Step += 1
@@ -93,7 +93,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - No results found.")
 
         except:
-            logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
+            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

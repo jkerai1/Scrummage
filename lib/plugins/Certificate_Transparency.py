@@ -46,11 +46,11 @@ def Search(Query_List, Task_ID):
     for Query in Query_List:
 
         if Configuration_Details[1].lower() == "true":
-            Request = 'https://api.certspotter.com/v1/issuances?domain=' + Query + '&include_subdomains=true&expand=dns_names&expand=issuer&expand=cert'
+            Request = f'https://api.certspotter.com/v1/issuances?domain={Query}&include_subdomains=true&expand=dns_names&expand=issuer&expand=cert'
             Response = requests.get(Request, auth=(Configuration_Details[0], '')).text
 
         else:
-            Request = 'https://api.certspotter.com/v1/issuances?domain=' + Query + '&expand=dns_names&expand=issuer&expand=cert'
+            Request = f'https://api.certspotter.com/v1/issuances?domain={Query}&expand=dns_names&expand=issuer&expand=cert'
             Response = requests.get(Request, auth=(Configuration_Details[0], '')).text
 
         JSON_Response = json.loads(Response)
@@ -69,7 +69,7 @@ def Search(Query_List, Task_ID):
 
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Plugin_Name, "sslmate.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
-                                Output_Connections.Output(Output_file, Request, General.Get_Title(Request))
+                                Output_Connections.Output([Output_file], Request, General.Get_Title(Request), Plugin_Name.lower())
 
                         else:
                             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")

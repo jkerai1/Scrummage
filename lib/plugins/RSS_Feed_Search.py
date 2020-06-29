@@ -71,7 +71,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
                         if Output_file:
                             Output_Connections = General.Connections(Query, Plugin_Name, Domain, "Data Leakage", Task_ID, Plugin_Name.lower())
-                            Output_Connections.Output(Output_file, Feed.link, General.Get_Title(Feed.link), Dump_Types=Dump_Types)
+                            Output_Connections.Output([Output_file], Feed.link, General.Get_Title(Feed.link), Plugin_Name.lower(), Dump_Types=Dump_Types)
 
                         Data_to_Cache.append(Feed.link)
                         Current_Step += 1

@@ -27,7 +27,7 @@ def Search(Query_List, Task_ID):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        BSB_Search_URL = "https://www.bsbnumbers.com/" + Query + ".html"
+        BSB_Search_URL = f"https://www.bsbnumbers.com/{Query}.html"
         Response = requests.get(BSB_Search_URL).text
         Error_Regex = re.search(r"Correct\sthe\sfollowing\serrors", Response)
         Output_Connections = General.Connections(Query, Plugin_Name, "bsbnumbers.com", "Data Leakage", Task_ID, Plugin_Name.lower())
@@ -38,7 +38,7 @@ def Search(Query_List, Task_ID):
                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Query, The_File_Extension)
 
                 if Output_file:
-                    Output_Connections.Output(Output_file, BSB_Search_URL, General.Get_Title(BSB_Search_URL))
+                    Output_Connections.Output([Output_file], BSB_Search_URL, General.Get_Title(BSB_Search_URL), Plugin_Name.lower())
 
                 Data_to_Cache.append(BSB_Search_URL)
 

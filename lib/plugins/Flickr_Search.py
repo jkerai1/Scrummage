@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import requests, logging, os, re, plugins.common.General as General, json, flickr_api
+headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
 
 Plugin_Name = "Flickr"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -73,52 +74,50 @@ def Search(Query_List, Task_ID, **kwargs):
             try:
                 User = flickr_api.Person.findByEmail(Query)
                 Photos = User.getPhotos()
-                General.Main_File_Create(Directory, Plugin_Name, Photos, Query, ".txt")
+                Main_File = General.Main_File_Create(Directory, Plugin_Name, Photos, Query, The_File_Extensions["Main"])
                 Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
                 Current_Step = 0
 
                 for Photo in Photos:
-                    Photo_URL = "https://www.flickr.com/photos/" + Query + "/" + Photo["id"]
+                    Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
 
                     if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
-                        headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
                         Photo_Response = requests.get(Photo_URL, headers=headers).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, Photo, The_File_Extension)
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, Photo, The_File_Extensions["Query"])
 
-                        if Output_file:
-                            Output_Connections.Output(Output_file, Photo_URL, General.Get_Title(Photo_URL))
+                        if Main_File and Output_file:
+                            Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Photo_URL)
                         Current_Step += 1
 
             except:
-                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
 
         else:
 
             try:
                 User = flickr_api.Person.findByUserName(Query)
                 Photos = User.getPhotos()
-                General.Main_File_Create(Directory, Plugin_Name, Photos, Query, ".txt")
+                Main_File = General.Main_File_Create(Directory, Plugin_Name, Photos, Query, The_File_Extensions["Main"])
                 Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
                 Current_Step = 0
 
                 for Photo in Photos:
-                    Photo_URL = "https://www.flickr.com/photos/" + Query + "/" + Photo["id"]
+                    Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
 
                     if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
-                        headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
                         Photo_Response = requests.get(Photo_URL, headers=headers).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, str(Photo['id']), The_File_Extension)
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, str(Photo['id']), The_File_Extensions["Query"])
 
-                        if Output_file:
-                            Output_Connections.Output(Output_file, Photo_URL, General.Get_Title(Photo_URL))
+                        if Main_File and Output_file:
+                            Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Photo_URL)
                         Current_Step += 1
 
             except:
-                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

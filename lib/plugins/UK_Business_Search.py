@@ -4,7 +4,7 @@ import os, json, logging, requests, base64, plugins.common.General as General
 
 Plugin_Name = "UK-Business"
 Concat_Plugin_Name = "ukbusiness"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -68,18 +68,19 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
 
                     try:
-                        Dud_Query = str(int(Query))
+                        Query = str(int(Query))
 
                         if Response and '{"errors":[{"error":"company-profile-not-found","type":"ch:service"}]}' not in Response:
 
                             if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
                                 Result_URL = 'https://beta.companieshouse.gov.uk/company/' + str(JSON_Response["company_number"])
                                 Result_Response = requests.get(Result_URL).text
-                                Main_Output_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, '.json')
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extension)
+                                Main_Output_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extensions["Query"])
 
                                 if Main_Output_File and Output_file:
-                                    General.Connections(Output_file, Query, Plugin_Name, Result_URL, "companieshouse.gov.uk", "Data Leakage", Task_ID, str(JSON_Response["company_name"]), Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections.Output([Main_Output_File, Output_file], Result_URL, str(JSON_Response["company_name"]), Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
                     except:
@@ -106,7 +107,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         Limit = 10
 
                     try:
-                        Main_URL = 'https://api.companieshouse.gov.uk/search/companies?q=' + Query + '&items_per_page=' + Limit
+                        Main_URL = f'https://api.companieshouse.gov.uk/search/companies?q={Query}&items_per_page={Limit}'
                         headers = {"Authorization": "Basic SGI5M0V4STRkMDZ2d0NHSzBZTkI5QUxnQ3N3UDNhNEFNMDRHeWtVdzo="}
                         Response = requests.get(Main_URL, headers=headers).text
                         JSON_Response = json.loads(Response)
@@ -125,10 +126,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     if Full_UKBN_URL not in Cached_Data and Full_UKBN_URL not in Data_to_Cache:
                                         UKCN = Item['title']
                                         Current_Response = requests.get(Full_UKBN_URL).text
-                                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extension)
+                                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extensions["Query"])
 
                                         if Output_file:
-                                            Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN)
+                                            Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN, Concat_Plugin_Name)
                                             Data_to_Cache.append(Full_UKBN_URL)
 
                         except:

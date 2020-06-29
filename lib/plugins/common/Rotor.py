@@ -7,7 +7,7 @@ Altered_URLs = []
 def Date():
     return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives):
+def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives, Comprehensive):
     A_List = []
     B_List = []
     C_List = []
@@ -108,7 +108,7 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         L_List.extend(["|", "[", "]"])
         T_List.append("+")
 
-    if Cyrillic:
+    if Cyrillic and Comprehensive:
         A_List.extend([u"а", u"д"])
         B_List.append(u"в")
         C_List.append(u"с")
@@ -127,7 +127,25 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         X_List.extend([u"х", u"ж"])
         Y_List.extend([u"у", u"ү"])
 
-    if Greek:
+    elif Cyrillic and not Comprehensive:
+        A_List.append(u"а")
+        C_List.append(u"с")
+        E_List.append(u"е")
+        H_List.append(u"һ", u"Һ")
+        I_List.append(u"і")
+        K_List.append(u"к")
+        M_List.append(u"м")
+        N_List.append(u"п")
+        O_List.append(u"о")
+        P_List.append(u"р")
+        R_List.append(u"г")
+        S_List.append(u"ѕ")
+        T_List.append(u"т")
+        W_List.append(u"ш")
+        X_List.append(u"х")
+        Y_List.extend([u"у", u"ү"])
+
+    if Greek and Comprehensive:
         I_List.extend([u"ί", u"ι"])
         K_List.append(u"κ")
         N_List.extend([u"η", u"π"])
@@ -138,6 +156,16 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         V_List.extend([u"ν", u"υ"])
         W_List.append(u"ω")
         X_List.append(u"χ")
+        Y_List.append(u"γ")
+
+    elif Greek and not Comprehensive:
+        K_List.append(u"κ")
+        N_List.append(u"η")
+        O_List.extend([u"ο", u"σ"])
+        P_List.append(u"ρ")
+        U_List.append(u"υ")
+        V_List.append(u"ν")
+        W_List.append(u"ω")
         Y_List.append(u"γ")
 
     if Phoenetic_Alternatives:
@@ -153,27 +181,21 @@ def List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cy
         U_List.extend([u"ù", u"ú", u"û", u"ü", u"ũ", u"ū", u"ŭ", u"ů"])
         Y_List.extend([u"ý", u"ÿ"])
 
-    return [["a", A_List], ["b", B_List], ["c", C_List], ["d", D_List], ["e", E_List], ["f", F_List], ["g", G_List],
-            ["h", H_List], ["i", I_List], ["j", J_List], ["k", K_List], ["l", L_List], ["m", M_List], ["n", N_List],
-            ["o", O_List], ["p", P_List], ["q", Q_List], ["r", R_List], ["s", S_List], ["t", T_List], ["u", U_List],
-            ["v", V_List], ["w", W_List], ["x", X_List], ["y", Y_List], ["z", Z_List]]
+    return {"a": A_List, "b": B_List, "c": C_List, "d": D_List, "e": E_List, "f": F_List, "g": G_List, "h": H_List, "i": I_List, "j": J_List, "k": K_List, "l": L_List, "m": M_List, "n": N_List, "o": O_List, "p": P_List, "q": Q_List, "r": R_List, "s": S_List, "t": T_List, "u": U_List, "v": V_List, "w": W_List, "x": X_List, "y": Y_List, "z": Z_List}
 
-def Search(Query, English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives):
+def Search(Query, English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives, Comprehensive):
     global Altered_URLs
-
     Rotor_Word = []
     Altered_URLs = []
     URL_Allowed_Characters_List = ['$', '-', '_', '.', '+', '!', '*', '\'', '(', ')', ',']
-
-    Lists = List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek,
-                           Phoenetic_Alternatives)
+    Lists = List_Formatter(English_Lower, English_Upper, Numbers, Special_Characters, Cyrillic, Greek, Phoenetic_Alternatives, Comprehensive)
 
     for Letter in Query:
 
-        for List in Lists:
+        for List_Key, List_Value in Lists.items():
 
-            if Letter == List[0]:
-                Rotor_Word.append(List[1])
+            if Letter == List_Key:
+                Rotor_Word.append(List_Value)
 
         for Character in URL_Allowed_Characters_List:
 

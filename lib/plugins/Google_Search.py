@@ -3,7 +3,7 @@ import requests, re, logging, os, json, plugins.common.General as General
 from googleapiclient.discovery import build
 
 Plugin_Name = "Google"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -70,7 +70,7 @@ def Search(Query_List, Task_ID, **kwargs):
         CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
         CSE_JSON_Response = json.loads(CSE_JSON_Output_Response)
 
-        General.Main_File_Create(Directory, Plugin_Name, CSE_JSON_Output_Response, Query, ".json")
+        Main_File = General.Main_File_Create(Directory, Plugin_Name, CSE_JSON_Output_Response, Query, The_File_Extensions["Main"])
         Output_Connections = General.Connections(Query, Plugin_Name, "google.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
 
         for JSON_Response_Items in CSE_JSON_Response['items']:
@@ -88,10 +88,10 @@ def Search(Query_List, Task_ID, **kwargs):
                             headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
                             Google_Item_Response = requests.get(Google_Item_URL, headers=headers).text
                             Output_Path = Path_Regex.group(4).replace("/", "-")
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extension)
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extensions["Query"])
 
-                            if Output_file:
-                                Output_Connections.Output(Output_file, Google_Item_URL, General.Get_Title(Google_Item_URL))
+                            if Main_File and Output_file:
+                                Output_Connections.Output([Main_File, Output_file], Google_Item_URL, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
 
                         else:
                             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
@@ -99,7 +99,7 @@ def Search(Query_List, Task_ID, **kwargs):
                         Data_to_Cache.append(Google_Item_URL)
 
             except Exception as e:
-                logging.info(General.Date() + str(e))
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

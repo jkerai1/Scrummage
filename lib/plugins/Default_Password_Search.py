@@ -45,7 +45,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Main_URL = URL_Body + '/' + Query.lower().replace(' ', '-')
         headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
         Response = requests.get(Main_URL, headers=headers).text
-        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+        Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
         Regex = re.findall(r'\<tr\>\s+\<td\sclass\=\"name\"\>\s+\<a\shref\=\"([\/\d\w\-\+\?\.]+)\"\>([\/\d\w\-\+\?\.\(\)\s\,\;\:\~\`\!\@\#\$\%\^\&\*\[\]\{\}]+)\<\/a\>\s+\<\/td\>', Response)
 
         if Regex:
@@ -67,8 +67,8 @@ def Search(Query_List, Task_ID, **kwargs):
                         if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache and Current_Step < int(Limit):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Response['data'], Title, The_File_Extension)
 
-                            if Output_file:
-                                Output_Connections.Output(Output_file, Item_URL, General.Get_Title(Item_URL))
+                            if Main_File and Output_file:
+                                Output_Connections.Output([Main_File, Output_file], Item_URL, General.Get_Title(Item_URL), Concat_Plugin_Name)
 
                             Data_to_Cache.append(Item_URL)
                             Current_Step += 1

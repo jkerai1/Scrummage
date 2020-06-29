@@ -4,7 +4,7 @@
 import json, os, requests, logging, tweepy, plugins.common.General as General
 
 Plugin_Name = "Twitter"
-The_File_Extension = ".txt"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -62,6 +62,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
 
     JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
     Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+    Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, The_File_Extensions["Main"])
 
     for JSON_Item in JSON_Response:
 
@@ -69,12 +70,12 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             Link = JSON_Item['url']
 
             if Link not in Cached_Data and Link not in Data_to_Cache:
-                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - " + Link)
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - {Link}")
                 Item_Response = requests.get(Link).text
-                Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), ".html")
+                Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), The_File_Extensions["Query"])
 
-                if Output_file:
-                    Output_Connections.Output(Output_file, Link, General.Get_Title(Link))
+                if Main_File and Output_file:
+                    Output_Connections.Output([Main_File, Output_file], Link, General.Get_Title(Link), Plugin_Name.lower())
 
                 else:
                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Output file not returned.")
@@ -83,8 +84,6 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Insufficient parameters provided.")
 
         Data_to_Cache.append(Link)
-
-    General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, ".json")
 
     if Cached_Data:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

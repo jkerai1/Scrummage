@@ -62,7 +62,7 @@ def Search(Query_List, Task_ID, **kwargs):
     Query_List = General.Convert_to_List(Query_List)
 
     for Query in Query_List:
-        Main_URL = "https://" + Craigslist_Location.lower() + ".craigslist.org/search/sss?format=rss&query=" + Query
+        Main_URL = f"https://{Craigslist_Location.lower()}.craigslist.org/search/sss?format=rss&query={Query}"
         Craigslist_Response = feedparser.parse(Main_URL)
         Craigslist_Items = Craigslist_Response["items"]
         Current_Step = 0
@@ -72,8 +72,8 @@ def Search(Query_List, Task_ID, **kwargs):
 
             if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache and Current_Step < int(Limit):
                 Craigslist_Response = requests.get(Item_URL).text
-                Local_URL = "https://" + Craigslist_Location.lower() + ".craigslist.org/"
-                Local_Domain = Craigslist_Location.lower() + ".craigslist.org/"
+                Local_URL = f"https://{Craigslist_Location.lower()}.craigslist.org/"
+                Local_Domain = f"{Craigslist_Location.lower()}.craigslist.org/"
                 Filename = Item_URL.replace(Local_URL, "")
                 Filename = Filename.replace(".html/", "")
                 Filename = Filename.replace(".html", "")
@@ -82,7 +82,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
                 if Output_file:
                     Output_Connections = General.Connections(Query, Plugin_Name, Local_Domain, "Data Leakage", Task_ID, Plugin_Name.lower())
-                    Output_Connections.Output(Output_file, Item_URL, General.Get_Title(Item_URL))
+                    Output_Connections.Output([Output_file], Item_URL, General.Get_Title(Item_URL), Plugin_Name.lower())
 
                 Data_to_Cache.append(Item_URL)
                 Current_Step += 1

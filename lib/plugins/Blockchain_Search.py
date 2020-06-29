@@ -55,7 +55,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid type provided.")
 
             if Query_Regex:
-                Main_URL = "https://www.blockchain.com/" + Type + "/tx/" + Query
+                Main_URL = f"https://www.blockchain.com/{Type}/tx/{Query}"
                 Main_Response = requests.get(Main_URL).text
 
                 if Type == "btc":
@@ -75,14 +75,14 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                     Output_Connections = General.Connections(Query, Local_Plugin_Name, "blockchain.com", "Blockchain Address", Task_ID, Plugin_Name.lower())
 
                     for Transaction in Address_Regex:
-                        Query_URL = "https://www.blockchain.com/" + Type + "/address/" + Transaction
+                        Query_URL = f"https://www.blockchain.com/{Type}/address/{Transaction}"
 
                         if Query_URL not in Cached_Data and Query_URL not in Data_to_Cache and Current_Step < int(Limit):
                             Transaction_Response = requests.get(Query_URL).text
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Transaction, The_File_Extension)
 
                             if Output_file:
-                                Output_Connections.Output(Output_file, Query_URL, General.Get_Title(Query_URL))
+                                Output_Connections.Output([Output_file], Query_URL, General.Get_Title(Query_URL), Plugin_Name.lower())
 
                             Data_to_Cache.append(Query_URL)
                             Current_Step += 1
@@ -94,7 +94,7 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
     else:
-        Query_URL = "https://moneroblocks.info/search/" + Query
+        Query_URL = f"https://moneroblocks.info/search/{Query}"
         Transaction_Response = requests.get(Query_URL).text
 
         if "Whoops, looks like something went wrong." not in Transaction_Response and Query_URL not in Cached_Data and Query_URL not in Data_to_Cache:
@@ -102,7 +102,8 @@ def Transaction_Search(Query_List, Task_ID, Type, **kwargs):
             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Query, The_File_Extension)
 
             if Output_file:
-                General.Connections(Output_file, Query, Local_Plugin_Name, Query_URL, "moneroblocks.info", "Blockchain Transaction", Task_ID, General.Get_Title(Query_URL), Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, "moneroblocks.info", "Blockchain Transaction", Task_ID, Plugin_Name.lower())
+                Output_Connections.Output([Output_file], Query_URL, General.Get_Title(Query_URL), Plugin_Name.lower())
 
             Data_to_Cache.append(Query_URL)
 
@@ -159,7 +160,7 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid type provided.")
 
         if Query_Regex:
-            Main_URL = "https://www.blockchain.com/" + Type + "/address/" + Query
+            Main_URL = f"https://www.blockchain.com/{Type}/address/{Query}"
             Main_Response = requests.get(Main_URL).text
 
             if Type == "btc":
@@ -179,14 +180,14 @@ def Address_Search(Query_List, Task_ID, Type, **kwargs):
                 Output_Connections = General.Connections(Query, Local_Plugin_Name, "blockchain.com", "Blockchain Transaction", Task_ID, Plugin_Name.lower())
 
                 for Transaction in Transaction_Regex:
-                    Query_URL = "https://www.blockchain.com/" + Type + "/tx/" + Transaction
+                    Query_URL = f"https://www.blockchain.com/{Type}/tx/{Transaction}"
 
                     if Query_URL not in Cached_Data and Query_URL not in Data_to_Cache and Current_Step < int(Limit):
                         Transaction_Response = requests.get(Query_URL).text
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Transaction_Response, Transaction, The_File_Extension)
 
                         if Output_file:
-                            Output_Connections.Output(Output_file, Query_URL, General.Get_Title(Query_URL))
+                            Output_Connections.Output([Output_file], Query_URL, General.Get_Title(Query_URL), Plugin_Name.lower())
 
                         Data_to_Cache.append(Query_URL)
                         Current_Step += 1

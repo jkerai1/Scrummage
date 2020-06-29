@@ -3,7 +3,7 @@ import requests, logging, json, re, os, plugins.common.General as General
 
 Plugin_Name = "iTunes-Store"
 Concat_Plugin_Name = "itunesstore"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Search(Query_List, Task_ID, **kwargs):
     Data_to_Cache = []
@@ -43,13 +43,13 @@ def Search(Query_List, Task_ID, **kwargs):
     for Query in Query_List:
 
         try:
-            Response = requests.get("http://itunes.apple.com/search?term=" + Query + "&country=" + Location + "&entity=software&limit=" + str(Limit)).text
+            Response = requests.get(f"http://itunes.apple.com/search?term={Query}&country={Location}&entity=software&limit={str(Limit)}").text
 
         except:
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request, are you connected to the internet?")
 
         JSON_Response = json.loads(Response)
-        General.Main_File_Create(Directory, "iTunes", json.dumps(Response, indent=4, sort_keys=True), Query, ".json")
+        Main_File = General.Main_File_Create(Directory, "iTunes", json.dumps(Response, indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
 
         if 'resultCount' in JSON_Response:
 
@@ -65,10 +65,10 @@ def Search(Query_List, Task_ID, **kwargs):
                             iTunes_Regex = re.search("https\:\/\/itunes\.apple\.com\/" + Location + "\/developer\/[\w\d\-]+\/(id[\d]{9,10})\?mt\=\d\&uo\=\d", JSON_Object['artistViewUrl'])
 
                             if iTunes_Regex:
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Object_Response, iTunes_Regex.group(1), The_File_Extension)
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Object_Response, iTunes_Regex.group(1), The_File_Extensions["Query"])
 
-                                if Output_file:
-                                    Output_Connections.Output(Output_file, JSON_Object['artistViewUrl'], General.Get_Title(JSON_Object['artistViewUrl']))
+                                if Main_File and Output_file:
+                                    Output_Connections.Output([Main_File, Output_file], JSON_Object['artistViewUrl'], General.Get_Title(JSON_Object['artistViewUrl']), Concat_Plugin_Name)
 
                             Data_to_Cache.append(JSON_Object['artistViewUrl'])
 

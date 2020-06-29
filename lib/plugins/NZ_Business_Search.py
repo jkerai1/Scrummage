@@ -34,7 +34,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
         try:
 
             if Type == "NZBN":
-                Main_URL = 'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/search?q=' + Query + '&entityTypes=ALL&entityStatusGroups=ALL&incorpFrom=&incorpTo=&addressTypes=ALL&addressKeyword=&start=0&limit=1&sf=&sd=&advancedPanel=true&mode=advanced#results'
+                Main_URL = f'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/search?q={Query}&entityTypes=ALL&entityStatusGroups=ALL&incorpFrom=&incorpTo=&addressTypes=ALL&addressKeyword=&start=0&limit=1&sf=&sd=&advancedPanel=true&mode=advanced#results'
                 Response = requests.get(Main_URL).text
 
                 try:
@@ -47,7 +47,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
-                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
+                                Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
                                 Data_to_Cache.append(Main_URL)
 
                 except:
@@ -74,21 +74,21 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     NZCN_Regex = re.search(r".*[a-zA-Z].*", Query)
 
                     if NZCN_Regex:
-                        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+                        Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
                         NZBNs_Regex = re.findall(r"\<span\sclass\=\"entityName\"\>([\w\d\s\-\_\&\|\!\@\#\$\%\^\*\(\)\.\,]+)\<\/span\>\s<span\sclass\=\"entityInfo\"\>\((\d+)\)\s\(NZBN\:\s(\d+)\)", Response)
 
                         if NZBNs_Regex:
                             Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
 
                             for NZCN, NZ_ID, NZBN_URL in NZBNs_Regex:
-                                Full_NZBN_URL = 'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/' + NZ_ID + '?backurl=H4sIAAAAAAAAAEXLuwrCQBCF4bfZNtHESIpBbLQwhWBeYNgddSF7cWai5O2NGLH7zwenyHgjKWwKGaOfSwjZ3ncPaOt1W9bbsmqaamMoqtepnzIJ7Ltu2RdFHeXIacxf9tEmzgdOAZbuExh0jknk%2F17gRNMrsQMjiqxQmsEHr7Aycp3NfY5PjJbcGSMNoDySCckR%2FPwNLgXMiL4AAAA%3D'
+                                Full_NZBN_URL = f'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/{NZ_ID}?backurl=H4sIAAAAAAAAAEXLuwrCQBCF4bfZNtHESIpBbLQwhWBeYNgddSF7cWai5O2NGLH7zwenyHgjKWwKGaOfSwjZ3ncPaOt1W9bbsmqaamMoqtepnzIJ7Ltu2RdFHeXIacxf9tEmzgdOAZbuExh0jknk%2F17gRNMrsQMjiqxQmsEHr7Aycp3NfY5PjJbcGSMNoDySCckR%2FPwNLgXMiL4AAAA%3D'
 
                                 if Full_NZBN_URL not in Cached_Data and Full_NZBN_URL not in Data_to_Cache:
                                     Current_Response = requests.get(Full_NZBN_URL).text
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), NZCN.replace(' ', '-'), The_File_Extension)
 
-                                    if Output_file:
-                                        Output_Connections.Output(Output_file, Full_NZBN_URL, General.Get_Title(Full_NZBN_URL))
+                                    if Main_File and Output_file:
+                                        Output_Connections.Output([Main_File, Output_file], Full_NZBN_URL, General.Get_Title(Full_NZBN_URL), Concat_Plugin_Name)
                                         Data_to_Cache.append(Full_NZBN_URL)
 
                         else:

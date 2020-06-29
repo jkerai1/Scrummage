@@ -44,7 +44,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Response = requests.get('https://tpbc.herokuapp.com/search/' + Query.replace(" ", "+") + '/?sort=seeds_desc', headers=headers).text
         Response = json.loads(Response)
         JSON_Response = json.dumps(Response, indent=4, sort_keys=True)
-        Output_file = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, ".json")
+        Output_file = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extension)
 
         if Output_file:
             Current_Step = 0
@@ -58,7 +58,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     #Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Response, Result_Title, The_File_Extension)
 
                     if Output_file:
-                        Output_Connections.Output(Output_file, Result_URL, General.Get_Title(Result_URL))
+                        Output_Connections.Output([Output_file], Result_URL, General.Get_Title(Result_URL), Plugin_Name.lower())
 
                     Data_to_Cache.append(Result_URL)
                     Current_Step += 1

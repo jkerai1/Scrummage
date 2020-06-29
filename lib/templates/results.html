@@ -32,7 +32,7 @@
                     <thead>
                         <tr>
                             <th>Screenshot</th>
-                            <th>File</th>
+                            <th>Files</th>
                             <th id="result_task_mob">Plugin</th>
                             <th>Result Type</th>
                             <th>Domain</th>
@@ -66,8 +66,12 @@
                                     <td class="nonscreenshottab">Not Available</td>
                                 {% endif %}
                             {% endif %}
-                            {% if results[10] %}
-                                <td style="padding-left: 10px;"><a href="{{results[10]}}"><div class="document"></div></a></td>
+                            {% if Output_Files %}
+                                <td style="padding-left: 10px;">
+                                {% for Output_File in Output_Files %}
+                                <a href="{{Output_File}}"><div class="document"></div></a>
+                                {% endfor %}
+                                </td>
                             {% else %}
                                 <td class="nonscreenshottab">N/A</td>
                             {% endif %}
@@ -207,7 +211,7 @@
                         <tr>
                             <th style="min-width: 40px;">ID</th>
                             {% if is_admin %}
-                            <th style="min-width: 30px;"><input type="checkbox" onclick="checkAll(this)" id="masterselect" name="masterchkbox"></th>
+                            <th></th>
                             {% endif %}
                             <th>Title</th>
                             <th>Status</th>
@@ -245,10 +249,17 @@
                 <form style="display: none;" id="newresult" class="form_left" action="{{url_for('new_result')}}" method=post autocomplete="off">
                     <input class="button" name="newresult" type=submit value="New Result">
                 </form>
-                <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected result items: ' + getSelectValues() + '?') && sendRequest();" disabled="true">Delete Result</button>
+                <button id="select_all_button" style="display: none;" class="button" onclick="checkAll(this)">Select All</button>
+                <button id="deselect_all_button" style="display: none;" class="button-disabled" onclick="checkAll(this)" disabled="true">Deselect All</button>
+                <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected result items: ' + getSelectValues() + '?') && sendRequest('delete');" disabled="true">Delete Result</button>
+                <button id="bottom_open_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to open the selected result items: ' + getSelectValues() + '?') && sendRequest('open');" disabled="true">Open Result</button>
+                <button id="bottom_inspect_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to inspect the selected result items: ' + getSelectValues() + '?') && sendRequest('inspect');" disabled="true">Inspect Result</button>
+                <button id="bottom_review_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to review the selected result items: ' + getSelectValues() + '?') && sendRequest('review');" disabled="true">Review Result</button>
+                <button id="bottom_close_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to close the selected result items: ' + getSelectValues() + '?') && sendRequest('close');" disabled="true">Close Result</button>
             </div>
             <script type="text/javascript">
             var myVar;
+            var ButtonArr = [['bottom_delete_button', 'Delete'], ['bottom_open_button', 'Open'], ['bottom_inspect_button', 'Inspect'], ['bottom_review_button', 'Review'], ['bottom_close_button', 'Close']];
 
             function myFunction() {
               myVar = setTimeout(showPage, 1000);
@@ -259,7 +270,11 @@
                 document.getElementById("loader-message").style.display = "none";
                 document.getElementById("paginate").style.display = null;
                 document.getElementById("newresult").style.display = null;
-                document.getElementById("bottom_delete_button").style.display = null;
+                ButtonArr.forEach(function(item) {
+                    document.getElementById(item[0]).style.display = null;
+                });
+                document.getElementById("select_all_button").style.display = null;
+                document.getElementById("deselect_all_button").style.display = null;
                 document.getElementById("fc").style.display = null;
                 document.getElementsByTagName("INPUT")[0].placeholder='Search';
                 document.getElementsByTagName("INPUT")[0].className='js_search';
@@ -274,10 +289,14 @@
                return checkedArrayStr
             }
 
-            function sendRequest() {
+            function sendRequest(extension) {
                 var xhr = new XMLHttpRequest();
-                var selectedValArray = getSelectValues()
-                var uri = "results/delete/" + selectedValArray
+                var selectedValArray = getSelectValues();
+                if (extension == "delete") {
+                    var uri = "results/" + extension + "/" + selectedValArray;
+                } else {
+                    var uri = "results/changestatus/" + extension + "/" + selectedValArray;
+                }
                 xhr.open("POST", uri, true);
                 xhr.send();
                 xhr.onreadystatechange = function(e) {
@@ -289,29 +308,75 @@
 
             function terms_changed(termsCheckBox){
                 //If the checkbox has been checked
-                if(termsCheckBox.checked){
+                if (checkAny("Checked") == true && checkAny("Unchecked") == false) {
+                    document.getElementById("deselect_all_button").disabled = false;
+                    document.getElementById("deselect_all_button").className = "button";
+                    document.getElementById("select_all_button").disabled = true;
+                    document.getElementById("select_all_button").className = "button-disabled";
+                } else if (checkAny("Checked") == false && checkAny("Unchecked") == true) {
+                    document.getElementById("select_all_button").disabled = false;
+                    document.getElementById("select_all_button").className = "button";
+                    document.getElementById("deselect_all_button").disabled = true;
+                    document.getElementById("deselect_all_button").className = "button-disabled";
+                } else if (checkAny("Checked") == true && checkAny("Unchecked") == true) {
+                    document.getElementById("select_all_button").disabled = false;
+                    document.getElementById("select_all_button").className = "button";
+                    document.getElementById("deselect_all_button").disabled = false;
+                    document.getElementById("deselect_all_button").className = "button";
+                }
+                if (termsCheckBox.checked) {
                     //Set the disabled property to FALSE and enable the button.
-                    document.getElementById("bottom_delete_button").disabled = false;
-                    document.getElementById("bottom_delete_button").className = "button";
-                    if($('#select:checked').length >= 2) {
-                        document.querySelector("#bottom_delete_button").innerText = 'Delete Results'
-                    }
+                    ButtonArr.forEach(function(item) {
+                        document.getElementById(item[0]).disabled = false;
+                        document.getElementById(item[0]).className = "button";
+                        if($('#select:checked').length >= 2) {
+                            document.querySelector("#" + item[0]).innerText = item[1] + ' Results';
+                        }
+                    });
                 } else{
-                    document.getElementById('masterselect').checked = false;
                     if($('#select:checked').length === 1) {
-                        document.querySelector("#bottom_delete_button").innerText = 'Delete Result'
+                        ButtonArr.forEach(function(item) {
+                            document.querySelector("#" + item[0]).innerText = item[1] + ' Result';
+                        });
                     }
                     if($('#select:checked').length === 0) {
                     //Otherwise, disable the submit button.
-                        document.getElementById("bottom_delete_button").disabled = true;
-                        document.getElementById("bottom_delete_button").className = "button-disabled";
+                        ButtonArr.forEach(function(item) {
+                            document.getElementById(item[0]).disabled = true;
+                            document.getElementById(item[0]).className = "button-disabled";
+                        });
                     }
+                }
+            }
+
+            function checkAny(type) {
+                var checkboxes = document.getElementsByTagName('input');
+                if (type == "Checked") {
+                    var ischecked = false;
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            if (checkboxes[i].checked == true) {
+                                ischecked = true;
+                            }
+                        }
+                    }
+                    return ischecked;
+                } else if (type == "Unchecked") {
+                    var unchecked = false;
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        if (checkboxes[i].type == 'checkbox') {
+                            if (checkboxes[i].checked == false) {
+                                unchecked = true;
+                            }
+                        }
+                    }
+                    return unchecked;
                 }
             }
 
             function checkAll(ele) {
                 var checkboxes = document.getElementsByTagName('input');
-                if (ele.checked) {
+                if (ele.innerText == "Select All") {
                     for (var i = 0; i < checkboxes.length; i++) {
                         if (checkboxes[i].type == 'checkbox') {
                             checkboxes[i].checked = true;

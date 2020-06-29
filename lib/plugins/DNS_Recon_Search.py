@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-import plugins.common.General as General, plugins.common.checkdmarc as checkdmarc, json, os, logging
+import plugins.common.General as General, plugins.common.checkdmarc as checkdmarc, json, os, logging, requests
 
-The_File_Extension = ".json"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 Plugin_Name = "DNS-Recon"
 Concat_Plugin_Name = "dnsrecon"
+headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0"}
 
 def Search(Query_List, Task_ID):
     Data_to_Cache = []
@@ -39,11 +40,13 @@ def Search(Query_List, Task_ID):
                 Title = "DNS Information for " + DNS_Item['base_domain']
 
                 if Link not in Data_to_Cache and Link not in Cached_Data:
-                    Output_file = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extension)
+                    Response = requests.get(Link, headers=headers).text
+                    Main_File = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extensions["Main"])
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Title, The_File_Extensions["Query"])
 
-                    if Output_file:
+                    if Main_File and Output_file:
                         Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
-                        Output_Connections.Output(Output_file, Link, Title)
+                        Output_Connections.Output([Main_File, Output_file], Link, Title, Concat_Plugin_Name)
 
                     Data_to_Cache.append(Link)
 
@@ -54,11 +57,13 @@ def Search(Query_List, Task_ID):
             Title = "DNS Information for " + Query
 
             if Link not in Data_to_Cache and Link not in Cached_Data:
-                Output_file = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extension)
+                Response = requests.get(Link, headers=headers).text
+                Main_File = General.Main_File_Create(Directory, Plugin_Name, Output_Dict, Query, The_File_Extensions["Main"])
+                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Title, The_File_Extensions["Query"])
 
-                if Output_file:
+                if Main_File and Output_file:
                     Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
-                    Output_Connections.Output(Output_file, Link, Title)
+                    Output_Connections.Output([Main_File, Output_file], Link, Title, Concat_Plugin_Name)
 
                 Data_to_Cache.append(Link)
 

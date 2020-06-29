@@ -14,7 +14,7 @@ def Date():
     return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def Load_Chrome_Configuration():
-    logging.info(f"{Date()} Loading RTIR configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading RTIR configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -30,10 +30,10 @@ def Load_Chrome_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_CSV_Configuration():
-    logging.info(f"{Date()} Loading CSV configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading CSV configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -48,10 +48,10 @@ def Load_CSV_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_DOCX_Configuration():
-    logging.info(f"{Date()} Loading DOCX configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading DOCX configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -66,10 +66,10 @@ def Load_DOCX_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Defect_Dojo_Configuration():
-    logging.info(f"{Date()} Loading DefectDojo configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading DefectDojo configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -90,10 +90,10 @@ def Load_Defect_Dojo_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Email_Configuration():
-    logging.info(f"{Date()} Loading email configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading email configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -112,10 +112,10 @@ def Load_Email_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Elasticsearch_Configuration():
-    logging.info(f"{Date()} Loading Elasticsearch configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading Elasticsearch configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -132,10 +132,10 @@ def Load_Elasticsearch_Configuration():
             return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Main_Database():
-    logging.info(f"{Date()} Loading Scrummage's Main Database configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading Scrummage's Main Database configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -148,7 +148,7 @@ def Load_Main_Database():
             DB_Database = DB_Info['database']
 
     except:
-        logging.warning(f"{Date()} Failed to load configuration file.")
+        logging.warning(f"{Date()} Connectors Library - Failed to load configuration file.")
 
     try:
         DB_Connection = psycopg2.connect(user=DB_Username,
@@ -164,10 +164,10 @@ def Load_Main_Database():
             return None
 
     except:
-        logging.warning(f"{Date()} Failed to connect to database.")
+        logging.warning(f"{Date()} Connectors Library - Failed to connect to database.")
 
 def Load_JIRA_Configuration():
-    logging.info(f"{Date()} Loading JIRA configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading JIRA configuration data.")
 
     try:
 
@@ -187,10 +187,10 @@ def Load_JIRA_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Slack_Configuration():
-    logging.info(f"{Date()} Loading Slack configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading Slack configuration data.")
 
     try:
 
@@ -207,10 +207,10 @@ def Load_Slack_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_Scumblr_Configuration():
-    logging.info(f"{Date()} Loading Scumblr configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading Scumblr configuration data.")
 
     try:
 
@@ -230,10 +230,10 @@ def Load_Scumblr_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Load_RTIR_Configuration():
-    logging.info(f"{Date()} Loading RTIR configuration data.")
+    logging.info(f"{Date()} Connectors Library - Loading RTIR configuration data.")
 
     try:
         with open(Configuration_File) as JSON_File:
@@ -253,41 +253,44 @@ def Load_RTIR_Configuration():
                 return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
-def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
+def CSV_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Directory):
 
     try:
         Use_CSV = Load_CSV_Configuration()
 
         if Use_CSV:
-            Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output File", "Result Type", "Task ID"]
+            Headings = ["Title", "Plugin", "Domain", "Link", "Created At", "Output Files", "Result Type", "Task ID"]
             Data = [Title, Plugin_Name, Domain, Link, Date(), Output_File, Result_Type, str(Task_ID)]
-            File_Path = f"{File_Dir}/static/protected/output/{Plugin_Name}"
-            Complete_File = File_Path + "-Output.csv"
+            Complete_File = f"{File_Dir}/static/protected/output/{Directory}/{Plugin_Name}-Output.csv"
 
             if not os.path.exists(Complete_File):
                 CSV_Output = csv.writer(open(Complete_File, 'w'))
                 CSV_Output.writerow(Headings)
                 CSV_Output.writerow(Data)
-                logging.info(f"{Date()} Created new CSV file located at {str(Complete_File)}.")
+                logging.info(f"{Date()} Connectors Library - Created new CSV file located at {str(Complete_File)}.")
 
             else:
                 CSV_Output = csv.writer(open(Complete_File, 'a'))
                 CSV_Output.writerow(Data)
-                logging.info(f"{Date()} Updated existing CSV file located at {str(Complete_File)}.")
+                logging.info(f"{Date()} Connectors Library - Updated existing CSV file located at {str(Complete_File)}.")
+
+            return Complete_File
+
+        else:
+            return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
-def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID):
+def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Directory):
 
     try:
         Use_DOCX = Load_DOCX_Configuration()
 
         if Use_DOCX:
-            File_Path = f"{File_Dir}/static/protected/output/{Plugin_Name}"
-            Complete_File = f"{File_Path}-Output.docx"
+            Complete_File = f"{File_Dir}/static/protected/output/{Directory}/{Plugin_Name}-Output.docx"
 
             if os.path.exists(Complete_File):
                 document = Document(Complete_File)
@@ -301,7 +304,7 @@ def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task
                 ('Link', Link),
                 ('Created At', str(Date())),
                 ('Result Type', Result_Type),
-                ('Output File', Output_File),
+                ('Output Files', Output_File),
                 ('Associated Task ID', str(Task_ID))
             )
 
@@ -317,10 +320,14 @@ def DOCX_Output(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task
 
             document.add_page_break()
             document.save(Complete_File)
-            logging.info(f"{Date()} Exported to DOCX file located at {str(Complete_File)}.")
+            logging.info(f"{Date()} Connectors Library - Exported to DOCX file located at {str(Complete_File)}.")
+            return Complete_File
+
+        else:
+            return None
 
     except Exception as e:
-        logging.warning(f"{Date()} {str(e)}.")
+        logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 
 def Defect_Dojo_Output(Title, Description):
@@ -336,10 +343,10 @@ def Defect_Dojo_Output(Title, Description):
 
             try:
                 Finding = str(int(str(Finding)))
-                logging.info(f"{Date()} DefectDojo finding {Finding} created.")
+                logging.info(f"{Date()} Connectors Library - DefectDojo finding {Finding} created.")
 
             except:
-                logging.info(f"{Date()} Failed to create DefectDojo finding.")
+                logging.info(f"{Date()} Connectors Library - Failed to create DefectDojo finding.")
 
         except (Exception, psycopg2.DatabaseError) as Error:
             logging.warning(Date() + str(Error))
@@ -360,7 +367,7 @@ def Main_Database_Insert(Title, Plugin_Name, Domain, Link, Result_Type, Output_F
                 Cursor.execute("INSERT INTO results (title, plugin, status, domain, link, created_at, updated_at, output_file, result_type, task_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Title, Plugin_Name, "Open", Domain, Link, Date(), Date(), Output_File, Result_Type, Task_ID,))
 
             else:
-                logging.info(f"{Date()} Entry already exists in the database. Skipping...")
+                logging.info(f"{Date()} Connectors Library - Entry already exists in the database. Skipping...")
 
         except (Exception, psycopg2.DatabaseError) as Error:
             logging.warning(Date() + str(Error))
@@ -391,18 +398,18 @@ def Scumblr_Main(Link, Domain, Title):
                 Cursor.execute("INSERT INTO results (title, url, created_at, updated_at, domain) VALUES(%s, %s, %s, %s, %s)", (Title, Link, Date(), Date(), Domain))
 
             else:
-                logging.info(f"{Date()} Entry already exists in Scumblr database. Skipping...")
+                logging.info(f"{Date()} Connectors Library - Entry already exists in Scumblr database. Skipping...")
 
         except (Exception, psycopg2.DatabaseError) as Error:
-            logging.warning(f"{Date()} " + Error)
+            logging.warning(f"{Date()} Connectors Library - " + Error)
 
         finally:
 
             if Connection is not None:
                 Connection.commit()
                 Connection.close()
-                logging.info(f"{Date()} Result added to Scumblr database.")
-                logging.info(f"{Date()} Database connection closed.")
+                logging.info(f"{Date()} Connectors Library - Result added to Scumblr database.")
+                logging.info(f"{Date()} Connectors Library - Database connection closed.")
 
 def RTIR_Main(Ticket_Subject, Ticket_Text):
     RTIR_Details = Load_RTIR_Configuration()
@@ -416,13 +423,13 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
             else:
-                logging.info(f"{Date()} No Authenticator specified, using the default which is cookie-based authentication,")
+                logging.info(f"{Date()} Connectors Library - No Authenticator specified, using the default which is cookie-based authentication,")
                 requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
 
-            logging.info(f"{Date()} New RTIR ticket created.")
+            logging.info(f"{Date()} Connectors Library - New RTIR ticket created.")
 
         except Exception as e:
-            logging.warning(f"{Date()} {str(e)}.")
+            logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def JIRA_Main(Ticket_Summary, Ticket_Description):
     JIRA_Details = Load_JIRA_Configuration()
@@ -433,10 +440,10 @@ def JIRA_Main(Ticket_Summary, Ticket_Description):
             JIRA_Options={'server': JIRA_Details[1]}
             JIRA_Session=JIRA(options=JIRA_Options,basic_auth=(JIRA_Details[2], JIRA_Details[3]))
             JIRA_Session.create_issue(project={'key': JIRA_Details[0]}, summary=Ticket_Summary, description=Ticket_Description, issuetype={'name': JIRA_Details[4]})
-            logging.info(f"{Date()} New JIRA ticket created.")
+            logging.info(f"{Date()} Connectors Library - New JIRA ticket created.")
 
         except Exception as e:
-            logging.warning(f"{Date()} {str(e)}.")
+            logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Slack_Main(Description):
     Slack_Details = Load_Slack_Configuration()
@@ -446,10 +453,10 @@ def Slack_Main(Description):
         try:
             client = slack.WebClient(token=Slack_Details[0])
             client.chat_postMessage(channel=Slack_Details[1], text=Description)
-            logging.info(f"{Date()} New Slack Notification created.")
+            logging.info(f"{Date()} Connectors Library - New Slack Notification created.")
 
         except Exception as e:
-            logging.warning(f"{Date()} {str(e)}.")
+            logging.warning(f"{Date()} Connectors Library - {str(e)}.")
 
 def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_File, Task_ID, Concat_Plugin_Name):
     Elasticsearch_Details = Load_Elasticsearch_Configuration()
@@ -464,13 +471,13 @@ def Elasticsearch_Main(Title, Plugin_Name, Domain, Link, Result_Type, Output_Fil
             resp = requests.post(URI, data=data, headers=headers)
 
             if resp.status_code == 200:
-                logging.info(f"{Date()} New result created in Elasticsearch, using the URI " + URI + ".")
+                logging.info(f"{Date()} Connectors Library - New result created in Elasticsearch, using the URI " + URI + ".")
 
             else:
-                logging.info(f"{Date()} Failed to create result in Elasticsearch, using the URI " + URI + ".")
+                logging.info(f"{Date()} Connectors Library - Failed to create result in Elasticsearch, using the URI " + URI + ".")
 
         except:
-            logging.warning(f"{Date()} Failed to create result in Elasticsearch.")
+            logging.warning(f"{Date()} Connectors Library - Failed to create result in Elasticsearch.")
 
 def Email_Main(Email_Subject, Email_Body):
     Email_Details = Load_Email_Configuration()
@@ -490,7 +497,7 @@ def Email_Main(Email_Subject, Email_Body):
             text = msg.as_string()
             server.sendmail(Email_Details[2], Email_Details[4], text)
             server.quit()
-            logging.info(f"{Date()} Email Sent.")
+            logging.info(f"{Date()} Connectors Library - Email Sent.")
 
         except:
-            logging.warning(f"{Date()} Failed to send alert! Check email login settings.")
+            logging.warning(f"{Date()} Connectors Library - Failed to send alert! Check email login settings.")

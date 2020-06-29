@@ -75,9 +75,9 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
-        elif self.plugin_name == "PhishTank Search":
-            import plugins.Phishtank_Search as Phishtank_Search
-            Thread_1 = threading.Thread(target=Phishtank_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
+        elif self.plugin_name == "Phishstats Search":
+            import plugins.Phishstats_Search as Phishstats_Search
+            Thread_1 = threading.Thread(target=Phishstats_Search.Search, args=(self.query, self.task_id,), kwargs={"Limit": self.limit, })
             Thread_1.start()
             Thread_1.join()
 
@@ -191,10 +191,17 @@ class Plugin_Caller:
             Thread_1.start()
             Thread_1.join()
 
-        elif self.plugin_name == "Domain Fuzzer - Punycode":
+        elif self.plugin_name == "Domain Fuzzer - Punycode (Comprehensive)":
             import plugins.Domain_Fuzzer as Domain_Fuzzer
             Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
-            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Character_Switch)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Character_Switch, args=(True,))
+            Thread_1.start()
+            Thread_1.join()
+
+        elif self.plugin_name == "Domain Fuzzer - Punycode (Condensed)":
+            import plugins.Domain_Fuzzer as Domain_Fuzzer
+            Domain_Fuzz_Obj = Domain_Fuzzer.Fuzzer(self.query, self.task_id)
+            Thread_1 = threading.Thread(target=Domain_Fuzz_Obj.Character_Switch, args=(False,))
             Thread_1.start()
             Thread_1.join()
 

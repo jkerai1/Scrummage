@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import plugins.common.General as General, json, logging, os, requests
 
-The_File_Extension = ".html"
 Plugin_Name = "Pinterest"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -66,18 +66,18 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             Search_Response = requests.get(Request_URL).text
             Search_Response = json.loads(Search_Response)
             JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
-            General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, ".json")
+            Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
 
             Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
             Result_URL = Search_Response["data"]["url"]
             Search_Result_Response = requests.get(Result_URL).text
 
             if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
-                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
 
                 if Output_file:
                     Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                    Output_Connections.Output(Output_file, Result_URL, Result_Title)
+                    Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
 
                 Data_to_Cache.append(Result_URL)
 
@@ -87,7 +87,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             Search_Response = requests.get(Request_URL).text
             Search_Response = json.loads(Search_Response)
             JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
-            General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, ".json")
+            Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
             Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
             Current_Step = 0
 
@@ -97,10 +97,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Search_Result_Response = requests.get(Result_URL).text
 
                 if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
-                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
 
-                    if Output_file:
-                        Output_Connections.Output(Output_file, Result_URL, Result_Title)
+                    if Main_File and Output_file:
+                        Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
 
                     Data_to_Cache.append(Result_URL)
                     Current_Step += 1

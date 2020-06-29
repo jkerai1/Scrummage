@@ -4,7 +4,7 @@ import os, re, logging, requests, plugins.common.General as General
 
 Plugin_Name = "American-Business"
 Concat_Plugin_Name = "americanbusiness"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".html", "Query": ".html"}
 
 def Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
@@ -34,7 +34,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
         try:
 
             if Type == "CIK":
-                Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + Query + '&owner=exclude&count=40&hidefilings=0'
+                Main_URL = f'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={Query}&owner=exclude&count=40&hidefilings=0'
                 Response = requests.get(Main_URL).text
 
                 try:
@@ -43,17 +43,18 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         Query = str(int(Query))
 
                         if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extensions["Query"])
 
                             if Output_file:
-                                General.Connections(Output_file, Query, Plugin_Name, Main_URL, "sec.gov", "Data Leakage", Task_ID, General.Get_Title(Main_URL), Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
                                 Data_to_Cache.append(Main_URL)
 
                 except:
                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for CIK Search.")
 
             elif Type == "ACN":
-                Main_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?company=' + Query + '&owner=exclude&action=getcompany'
+                Main_URL = f'https://www.sec.gov/cgi-bin/browse-edgar?company={Query}&owner=exclude&action=getcompany'
                 Response = requests.get(Main_URL).text
 
                 if kwargs.get('Limit'):
@@ -71,7 +72,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     ACN = re.search(r".*[a-zA-Z].*", Query)
 
                     if ACN:
-                        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+                        Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extensions["Main"])
                         Current_Step = 0
                         CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
 
@@ -79,14 +80,14 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Data Leakage", Task_ID, Plugin_Name)
 
                             for CIK_URL, ACN in CIKs_Regex:
-                                Full_CIK_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + CIK_URL + '&owner=exclude&count=40&hidefilings=0'
+                                Full_CIK_URL = f'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={CIK_URL}&owner=exclude&count=40&hidefilings=0'
 
                                 if Full_CIK_URL not in Cached_Data and Full_CIK_URL not in Data_to_Cache and Current_Step < int(Limit):
                                     Current_Response = requests.get(Full_CIK_URL).text
-                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extensions["Query"])
 
-                                    if Output_file:
-                                        Output_Connections.Output(Output_file, Full_CIK_URL, General.Get_Title(Full_CIK_URL))
+                                    if Main_File and Output_file:
+                                        Output_Connections.Output([Main_File, Output_file], Full_CIK_URL, General.Get_Title(Full_CIK_URL), Concat_Plugin_Name)
                                         Data_to_Cache.append(Full_CIK_URL)
                                         Current_Step += 1
 

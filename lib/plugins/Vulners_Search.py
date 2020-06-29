@@ -2,7 +2,7 @@
 import plugins.common.General as General, vulners, json, os, requests, logging
 
 Unacceptable_Bulletins = ["advertisement", "kitsploit"]
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".json", "Query": ".html"}
 Plugin_Name = "Vulners"
 
 def Load_Configuration():
@@ -63,7 +63,7 @@ def Search(Query_List, Task_ID, **kwargs):
         vulners_api = vulners.Vulners(api_key=Load_Configuration())
         Search_Response = vulners_api.search(Query, limit=int(Limit))
         JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
-        General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, ".json")
+        Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
         Output_Connections = General.Connections(Query, Plugin_Name, "vulners.com", "Exploit", Task_ID, Plugin_Name.lower())
 
         for Search_Result in Search_Response:
@@ -74,10 +74,10 @@ def Search(Query_List, Task_ID, **kwargs):
                 Search_Result_Response = requests.get(Result_URL).text
 
                 if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
-                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extension)
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
 
-                    if Output_file:
-                        Output_Connections.Output(Output_file, Result_URL, Result_Title)
+                    if Main_File and Output_file:
+                        Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
 
                     Data_to_Cache.append(Result_URL)
 

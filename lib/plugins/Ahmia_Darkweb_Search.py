@@ -64,7 +64,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 for URL in Tor_Scrape_URLs:
 
                     if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
-                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
+                        Output_Connections.Output([Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
                         Data_to_Cache.append(URL)
                         Current_Step += 1
 
@@ -84,7 +84,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 for URL in I2P_Scrape_URLs:
 
                     if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
-                        Output_Connections.Output(Output_file, URL, General.Get_Title(URL))
+                        Output_Connections.Output([Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
                         Data_to_Cache.append(URL)
                         Current_Step += 1
 

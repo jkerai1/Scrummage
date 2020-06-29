@@ -4,7 +4,7 @@ import os, re, logging, requests, plugins.common.General as General
 
 Plugin_Name = "Australian-Business"
 Concat_Plugin_Name = "australianbusiness"
-The_File_Extension = ".html"
+The_File_Extensions = {"Main": ".html", "Query": ".html"}
 
 def Search(Query_List, Task_ID, Type, **kwargs):
     Data_to_Cache = []
@@ -43,11 +43,11 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         Query = str(int(Query))
 
                         if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extensions["Query"])
 
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
-                                Output_Connections.Output(Output_file, Main_URL, General.Get_Title(Main_URL))
+                                Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
                                 Data_to_Cache.append(Main_URL)
 
                 except:
@@ -73,7 +73,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     ACN_Regex = re.search(r".*[a-zA-Z].*", Query)
 
                     if ACN_Regex:
-                        General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
+                        Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extensions["Main"])
                         Current_Step = 0
                         ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
 
@@ -87,10 +87,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     ACN = ACN.rstrip()
                                     Current_Response = requests.get(Full_ABN_URL).text
                                     print(Full_ABN_URL)
-                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extension)
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extensions["Query"])
 
-                                    if Output_file:
-                                        Output_Connections.Output(Output_file, Full_ABN_URL, General.Get_Title(Full_ABN_URL))
+                                    if Main_File and Output_file:
+                                        Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, General.Get_Title(Full_ABN_URL), Concat_Plugin_Name)
                                         Data_to_Cache.append(Full_ABN_URL)
                                         Current_Step += 1
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import os, re, praw, json, logging, plugins.common.General as General
+import os, re, praw, json, logging, requests, plugins.common.General as General
 
 Plugin_Name = "Reddit"
-The_File_Extension = ".txt"
+The_File_Extension = ".html"
+headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -67,10 +68,7 @@ def Search(Query_List, Task_ID, **kwargs):
             All_Subreddits = Reddit_Connection.subreddit(Reddit_Details[5])
 
             for Subreddit in All_Subreddits.search(Query, limit=Limit): # Limit, subreddit and search to be controlled by the web app.
-                Current_Result = []
-                Current_Result.append(Subreddit.url)
-                Current_Result.append(Subreddit.selftext)
-                Results.append(Current_Result)
+                Results.append(Subreddit.url)
 
         except:
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
@@ -79,16 +77,17 @@ def Search(Query_List, Task_ID, **kwargs):
 
         for Result in Results:
 
-            if Result[0] not in Cached_Data and Result[0] not in Data_to_Cache:
+            if Result not in Cached_Data and Result not in Data_to_Cache:
 
                 try:
                     Reddit_Regex = re.search("https\:\/\/www\.reddit\.com\/r\/(\w+)\/comments\/(\w+)\/([\w\d]+)\/", Result[0])
 
                     if Reddit_Regex:
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result[1], Reddit_Regex.group(3), The_File_Extension)
+                        Reddit_Response = requests.get(Result, headers=headers).text
+                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Reddit_Response, Reddit_Regex.group(3), The_File_Extension)
 
                         if Output_file:
-                            Output_Connections.Output(Output_file, Result[0], General.Get_Title(Result[0]))
+                            Output_Connections.Output([Output_file], Result, General.Get_Title(Result[0]), Plugin_Name.lower())
 
                 except:
                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create file.")
