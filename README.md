@@ -3,11 +3,13 @@
 
 # Scrummage  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
-**VERSION 2.3**
-- Significant UI Improvements.
+**VERSION 2.4**
+- UI Simplifications.
 - Simplified new code that retains the same look and feel as before with a few improvements.
-- Bug fixes for task management functions. 
-
+- Bug fixes for task management functions and plugins. 
+- Phishtank plugin removed and replaced with Phishstats (See The Wiki Pages linked below)
+- Divided Punycode Fuzzer into comprehensive search and condensed search (See The Wiki Pages linked below)
+- Better, more accurate results. Results also allow users to access Main Files (Related to all results from the relevant query used to find the result), Individual Files (Related to result), CSV and DOCX Output files (If the functionality is switched on in the configuration file).
 **There is currently a known bug with the Google Play Store plugin.**
 
 Scrummage is an OSINT tool that centralises search functionality from powerful, yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
