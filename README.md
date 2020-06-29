@@ -8,6 +8,8 @@
 - Simplified new code that retains the same look and feel as before with a few improvements.
 - Bug fixes for task management functions. 
 
+**There is currently a known bug with the Google Play Store plugin.**
+
 Scrummage is an OSINT tool that centralises search functionality from powerful, yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
 - The https://github.com/Netflix-Skunkworks/Scumblr project, which while is now deprecated, inspired this concept.
 - The OSINT framework, a high-level overview of a range of sites that can be used to search for a variety of things, which can be found at https://osintframework.com/ or https://github.com/lockfale/OSINT-Framework.
