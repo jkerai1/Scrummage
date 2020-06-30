@@ -120,8 +120,7 @@ if Arguments.database and Arguments.username and Arguments.password:
                 "channel": ""
             },
             "sslmate": {
-                "api_key": "",
-                "search_subdomain": "true or false"
+                "search_subdomain": false
             },
             "twitter": {
                 "CONSUMER_KEY": "",
