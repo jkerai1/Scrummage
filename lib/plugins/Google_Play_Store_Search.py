@@ -7,38 +7,21 @@ Concat_Plugin_Name = "playstore"
 The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Search(Query_List, Task_ID, **kwargs):
+
+    # try:
     Data_to_Cache = []
-    Cached_Data = []
-
-    if kwargs.get('Limit'):
-
-        if int(kwargs["Limit"]) > 0:
-            Limit = int(kwargs["Limit"])
-
-        else:
-            Limit = 10
-
-    else:
-        Limit = 10
-
     Directory = General.Make_Directory(Concat_Plugin_Name)
-
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-
     Log_File = General.Logging(Directory, Concat_Plugin_Name)
     handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
     handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-
     Cached_Data = General.Get_Cache(Directory, Plugin_Name)
-
-    if not Cached_Data:
-        Cached_Data = []
-
     Query_List = General.Convert_to_List(Query_List)
+    Limit = General.Get_Limit(kwargs)
 
     for Query in Query_List:
 
@@ -59,13 +42,15 @@ def Search(Query_List, Task_ID, **kwargs):
                     Play_Store_Response = requests.get(Result_URL, headers=headers).text
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extensions["Query"])
 
-                    if Main_File and Output_file:
+                    if Output_file:
                         Output_Connections.Output([Main_File, Output_file], Result_URL, General.Get_Title(Result_URL), Concat_Plugin_Name)
+                        Data_to_Cache.append(Result_URL)
+
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
                 else:
                     logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
-
-                Data_to_Cache.append(Result_URL)
 
         # except:
         #     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results, this may be due to the query provided.")
@@ -75,3 +60,6 @@ def Search(Query_List, Task_ID, **kwargs):
 
     else:
         General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+
+    # except Exception as e:
+    #     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")

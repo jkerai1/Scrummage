@@ -29,24 +29,12 @@ def Load_Configuration():
         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load API details.")
 
 def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
-    Data_to_Cache = []
-    Cached_Data = []
 
     try:
-
-        if kwargs.get('Limit'):
-
-            if int(kwargs["Limit"]) > 0:
-                Limit = int(kwargs["Limit"])
-
-        else:
-            Limit = 10
-
+        Data_to_Cache = []
         Directory = General.Make_Directory(Concat_Plugin_Name)
-
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
-
         Log_File = General.Logging(Directory, Concat_Plugin_Name)
         handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
         handler.setLevel(logging.DEBUG)
@@ -61,13 +49,13 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to set API key, make sure it is set in the configuration file.")
 
         Query_List = General.Convert_to_List(Query_List)
+        Limit = General.Get_Limit(kwargs)
 
         if Type_of_Query == "email":
             Local_Plugin_Name = Plugin_Name + "-" + Type_of_Query
             Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
             if not Cached_Data:
-                Cached_Data = []
 
             for Query in Query_List:
                 Query_Response = pyhibp.get_pastes(email_address=Query)
@@ -85,8 +73,10 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
                             Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
+                            Data_to_Cache.append(Link)
 
-                        Data_to_Cache.append(Link)
+                        else:
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
             if Cached_Data:
                 General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -99,7 +89,6 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
             if not Cached_Data:
-                Cached_Data = []
 
             for Query in Query_List:
                 Query_Response = pyhibp.get_single_breach(breach_name=Query)
@@ -115,8 +104,10 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
                             Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
+                            Data_to_Cache.append(Link)
 
-                        Data_to_Cache.append(Link)
+                        else:
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
             if Cached_Data:
                 General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -129,7 +120,6 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
             if not Cached_Data:
-                Cached_Data = []
 
             for Query in Query_List:
                 Query_Response = pw.is_password_breached(password=Query)
@@ -144,8 +134,10 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                         if Output_file:
                             Output_Connections = General.Connections(Query, Local_Plugin_Name, "haveibeenpwned.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
                             Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
+                            Data_to_Cache.append(Link)
 
-                        Data_to_Cache.append(Link)
+                        else:
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
             if Cached_Data:
                 General.Write_Cache(Directory, Data_to_Cache, Local_Plugin_Name, "a")
@@ -158,7 +150,6 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
             Cached_Data = General.Get_Cache(Directory, Local_Plugin_Name)
 
             if not Cached_Data:
-                Cached_Data = []
 
             for Query in Query_List:
                 Query_Response = pyhibp.get_account_breaches(account=Query, truncate_response=True)
@@ -177,8 +168,11 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
                             if Output_file:
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Response['Domain'], "Data Leakage", Task_ID, Local_Plugin_Name.lower())
                                 Output_Connections.Output([Output_file], Link, General.Get_Title(Link), Concat_Plugin_Name)
+                                Data_to_Cache.append(Current_Response['Domain'])
 
-                            Data_to_Cache.append(Current_Response['Domain'])
+                            else:
+                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
                             Current_Step += 1
 
             if Cached_Data:
@@ -190,5 +184,5 @@ def Search(Query_List, Task_ID, Type_of_Query, **kwargs):
         else:
             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid type provided.")
 
-    except:
-        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Execution error.")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")

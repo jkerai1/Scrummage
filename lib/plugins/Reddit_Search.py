@@ -31,71 +31,64 @@ def Load_Configuration():
         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load Reddit details.")
 
 def Search(Query_List, Task_ID, **kwargs):
-    Data_to_Cache = []
-    Cached_Data = []
-    Results = []
 
-    if int(kwargs["Limit"]) > 0:
-        Limit = int(kwargs["Limit"])
+    try:
+        Data_to_Cache = []
+        Results = []
+        Directory = General.Make_Directory(Plugin_Name.lower())
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        Log_File = General.Logging(Directory, Plugin_Name.lower())
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        Reddit_Details = Load_Configuration()
+        Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+        Limit = General.Get_Limit(kwargs)
+        Query_List = General.Convert_to_List(Query_List)
 
-    else:
-        Limit = 10
+        for Query in Query_List:
 
-    Directory = General.Make_Directory(Plugin_Name.lower())
+            try:
+                Reddit_Connection = praw.Reddit(client_id=Reddit_Details[0], client_secret=Reddit_Details[1], user_agent=Reddit_Details[2], username=Reddit_Details[3], password=Reddit_Details[4])
+                All_Subreddits = Reddit_Connection.subreddit(Reddit_Details[5])
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+                for Subreddit in All_Subreddits.search(Query, limit=Limit): # Limit, subreddit and search to be controlled by the web app.
+                    Results.append(Subreddit.url)
 
-    Log_File = General.Logging(Directory, Plugin_Name.lower())
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+            except:
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
 
-    Reddit_Details = Load_Configuration()
-    Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+            Output_Connections = General.Connections(Query, Plugin_Name, "reddit.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
-    if not Cached_Data:
-        Cached_Data = []
+            for Result in Results:
 
-    Query_List = General.Convert_to_List(Query_List)
+                if Result not in Cached_Data and Result not in Data_to_Cache:
 
-    for Query in Query_List:
+                    try:
+                        Reddit_Regex = re.search("https\:\/\/www\.reddit\.com\/r\/(\w+)\/comments\/(\w+)\/([\w\d]+)\/", Result[0])
 
-        try:
-            Reddit_Connection = praw.Reddit(client_id=Reddit_Details[0], client_secret=Reddit_Details[1], user_agent=Reddit_Details[2], username=Reddit_Details[3], password=Reddit_Details[4])
-            All_Subreddits = Reddit_Connection.subreddit(Reddit_Details[5])
+                        if Reddit_Regex:
+                            Reddit_Response = requests.get(Result, headers=headers).text
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Reddit_Response, Reddit_Regex.group(3), The_File_Extension)
 
-            for Subreddit in All_Subreddits.search(Query, limit=Limit): # Limit, subreddit and search to be controlled by the web app.
-                Results.append(Subreddit.url)
+                            if Output_file:
+                                Output_Connections.Output([Output_file], Result, General.Get_Title(Result[0]), Plugin_Name.lower())
+                                Data_to_Cache.append(Result[0])
 
-        except:
-            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
+                            else:
+                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
-        Output_Connections = General.Connections(Query, Plugin_Name, "reddit.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                    except:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create file.")
 
-        for Result in Results:
+        if Cached_Data:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
-            if Result not in Cached_Data and Result not in Data_to_Cache:
+        else:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
 
-                try:
-                    Reddit_Regex = re.search("https\:\/\/www\.reddit\.com\/r\/(\w+)\/comments\/(\w+)\/([\w\d]+)\/", Result[0])
-
-                    if Reddit_Regex:
-                        Reddit_Response = requests.get(Result, headers=headers).text
-                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Reddit_Response, Reddit_Regex.group(3), The_File_Extension)
-
-                        if Output_file:
-                            Output_Connections.Output([Output_file], Result, General.Get_Title(Result[0]), Plugin_Name.lower())
-
-                except:
-                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create file.")
-
-                Data_to_Cache.append(Result[0])
-
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
-
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")

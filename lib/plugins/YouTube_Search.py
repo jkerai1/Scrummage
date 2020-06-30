@@ -31,66 +31,55 @@ def Load_Configuration():
         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
 def Search(Query_List, Task_ID, **kwargs):
-    Data_to_Cache = []
-    Cached_Data = []
 
-    if kwargs.get('Limit'):
+    try:
+        Data_to_Cache = []
+        Directory = General.Make_Directory(Plugin_Name.lower())
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        Log_File = General.Logging(Directory, Plugin_Name.lower())
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        YouTube_Details = Load_Configuration()
+        Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+        Query_List = General.Convert_to_List(Query_List)
+        Limit = General.Get_Limit(kwargs)
 
-        if int(kwargs["Limit"]) > 0:
-            Limit = int(kwargs["Limit"])
+        for Query in Query_List:
+            YouTube_Handler = discovery.build(YouTube_Details[1], YouTube_Details[2], developerKey=YouTube_Details[0])
+            Search_Response = YouTube_Handler.search().list(
+            q=Query,
+            type='video',
+            location=YouTube_Details[3],
+            locationRadius=YouTube_Details[4],
+            part='id,snippet',
+            maxResults=Limit,
+            ).execute()
+            Main_File = General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
+            Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+
+            for Search_Result in Search_Response.get('items', []):
+                Full_Video_URL = "https://www.youtube.com/watch?v=" + Search_Result['id']['videoId']
+                Search_Video_Response = requests.get(Full_Video_URL).text
+
+                if Full_Video_URL not in Cached_Data and Full_Video_URL not in Data_to_Cache:
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extensions["Query"])
+
+                    if Output_file:
+                        Output_Connections.Output([Main_File, Output_file], Full_Video_URL, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
+                        Data_to_Cache.append(Full_Video_URL)
+
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+        if Cached_Data:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
         else:
-            Limit = 10
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
 
-    else:
-        Limit = 10
-
-    Directory = General.Make_Directory(Plugin_Name.lower())
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    Log_File = General.Logging(Directory, Plugin_Name.lower())
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    YouTube_Details = Load_Configuration()
-    Cached_Data = General.Get_Cache(Directory, Plugin_Name)
-
-    if not Cached_Data:
-        Cached_Data = []
-
-    Query_List = General.Convert_to_List(Query_List)
-
-    for Query in Query_List:
-        YouTube_Handler = discovery.build(YouTube_Details[1], YouTube_Details[2], developerKey=YouTube_Details[0])
-        Search_Response = YouTube_Handler.search().list(
-        q=Query,
-        type='video',
-        location=YouTube_Details[3],
-        locationRadius=YouTube_Details[4],
-        part='id,snippet',
-        maxResults=Limit,
-        ).execute()
-        Main_File = General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
-        Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
-
-        for Search_Result in Search_Response.get('items', []):
-            Full_Video_URL = "https://www.youtube.com/watch?v=" + Search_Result['id']['videoId']
-            Search_Video_Response = requests.get(Full_Video_URL).text
-
-            if Full_Video_URL not in Cached_Data and Full_Video_URL not in Data_to_Cache:
-                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extensions["Query"])
-
-                if Main_File and Output_file:
-                    Output_Connections.Output([Main_File, Output_file], Full_Video_URL, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
-
-                Data_to_Cache.append(Full_Video_URL)
-
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
-
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")

@@ -31,101 +31,91 @@ def Load_Configuration():
         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load Twitter details.")
 
 def General_Pull(Handle, Limit, Directory, API, Task_ID):
-    Data_to_Cache = []
-    Cached_Data = []
-    JSON_Response = []
-    Cached_Data = General.Get_Cache(Directory, Plugin_Name)
 
-    if not Cached_Data:
-        Cached_Data = []
+    try:
+        Data_to_Cache = []
+        JSON_Response = []
+        Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+        Latest_Tweets = API.user_timeline(screen_name=Handle, count=Limit)
 
-    Latest_Tweets = API.user_timeline(screen_name=Handle, count=Limit)
+        for Tweet in Latest_Tweets:
+            Link = ""
 
-    for Tweet in Latest_Tweets:
-        Link = ""
+            try:
+                JSON_Response.append({
+                    'id': Tweet.id,
+                    'text': Tweet.text,
+                    'author_name': Tweet.user.screen_name,
+                    'url': Tweet.entities['urls'][0]["expanded_url"]
+                })
+                Link = Tweet.entities['urls'][0]["expanded_url"]
 
-        try:
-            JSON_Response.append({
-                'id': Tweet.id,
-                'text': Tweet.text,
-                'author_name': Tweet.user.screen_name,
-                'url': Tweet.entities['urls'][0]["expanded_url"]
-            })
-            Link = Tweet.entities['urls'][0]["expanded_url"]
+            except:
+                JSON_Response.append({
+                    'id': Tweet.id,
+                    'text': Tweet.text,
+                    'author_name': Tweet.user.screen_name
+                })
 
-        except:
-            JSON_Response.append({
-                'id': Tweet.id,
-                'text': Tweet.text,
-                'author_name': Tweet.user.screen_name
-            })
+        JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
+        Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+        Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, The_File_Extensions["Main"])
 
-    JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
-    Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Data Leakage", Task_ID, Plugin_Name.lower())
-    Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, The_File_Extensions["Main"])
+        for JSON_Item in JSON_Response:
 
-    for JSON_Item in JSON_Response:
+            if 'text' in JSON_Item and 'url' in JSON_Item:
+                Link = JSON_Item['url']
 
-        if 'text' in JSON_Item and 'url' in JSON_Item:
-            Link = JSON_Item['url']
+                if Link not in Cached_Data and Link not in Data_to_Cache:
+                    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - {Link}")
+                    Item_Response = requests.get(Link).text
+                    Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), The_File_Extensions["Query"])
 
-            if Link not in Cached_Data and Link not in Data_to_Cache:
-                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - {Link}")
-                Item_Response = requests.get(Link).text
-                Output_file = General.Create_Query_Results_Output_File(Directory, Handle, Plugin_Name, Item_Response, str(JSON_Item['id']), The_File_Extensions["Query"])
+                    if Output_file:
+                        Output_Connections.Output([Main_File, Output_file], Link, General.Get_Title(Link), Plugin_Name.lower())
+                        Data_to_Cache.append(Link)
 
-                if Main_File and Output_file:
-                    Output_Connections.Output([Main_File, Output_file], Link, General.Get_Title(Link), Plugin_Name.lower())
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Output file not returned.")
 
-                else:
-                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Output file not returned.")
+            else:
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Insufficient parameters provided.")
+
+        if Cached_Data:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
         else:
-            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Insufficient parameters provided.")
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
 
-        Data_to_Cache.append(Link)
-
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
-
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")
 
 def Search(Query_List, Task_ID, **kwargs):
 
-    if kwargs.get('Limit'):
+    try:
+        Directory = General.Make_Directory(Plugin_Name.lower())
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        Log_File = General.Logging(Directory, Plugin_Name.lower())
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        Twitter_Credentials = Load_Configuration()
+        Query_List = General.Convert_to_List(Query_List)
+        Limit = General.Get_Limit(kwargs)
 
-        if int(kwargs["Limit"]) > 0:
-            Limit = int(kwargs["Limit"])
+        for Query in Query_List:
 
-        else:
-            Limit = 10
+            try:
+                Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
+                Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
+                API = tweepy.API(Authentication)
+                General_Pull(Query, Limit, Directory, API, Task_ID)
 
-    else:
-        Limit = 10
+            except:
+                logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
 
-    Directory = General.Make_Directory(Plugin_Name.lower())
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    Log_File = General.Logging(Directory, Plugin_Name.lower())
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    Twitter_Credentials = Load_Configuration()
-    Query_List = General.Convert_to_List(Query_List)
-
-    for Query in Query_List:
-
-        try:
-            Authentication = tweepy.OAuthHandler(Twitter_Credentials[0], Twitter_Credentials[1])
-            Authentication.set_access_token(Twitter_Credentials[2], Twitter_Credentials[3])
-            API = tweepy.API(Authentication)
-            General_Pull(Query, Limit, Directory, API, Task_ID)
-
-        except:
-            logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")

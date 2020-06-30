@@ -30,125 +30,117 @@ def Load_Configuration():
 
 
 def Search(Query_List, Task_ID, Type, **kwargs):
-    Data_to_Cache = []
-    Cached_Data = []
 
-    Directory = General.Make_Directory(Concat_Plugin_Name)
+    try:
+        Data_to_Cache = []
+        Directory = General.Make_Directory(Concat_Plugin_Name)
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        Log_File = General.Logging(Directory, Concat_Plugin_Name)
+        handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+        Query_List = General.Convert_to_List(Query_List)
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+        for Query in Query_List:
 
-    Log_File = General.Logging(Directory, Concat_Plugin_Name)
-    handler = logging.FileHandler(os.path.join(Directory, Log_File), "w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+            try:
 
-    Cached_Data = General.Get_Cache(Directory, Plugin_Name)
+                if Type == "UKBN":
+                    Authorization_Key = Load_Configuration()
 
-    if not Cached_Data:
-        Cached_Data = []
-
-    Query_List = General.Convert_to_List(Query_List)
-
-    for Query in Query_List:
-
-        try:
-
-            if Type == "UKBN":
-                Authorization_Key = Load_Configuration()
-
-                if Authorization_Key:
-                    Authorization_Key = "Basic " + Authorization_Key.decode('ascii')
-                    headers = {"Authorization": Authorization_Key}
-                    Main_URL = 'https://api.companieshouse.gov.uk/company/' + Query
-                    Response = requests.get(Main_URL, headers=headers).text
-                    JSON_Response = json.loads(Response)
-                    Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
-
-                    try:
-                        Query = str(int(Query))
-
-                        if Response and '{"errors":[{"error":"company-profile-not-found","type":"ch:service"}]}' not in Response:
-
-                            if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                                Result_URL = 'https://beta.companieshouse.gov.uk/company/' + str(JSON_Response["company_number"])
-                                Result_Response = requests.get(Result_URL).text
-                                Main_Output_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extensions["Query"])
-
-                                if Main_Output_File and Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
-                                    Output_Connections.Output([Main_Output_File, Output_file], Result_URL, str(JSON_Response["company_name"]), Concat_Plugin_Name)
-                                    Data_to_Cache.append(Main_URL)
-
-                    except:
-                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKBN Search.")
-
-                else:
-                    logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
-
-            elif Type == "UKCN":
-                Authorization_Key = Load_Configuration()
-
-                if Authorization_Key:
-                    Authorization_Key = "Basic " + Authorization_Key.decode('ascii')
-
-                    if kwargs.get('Limit'):
-
-                        if int(kwargs["Limit"]) > 0:
-                            Limit = int(kwargs["Limit"])
-
-                        else:
-                            Limit = 10
-
-                    else:
-                        Limit = 10
-
-                    try:
-                        Main_URL = f'https://api.companieshouse.gov.uk/search/companies?q={Query}&items_per_page={Limit}'
-                        headers = {"Authorization": "Basic SGI5M0V4STRkMDZ2d0NHSzBZTkI5QUxnQ3N3UDNhNEFNMDRHeWtVdzo="}
+                    if Authorization_Key:
+                        Authorization_Key = "Basic " + Authorization_Key.decode('ascii')
+                        headers = {"Authorization": Authorization_Key}
+                        Main_URL = 'https://api.companieshouse.gov.uk/company/' + Query
                         Response = requests.get(Main_URL, headers=headers).text
                         JSON_Response = json.loads(Response)
                         Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
 
                         try:
+                            Query = str(int(Query))
 
-                            if JSON_Response['total_results'] > 0:
-                                General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, '.json')
-                                Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+                            if Response and '{"errors":[{"error":"company-profile-not-found","type":"ch:service"}]}' not in Response:
 
-                                for Item in JSON_Response['items']:
-                                    UKBN_URL = Item['links']['self']
-                                    Full_UKBN_URL = 'https://beta.companieshouse.gov.uk' + str(UKBN_URL)
+                                if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
+                                    Result_URL = 'https://beta.companieshouse.gov.uk/company/' + str(JSON_Response["company_number"])
+                                    Result_Response = requests.get(Result_URL).text
+                                    Main_Output_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extensions["Query"])
 
-                                    if Full_UKBN_URL not in Cached_Data and Full_UKBN_URL not in Data_to_Cache:
-                                        UKCN = Item['title']
-                                        Current_Response = requests.get(Full_UKBN_URL).text
-                                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extensions["Query"])
+                                    if Output_file:
+                                        Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+                                        Output_Connections.Output([Main_Output_File, Output_file], Result_URL, str(JSON_Response["company_name"]), Concat_Plugin_Name)
+                                        Data_to_Cache.append(Main_URL)
 
-                                        if Output_file:
-                                            Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN, Concat_Plugin_Name)
-                                            Data_to_Cache.append(Full_UKBN_URL)
+                                    else:
+                                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
                         except:
-                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Error during UKCN Search, perhaps the rate limit has been exceeded.")
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKBN Search.")
 
-                    except:
-                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKCN Search.")
+                    else:
+                        logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
+
+                elif Type == "UKCN":
+                    Authorization_Key = Load_Configuration()
+
+                    if Authorization_Key:
+                        Authorization_Key = "Basic " + Authorization_Key.decode('ascii')
+                        Limit = General.Get_Limit(kwargs)
+
+                        try:
+                            Main_URL = f'https://api.companieshouse.gov.uk/search/companies?q={Query}&items_per_page={Limit}'
+                            headers = {"Authorization": "Basic SGI5M0V4STRkMDZ2d0NHSzBZTkI5QUxnQ3N3UDNhNEFNMDRHeWtVdzo="}
+                            Response = requests.get(Main_URL, headers=headers).text
+                            JSON_Response = json.loads(Response)
+                            Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
+
+                            try:
+
+                                if JSON_Response['total_results'] > 0:
+                                    General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, '.json')
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+
+                                    for Item in JSON_Response['items']:
+                                        UKBN_URL = Item['links']['self']
+                                        Full_UKBN_URL = 'https://beta.companieshouse.gov.uk' + str(UKBN_URL)
+
+                                        if Full_UKBN_URL not in Cached_Data and Full_UKBN_URL not in Data_to_Cache:
+                                            UKCN = Item['title']
+                                            Current_Response = requests.get(Full_UKBN_URL).text
+                                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extensions["Query"])
+
+                                            if Output_file:
+                                                Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN, Concat_Plugin_Name)
+                                                Data_to_Cache.append(Full_UKBN_URL)
+
+                                            else:
+                                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+                            except:
+                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Error during UKCN Search, perhaps the rate limit has been exceeded.")
+
+                        except:
+                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for UKCN Search.")
+
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
 
                 else:
-                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to retrieve API key.")
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
 
-            else:
-                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid request type.")
+            except:
+                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
 
-        except:
-            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make request.")
+        if Cached_Data:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
-    if Cached_Data:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
+        else:
+            General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
 
-    else:
-        General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "w")
+    except Exception as e:
+        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")
