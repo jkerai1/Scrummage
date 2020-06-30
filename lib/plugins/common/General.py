@@ -9,6 +9,26 @@ Configuration_File = os.path.join('plugins/common/config', 'config.json')
 def Date():
     return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
+def Get_Limit(kwargs):
+
+    try:
+
+        if kwargs.get('Limit'):
+
+            if int(kwargs["Limit"]) > 0:
+                Limit = int(kwargs["Limit"])
+
+            else:
+                Limit = 10
+
+        else:
+            Limit = 10
+
+        return Limit
+
+    except:
+        logging.warning(f"{Date()} General Library - Failed to set limit.")
+
 def Logging(Directory, Plugin_Name):
 
     try:
@@ -40,6 +60,7 @@ def Get_Cache(Directory, Plugin_Name):
 
             else:
                 logging.info(f"{Date()} General Library - No cache file found, caching will not be used for this session.")
+                return []
 
         except:
             logging.warning(f"{Date()} General Library - Failed to read file.")
