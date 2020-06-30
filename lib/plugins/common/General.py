@@ -186,24 +186,32 @@ def Main_File_Create(Directory, Plugin_Name, Output, Query, Main_File_Extension)
                 File_Input = open(Complete_File, "r")
                 Cache_File_Input = File_Input.read()
                 File_Input.close()
-                
-                for Temp_Scrape in Cache_File_Input:
-
-                    if not Temp_Scrape in Cache_File_Input:
-                        Appendable_Output_Data.append(Temp_Scrape)
 
                 if Appendable_Output_Data:
                     logging.info(f"{Date()} General Library - New data has been discovered and will be appended to the existing file.")
-                    Appendable_Output_Data_String = "\n".join(Appendable_Output_Data)
+                    Appendable_Output_Data_String = "\n".join(Cache_File_Input)
                     File_Output = open(Complete_File, "a")
-                    File_Output.write(f"\n{Appendable_Output_Data_String}")
+                    File_Output.write(f"\n{Appendable_Output_Data_String}\n{Output}")
                     File_Output.close()
                     logging.info(f"{Date()} General Library - Main file appended.")
 
                 else:
-                    logging.info(f"{Date()} General Library - No new data has been discovered, no point continuing.")
+                    logging.info(f"{Date()} General Library - No existing data found in file, will overwrite.")
+                    os.remove(Complete_File)
+                    File_Output = open(Complete_File, "w")
+                    File_Output.write(Output)
+                    File_Output.close()
 
             else:
+                prv_i = 0
+                i = 0
+
+                while os.path.exists(Complete_File):
+                    Complete_File = Complete_File.strip(f"-{str(prv_i)}.json")
+                    Complete_File = f"{Complete_File}-{str(i)}.json"
+                    prv_i = i
+                    i += 1
+
                 File_Output = open(Complete_File, "w")
                 File_Output.write(Output)
                 File_Output.close()
