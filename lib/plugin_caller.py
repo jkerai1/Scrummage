@@ -1,12 +1,4 @@
-import threading, logging, plugins.common.Connectors as Connectors, plugins.common.General as General
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler('Plugin_Caller.log', "w")
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+import threading, plugins.common.Connectors as Connectors, plugins.common.General as General
 
 def Starter(Task_ID):
     Connection = Connectors.Load_Main_Database()
