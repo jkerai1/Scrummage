@@ -30,8 +30,7 @@
                                 <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
-                                            <input class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{results[2]}}">
-
+                                            <input onchange="setLimit(this)" id="textarea" class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{results[2]}}">
                                             <datalist id="browsers">
                                                 {% for plugin in Valid_Plugins %}
                                                 <option value="{{plugin}}"></option>
@@ -39,7 +38,7 @@
                                             </datalist>
                                         </dd>
                                         <dd>
-                                            <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
+                                            <input class="field_textarea" id="queryfield" type=text name=query onchange="checkLength()" placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
                                         </dd>
                                         <dd>
                                             <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{results[4]}}">
@@ -48,10 +47,14 @@
                                             <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
                                         </dd>
                                         <dd>
-                                            <input class="field_textarea" type=number name=limit placeholder="Limit" value="{{results[5]}}">
+                                            {% if Without_Limit %}
+                                            <input id="limitfield" style="display: none;" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit" value="{{results[5]}}">
+                                            {% else %}
+                                            <input id="limitfield" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit" value="{{results[5]}}">
+                                            {% endif %}
                                         </dd>
                                     </dl>
-                                    <input style="display: inline-block;" class="button_next" name="next" type=submit value="Update">
+                                    <input style="display: inline-block;" id="submitbutton" class="button_next" name="next" type=submit value="Update">
                                 </form>
                                 <form class="form_prv" action="{{ url_for('return_task', tasktype='edit') }}" method=post autocomplete="off">
                                     <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
@@ -60,6 +63,59 @@
                         </div>
                     </div>
                 </main>
+                <script type="text/javascript">
+                    var Valid_Plugins = {{Valid_Plugins | safe}};
+                    var Plugins_without_Limit = {{Plugins_without_Limit | safe}};
+
+                    function setLimit(element) {
+                        checkLength();
+                        if (Plugins_without_Limit.includes(element.value) == false) {
+                            if (Valid_Plugins.includes(element.value) == true) {
+                                document.getElementById("limitfield").style.display = null;
+                            }
+                        } else {
+                            if (Valid_Plugins.includes(element.value) == true) {
+                                document.getElementById("limitfield").style.display = "none";
+                            }
+                        }
+                    }
+
+                    function checkLength() {
+                        var tasktype = document.getElementById("textarea");
+                        var element = document.getElementById("queryfield");
+                        if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length > 10) {
+                            document.getElementById("submitbutton").disabled = true;
+                            element.value = "";
+                            element.placeholder = "* Query, For this task the query must be 10 characters or less in length. Use commas (,) for multiple queries.";
+                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length <= 10) {
+                            document.getElementById("submitbutton").disabled = false;
+                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
+                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length > 15) {
+                            document.getElementById("submitbutton").disabled = true;
+                            element.value = "";
+                            element.placeholder = "* Query, For this task the query must be 15 characters or less in length. Use commas (,) for multiple queries.";
+                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length <= 15) {
+                            document.getElementById("submitbutton").disabled = false;
+                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
+                        } else {
+                            document.getElementById("submitbutton").disabled = false;
+                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
+                        }
+                    }
+
+                    function checkLimitField() {
+                        var element = document.getElementById("textarea");
+                        if (Plugins_without_Limit.includes(element.value) == false) {
+                            if (Valid_Plugins.includes(element.value) == true) {
+                                document.getElementById("limitfield").style.display = null;
+                            }
+                        } else {
+                            if (Valid_Plugins.includes(element.value) == true) {
+                                document.getElementById("limitfield").style.display = "none";
+                            }
+                        }
+                    }
+                </script>
                 {% else %}
                 <main>
                     <div class="unpredicted_page">
@@ -305,9 +361,9 @@
                             <dl>
                                 <dd>
                                     {% if task_type_field %}
-                                    <input onchange="setLimit(this)" class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
+                                    <input onchange="checkLength() && setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
                                     {% else %}
-                                    <input onchange="setLimit(this)" class="field_textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
+                                    <input onchange="checkLength() && setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
                                     {% endif %}
                                     <datalist id="browsers">
                                         {% for plugin in Valid_Plugins%}
@@ -316,7 +372,7 @@
                                     </datalist>
                                 </dd>
                                 <dd>
-                                    <input class="field_textarea" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
+                                    <input class="field_textarea" onchange="checkLength()" id="queryfield" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
                                 </dd>
                                 <dd>
                                     {% if frequency_field %}
@@ -336,7 +392,7 @@
                                     <input style="display: none;" class="field_textarea" id="limitfield" type=text name=limit placeholder="Limit">
                                 </dd>
                             </dl>
-                            <input style="display: inline-block;" class="button_next" name="next" type=submit value="Finish">
+                            <input id="submitbutton" style="display: inline-block;" class="button_next" name="next" type=submit value="Finish">
                         </form>
                         <form class="form_prv" action="{{ url_for('return_task', tasktype='new') }}" method=post autocomplete="off">
                             <input style="display: inline-block;" class="button_prv" name="return" type=submit value="Return">
@@ -352,11 +408,8 @@
         </main>
         <script type="text/javascript">
             function setLimit(element) {
-                var Valid_Plugins = ["Ahmia Darkweb Search", "Blockchain Bitcoin Address Search", "Blockchain Bitcoin Cash Address Search", "Blockchain Ethereum Address Search", "Blockchain Bitcoin Transaction Search", "Blockchain Bitcoin Cash Transaction Search", "Blockchain Ethereum Transaction Search", "Blockchain Monero Transaction Search", "BSB Search", "Business Search - American Central Index Key", "Business Search - American Company Name", "Business Search - Australian Business Number", "Business Search - Australian Company Name", "Business Search - Canadian Business Number", "Business Search - Canadian Company Name", "Business Search - New Zealand Business Number", "Business Search - New Zealand Company Name", "Business Search - United Kingdom Business Number", "Business Search - United Kingdom Company Name", "Certificate Transparency", "Craigslist Search", "Default Password Search", "DNS Reconnaissance Search", "Domain Fuzzer - All Extensions",
-     "Domain Fuzzer - Punycode (Comprehensive)", "Domain Fuzzer - Punycode (Condensed)", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Ebay Search", "Flickr Search", "Google Search", "Have I Been Pwned - Password Search",
-     "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Account Search", "Instagram Location Search", "Instagram Media Search", "Instagram Tag Search", "Instagram User Search", "iTunes Store Search", "Library Genesis Search", "Phishstats Search", "Google Play Store Search", "Pinterest Board Search", "Pinterest Pin Search", "Reddit Search", "RSS Feed Search", "Torrent Search", "Twitter Scraper", "Vehicle Registration Search", "Vulners Search", "Windows Store Search", "YouTube Search"];
-
-                var Plugins_without_Limit = ["BSB Search", "Blockchain Monero Transaction Search", "Business Search - American Central Index Key", "Business Search - Australian Business Number", "Business Search - Canadian Business Number", "Business Search - New Zealand Business Number", "Business Search - United Kingdom Business Number", "Certificate Transparency", "DNS Reconnaissance Search", "Domain Fuzzer - All Extensions", "Domain Fuzzer - Alpha-Linguistic Character Switcher", "Domain Fuzzer - Global Domain Suffixes", "Domain Fuzzer - Regular Domain Suffixes", "Have I Been Pwned - Email Search", "Have I Been Pwned - Breach Search", "Have I Been Pwned - Password Search", "Instagram Media Search", "Pinterest Pin Search", "Vehicle Registration Search"];
+                var Valid_Plugins = {{Valid_Plugins | safe}};
+                var Plugins_without_Limit = {{Plugins_without_Limit | safe}};
 
                 if (Plugins_without_Limit.includes(element.value) == false) {
                     if (Valid_Plugins.includes(element.value) == true) {
@@ -366,6 +419,29 @@
                     if (Valid_Plugins.includes(element.value) == true) {
                         document.getElementById("limitfield").style.display = "none";
                     }
+                }
+            }
+
+            function checkLength() {
+                var tasktype = document.getElementById("textarea");
+                var element = document.getElementById("queryfield");
+                if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length > 10) {
+                    document.getElementById("submitbutton").disabled = true;
+                    element.value = "";
+                    element.placeholder = "* Query, For this task the query must be 10 characters or less in length. Use commas (,) for multiple queries.";
+                } else if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length <= 10) {
+                    document.getElementById("submitbutton").disabled = false;
+                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
+                } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length > 15) {
+                    document.getElementById("submitbutton").disabled = true;
+                    element.value = "";
+                    element.placeholder = "* Query, For this task the query must be 15 characters or less in length. Use commas (,) for multiple queries.";
+                } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length <= 15) {
+                    document.getElementById("submitbutton").disabled = false;
+                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
+                } else {
+                    document.getElementById("submitbutton").disabled = false;
+                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
                 }
             }
         </script>
