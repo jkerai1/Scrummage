@@ -40,7 +40,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                                 if Output_file:
                                     Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
-                                    Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
+                                    Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL).strip(" | ABN Lookup"), Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
                                 else:
@@ -79,7 +79,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), ACN.replace(' ', '-'), The_File_Extensions["Query"])
 
                                         if Output_file:
-                                            Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, General.Get_Title(Full_ABN_URL), Concat_Plugin_Name)
+                                            Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, General.Get_Title(Full_ABN_URL).strip(" | ABN Lookup"), Concat_Plugin_Name)
                                             Data_to_Cache.append(Full_ABN_URL)
 
                                         else:

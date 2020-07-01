@@ -27,7 +27,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
             try:
 
                 if Type == "CBN":
-                    Main_API_URL = f'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B{Query}%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
+                    Main_API_URL = f'https://searchapi.mrasservice.ca/Search/api/v1/search?fq=keyword:%7B{Query}%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
                     Response = requests.get(Main_API_URL).text
                     JSON_Response = json.loads(Response)
 
@@ -43,17 +43,17 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                                 if Output_file:
                                     Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
-                                    Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
+                                    Output_Connections.Output([Output_file], Main_URL, f"Canadian Business Number {Query}", Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
                                 else:
                                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
                     except:
-                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for ABN Search.")
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Invalid query provided for CBN Search.")
 
                 elif Type == "CCN":
-                    Main_URL = 'https://searchapi.mrasservice.com/Search/api/v1/search?fq=keyword:%7B' + urllib.parse.quote(Query) + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
+                    Main_URL = 'https://searchapi.mrasservice.ca/Search/api/v1/search?fq=keyword:%7B' + urllib.parse.quote(Query) + '%7D+Status_State:Active&lang=en&queryaction=fieldquery&sortfield=Company_Name&sortorder=asc'
                     Response = requests.get(Main_URL).text
                     JSON_Response = json.loads(Response)
                     Indented_JSON_Response = json.dumps(JSON_Response, indent=4, sort_keys=True)
@@ -77,7 +77,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), CCN.replace(' ', '-'), The_File_Extensions["Query"])
 
                                     if Output_file:
-                                        Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, General.Get_Title(Full_ABN_URL), Concat_Plugin_Name)
+                                        Output_Connections.Output([Main_File, Output_file], Full_ABN_URL, f"Canadian Business Number {CBN} for Query {Query}", Concat_Plugin_Name)
                                         Data_to_Cache.append(Full_ABN_URL)
 
                                     else:

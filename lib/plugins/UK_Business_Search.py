@@ -68,12 +68,13 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
                                     Result_URL = 'https://beta.companieshouse.gov.uk/company/' + str(JSON_Response["company_number"])
                                     Result_Response = requests.get(Result_URL).text
+                                    UKCN = str(JSON_Response["company_name"])
                                     Main_Output_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extensions["Query"])
 
                                     if Output_file:
                                         Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
-                                        Output_Connections.Output([Main_Output_File, Output_file], Result_URL, str(JSON_Response["company_name"]), Concat_Plugin_Name)
+                                        Output_Connections.Output([Main_Output_File, Output_file], Result_URL, f"UK Business Number {Query}", Concat_Plugin_Name)
                                         Data_to_Cache.append(Main_URL)
 
                                     else:
@@ -102,12 +103,13 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             try:
 
                                 if JSON_Response['total_results'] > 0:
-                                    General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, '.json')
+                                    General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
                                     Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
 
                                     for Item in JSON_Response['items']:
                                         UKBN_URL = Item['links']['self']
                                         Full_UKBN_URL = 'https://beta.companieshouse.gov.uk' + str(UKBN_URL)
+                                        UKBN = UKBN_URL.strip("/company/")
 
                                         if Full_UKBN_URL not in Cached_Data and Full_UKBN_URL not in Data_to_Cache:
                                             UKCN = Item['title']
@@ -115,7 +117,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), UKCN, The_File_Extensions["Query"])
 
                                             if Output_file:
-                                                Output_Connections.Output(Output_file, Full_UKBN_URL, UKCN, Concat_Plugin_Name)
+                                                Output_Connections.Output([Output_file], Full_UKBN_URL, f"UK Business Number {UKBN} for Query {Query}", Concat_Plugin_Name)
                                                 Data_to_Cache.append(Full_UKBN_URL)
 
                                             else:

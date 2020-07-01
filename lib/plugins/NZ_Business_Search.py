@@ -36,11 +36,11 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             Query = str(int(Query))
 
                             if Main_URL not in Cached_Data and Main_URL not in Data_to_Cache:
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extension)
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, f"new-zealand-business-number-{Query.lower()}", The_File_Extension)
 
                                 if Output_file:
                                     Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
-                                    Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL), Concat_Plugin_Name)
+                                    Output_Connections.Output([Output_file], Main_URL, f"New Zealand Business Number {Query}", Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
                                 else:
@@ -52,10 +52,10 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 elif Type == "NZCN":
 
                     try:
+                        Limit = General.Get_Limit(kwargs)
                         Main_URL = 'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/search?q=' + urllib.parse.quote(Query) + '&entityTypes=ALL&entityStatusGroups=ALL&incorpFrom=&incorpTo=&addressTypes=ALL&addressKeyword=&start=0&limit=' + str(Limit) + '&sf=&sd=&advancedPanel=true&mode=advanced#results'
                         Response = requests.get(Main_URL).text
                         NZCN_Regex = re.search(r".*[a-zA-Z].*", Query)
-                        Limit = General.Get_Limit(kwargs)
 
                         if NZCN_Regex:
                             Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
@@ -72,7 +72,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, str(Current_Response), NZCN.replace(' ', '-'), The_File_Extension)
 
                                         if Output_file:
-                                            Output_Connections.Output([Main_File, Output_file], Full_NZBN_URL, General.Get_Title(Full_NZBN_URL), Concat_Plugin_Name)
+                                            Output_Connections.Output([Main_File, Output_file], Full_NZBN_URL, f"New Zealand Business Number {NZ_ID} for Query {Query}", Concat_Plugin_Name)
                                             Data_to_Cache.append(Full_NZBN_URL)
 
                                         else:
