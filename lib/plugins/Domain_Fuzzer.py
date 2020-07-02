@@ -118,8 +118,8 @@ class Fuzzer:
 
                 if not Comprehensive_Search:
 
-                    if len(Query) > 15:
-                        logging.error(f"{General.Date()} - The length of the provided query: {Query} is greater than 10 characters in length. Condensed punycode domain fuzzing only allows a maximum of 10 characters.")
+                    if len(self.URL_Body) > 15:
+                        logging.error(f"{General.Date()} - {__name__.strip('plugins.')} - The length of the body of the provided query: {Query} is greater than 10 characters in length. Condensed punycode domain fuzzing only allows a maximum of 10 characters.")
                         return None
 
                     else:
@@ -127,8 +127,8 @@ class Fuzzer:
 
                 else:
 
-                    if len(Query) > 10:
-                        logging.error(f"{General.Date()} - The length of the provided query: {Query} is greater than 10 characters in length. Comprehensive punycode domain fuzzing searching only allows a maximum of 10 characters.")
+                    if len(self.URL_Body) > 10:
+                        logging.error(f"{General.Date()} - {__name__.strip('plugins.')} - The length of the body of the provided query: {Query} is greater than 10 characters in length. Comprehensive punycode domain fuzzing searching only allows a maximum of 10 characters.")
                         return None
 
                     else:
