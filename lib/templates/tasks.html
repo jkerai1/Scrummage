@@ -38,7 +38,7 @@
                                             </datalist>
                                         </dd>
                                         <dd>
-                                            <input class="field_textarea" id="queryfield" type=text name=query onchange="checkLength()" placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
+                                            <input class="field_textarea" id="queryfield" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries." value="{{results[1]}}">
                                         </dd>
                                         <dd>
                                             <input class="field_textarea" type=text name=frequency placeholder="Frequency" value="{{results[4]}}">
@@ -68,7 +68,6 @@
                     var Plugins_without_Limit = {{Plugins_without_Limit | safe}};
 
                     function setLimit(element) {
-                        checkLength();
                         if (Plugins_without_Limit.includes(element.value) == false) {
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = null;
@@ -77,29 +76,6 @@
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = "none";
                             }
-                        }
-                    }
-
-                    function checkLength() {
-                        var tasktype = document.getElementById("textarea");
-                        var element = document.getElementById("queryfield");
-                        if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length > 10) {
-                            document.getElementById("submitbutton").disabled = true;
-                            element.value = "";
-                            element.placeholder = "* Query, For this task the query must be 10 characters or less in length. Use commas (,) for multiple queries.";
-                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length <= 10) {
-                            document.getElementById("submitbutton").disabled = false;
-                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
-                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length > 15) {
-                            document.getElementById("submitbutton").disabled = true;
-                            element.value = "";
-                            element.placeholder = "* Query, For this task the query must be 15 characters or less in length. Use commas (,) for multiple queries.";
-                        } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length <= 15) {
-                            document.getElementById("submitbutton").disabled = false;
-                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
-                        } else {
-                            document.getElementById("submitbutton").disabled = false;
-                            element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
                         }
                     }
 
@@ -361,9 +337,9 @@
                             <dl>
                                 <dd>
                                     {% if task_type_field %}
-                                    <input onchange="checkLength() && setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
+                                    <input onchange="setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type" value="{{task_type_field}}">
                                     {% else %}
-                                    <input onchange="checkLength() && setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
+                                    <input onchange="setLimit(this)" class="field_textarea" id="textarea" list="browsers" name=tasktype onkeypress="return false;" placeholder="* Task Type">
                                     {% endif %}
                                     <datalist id="browsers">
                                         {% for plugin in Valid_Plugins%}
@@ -372,7 +348,7 @@
                                     </datalist>
                                 </dd>
                                 <dd>
-                                    <input class="field_textarea" onchange="checkLength()" id="queryfield" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
+                                    <input class="field_textarea" id="queryfield" type=text name=query placeholder="* Query, you can use commas (,) to enter multiple queries.">
                                 </dd>
                                 <dd>
                                     {% if frequency_field %}
@@ -419,29 +395,6 @@
                     if (Valid_Plugins.includes(element.value) == true) {
                         document.getElementById("limitfield").style.display = "none";
                     }
-                }
-            }
-
-            function checkLength() {
-                var tasktype = document.getElementById("textarea");
-                var element = document.getElementById("queryfield");
-                if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length > 10) {
-                    document.getElementById("submitbutton").disabled = true;
-                    element.value = "";
-                    element.placeholder = "* Query, For this task the query must be 10 characters or less in length. Use commas (,) for multiple queries.";
-                } else if (tasktype.value == "Domain Fuzzer - Punycode (Comprehensive)" && element.value.length <= 10) {
-                    document.getElementById("submitbutton").disabled = false;
-                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
-                } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length > 15) {
-                    document.getElementById("submitbutton").disabled = true;
-                    element.value = "";
-                    element.placeholder = "* Query, For this task the query must be 15 characters or less in length. Use commas (,) for multiple queries.";
-                } else if (tasktype.value == "Domain Fuzzer - Punycode (Condensed)" && element.value.length <= 15) {
-                    document.getElementById("submitbutton").disabled = false;
-                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
-                } else {
-                    document.getElementById("submitbutton").disabled = false;
-                    element.placeholder = "* Query, you can use commas (,) to enter multiple queries.";
                 }
             }
         </script>
