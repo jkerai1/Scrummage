@@ -98,7 +98,7 @@ if __name__ == '__main__':
         Cursor = Connection.cursor()
 
     except:
-        app.logger.fatal(f'{General.Date()} Failed to load main database, please make sure the database details are added correctly to the configuration.')
+        app.logger.fatal(f'{General.Date()} Failed to load main database, please make sure the database details are added correctly to the configuration, and the PostgreSQL service is running.')
         sys.exit()
 
     try:
@@ -189,8 +189,19 @@ if __name__ == '__main__':
             if 'authenticated' in dir(self):
 
                 try:
-                    Decoded_Token = jwt.decode(self.API, API_Secret, algorithm='HS256')
-                    return {"Key": self.API, "Message": "Current API is still valid."}
+
+                    if self.API:
+                        Decoded_Token = jwt.decode(self.API, API_Secret, algorithm='HS256')
+                        return {"Key": self.API, "Message": "Current API is still valid."}
+
+                    else:
+                        API_Key = Create_JWT(self)
+                        Cursor.execute('UPDATE users SET api_key = %s, api_generated_time = %s WHERE user_id = %s', (API_Key, General.Date(), self.ID,))
+                        Connection.commit()
+                        Message = f"New API Key generated for user ID {str(self.ID)}."
+                        app.logger.warning(Message)
+                        Create_Event(Message)
+                        return {"Key": API_Key, "Message": Message}
 
                 except jwt.ExpiredSignatureError:
                     API_Key = Create_JWT(self)
@@ -219,7 +230,12 @@ if __name__ == '__main__':
             User_Details = Cursor.fetchone()
 
             if auth_token == User_Details[5]:
-                return {"Token": True, "Admin": User_Details[4], "Message": "Token verification successful."}
+
+                if not User_Details[3]:
+                    return {"Token": True, "Admin": User_Details[4], "Username": User_Details[1], "Message": "Token verification successful."}
+
+                else:
+                    return {"Token": False, "Admin": False, "Message": "Token blocked."}
 
             else:
                 return {"Token": False, "Admin": False, "Message": "Invalid token."}
@@ -401,7 +417,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('index'))
 
-    @app.route('/api/v1/auth', methods=['POST'])
+    @app.route('/api/auth', methods=['POST'])
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_auth():
 
@@ -418,7 +434,7 @@ if __name__ == '__main__':
                         Current_User_API = Current_User_Object.API_registration()
 
                         if "Key" in Current_User_API and "Message" in Current_User_API:
-                            return jsonify({"Message": Current_User_API['Message'], "API Key": Current_User_API['Key']}), 200
+                            return jsonify({"Message": Current_User_API['Message'], "Bearer Token": Current_User_API['Key']}), 200
 
                         else:
                             return jsonify({"Error": "Registration Unsuccessful"}), 500
@@ -477,21 +493,21 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('tasks'))
 
-    @app.route('/api/v1/verify_output', methods=['POST'])
+    @app.route('/api/tasks/output/options/verify')
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_verify_output():
 
         try:
 
             if 'Authorization' in request.headers:
-                Auth_Token = request.headers['Authorization'].strip("Bearer ").strip("bearer ")
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
                 Authentication_Verified = API_verification(Auth_Token)
 
                 if Authentication_Verified["Token"]:
 
                     if Authentication_Verified["Admin"]:
 
-                        if request.method == 'POST':
+                        if request.method == 'GET':
                             CSV = Connectors.Load_CSV_Configuration()
                             DD = Connectors.Load_Defect_Dojo_Configuration()
                             DOCX = Connectors.Load_DOCX_Configuration()
@@ -568,6 +584,129 @@ if __name__ == '__main__':
 
         except Exception as e:
             app.logger.error(e)
+
+    @app.route('/api/result/screenshot/<resultid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_results_screenshot(resultid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            def grab_screenshot(screenshot_id, user, Chrome_Config):
+                                Cursor.execute('SELECT link FROM results WHERE result_id = %s', (screenshot_id,))
+                                result = Cursor.fetchone()
+                                Cursor.execute('SELECT screenshot_url FROM results WHERE result_id = %s', (screenshot_id,))
+                                SS_URL = Cursor.fetchone()
+                                Cursor.execute('SELECT screenshot_requested FROM results WHERE result_id = %s', (screenshot_id,))
+                                SS_Req = Cursor.fetchone()
+                                Message = f"Screenshot requested for result number {str(screenshot_id)} by {user}."
+                                app.logger.warning(Message)
+                                Create_Event(Message)
+                                Cursor.execute('UPDATE results SET screenshot_requested = %s WHERE result_id = %s', (True, screenshot_id,))
+                                Connection.commit()
+
+                                if any(String in result[0] for String in Bad_Link_Strings):
+                                    return redirect(url_for('results'))
+
+                                screenshot_file = result[0].replace("http://", "")
+                                screenshot_file = screenshot_file.replace("https://", "")
+
+                                if screenshot_file.endswith('/'):
+                                    screenshot_file = screenshot_file[:-1]
+
+                                if '?' in screenshot_file:
+                                    screenshot_file_list = screenshot_file.split('?')
+                                    screenshot_file = screenshot_file_list[0]
+
+                                for replaceable_item in ['/', '?', '#', '&', '%', '$', '@', '*', '=']:
+                                    screenshot_file = screenshot_file.replace(replaceable_item, '-')
+
+                                CHROME_PATH = Chrome_Config[0]
+                                CHROMEDRIVER_PATH = Chrome_Config[1]
+                                screenshot_file = f"{screenshot_file}.png"
+                                chrome_options = Options()
+                                chrome_options.add_argument("--headless")
+                                chrome_options.binary_location = CHROME_PATH
+
+                                try:
+                                    driver = webdriver.Chrome(
+                                        executable_path=CHROMEDRIVER_PATH,
+                                        options=chrome_options
+                                    )
+
+                                except Exception as e:
+
+                                    if "session not created" in str(e):
+                                        e = str(e).strip('\n')
+                                        Message = f"Screenshot request terminated for result number {str(screenshot_id)} by application, please refer to the log."
+                                        Message_E = e.replace("Message: session not created: ", "")
+                                        Message_E = Message_E.replace("This version of", "The installed version of")
+                                        app.logger.warning(f"Screenshot Request Error: {Message_E}.")
+                                        app.logger.warning(f"Kindly replace the Chrome Web Driver, located at {Chrome_Config[1]}, with the latest one from http://chromedriver.chromium.org/downloads that matches the version of Chrome installed on your system.")
+                                        Create_Event(Message)
+                                        Cursor.execute('UPDATE results SET screenshot_requested = %s WHERE result_id = %s', (False, screenshot_id,))
+                                        Connection.commit()
+                                    
+                                    return 0
+
+                                driver.implicitly_wait(5)
+                                driver.get(result[0])
+                                total_height = driver.execute_script("return document.body.scrollHeight")
+                                driver.set_window_size(1920, total_height)
+                                driver.save_screenshot(f"static/protected/screenshots/{screenshot_file}")
+                                driver.close()
+                                Cursor.execute('UPDATE results SET screenshot_url = %s WHERE result_id = %s', (screenshot_file, screenshot_id,))
+                                Connection.commit()
+
+                            ss_id = int(resultid)
+                            Chrome_Config = Connectors.Load_Chrome_Configuration()
+
+                            if all(os.path.exists(Config) for Config in Chrome_Config):
+                                Cursor.execute('SELECT screenshot_url FROM results WHERE result_id = %s', (screenshot_id,))
+                                SS_URL = Cursor.fetchone()
+                                Cursor.execute('SELECT screenshot_requested FROM results WHERE result_id = %s', (screenshot_id,))
+                                SS_Req = Cursor.fetchone()
+
+                                if not SS_URL[0] and not SS_Req[0]:
+                                    Thread_1 = threading.Thread(target=grab_screenshot, args=(ss_id, Authentication_Verified["Username"], Chrome_Config))
+                                    Thread_1.start()
+                                    return jsonify({"Message": f"Successfully requested screenshot for {str(ss_id)}."}), 200
+
+                                else:
+                                    jsonify({"Error": f"Screenshot already requested for result id {str(ss_id)}."})
+
+                            else:
+                                return jsonify({"Error": "Screenshot request terminated. Google Chrome and/or Chrome Driver have either not been installed or configured properly."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/results/screenshot/<resultid>', methods=['POST'])
     def screenshot(resultid):
@@ -773,7 +912,7 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.error(e)
 
-    @app.route('/api/v1/dashboard', methods=['POST'])
+    @app.route('/api/dashboard', methods=['GET'])
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_dashboard():
 
@@ -887,7 +1026,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('events'))
 
-    @app.route('/api/v1/event_details', methods=['POST'])
+    @app.route('/api/events')
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_event_details():
 
@@ -898,13 +1037,120 @@ if __name__ == '__main__':
                 Authentication_Verified = API_verification(Auth_Token)
 
                 if Authentication_Verified.get("Token"):
-                    data = {}
-                    Cursor.execute('SELECT * FROM events ORDER BY event_id DESC LIMIT 100')
 
-                    for Event in Cursor.fetchall():
-                        data[Event[0]] = [{"Description": Event[1], "Created Timestamp": Event[2]}]
+                    if request.method == 'GET':
 
-                    return jsonify(data), 200
+                        if request.is_json:
+                            Content = request.get_json()
+                            data = {}
+                            Safe_Content = {}
+
+                            for Item in ["ID", "Description", "Created At"]:
+
+                                if Item in Content:
+
+                                    if any(char in Item for char in Bad_Characters):
+                                        return jsonify({"Error": f"Bad characters detected in the {Item} field."}), 500
+
+                                    if Item == "ID":
+
+                                        if type(Content[Item]) != int:
+                                            return jsonify({"Error": f"The ID provided is not an integer."}), 500
+
+                                        Safe_Content["event_id"] = Content[Item]
+
+                                    elif " " in Item:
+                                        Safe_Content[Item.lower().replace(" ", "_")] = Content[Item]
+
+                                    else:
+                                        Safe_Content[Item.lower()] = Content[Item]
+
+                            if len(Safe_Content) > 1:
+                                Select_Query = "SELECT * FROM events WHERE "
+
+                                for Item_Key, Item_Value in sorted(Safe_Content.items()):
+                                    Select_Query += f"{Item_Key} = '{Item_Value}'"
+
+                                    if Item_Key != sorted(Safe_Content.keys())[-1]:
+                                        Select_Query += " and "
+
+                                    else:
+                                        Select_Query += ";"
+
+                                Cursor.execute(Select_Query)
+
+                            elif len(Safe_Content) == 1:
+                                Key = list(Safe_Content.keys())[0]
+                                Val = list(Safe_Content.values())[0]
+                                Cursor.execute(f"SELECT * FROM events WHERE {Key} = '{Val}';")
+
+                            else:
+                                return jsonify({"Error": "No valid fields found in request."}), 500
+
+                            for Event in Cursor.fetchall():
+                                data[Event[0]] = [{"Description": Event[1], "Created Timestamp": Event[2]}]
+
+                            return jsonify(data), 200
+
+                        else:
+                            data = {}
+                            Cursor.execute('SELECT * FROM events ORDER BY event_id DESC LIMIT 100')
+
+                            for Event in Cursor.fetchall():
+                                data[Event[0]] = [{"Description": Event[1], "Created Timestamp": Event[2]}]
+
+                            return jsonify(data), 200
+
+                    else:
+                        return jsonify({"Error": "Method not allowed."}), 500
+
+                else:
+
+                    if Authentication_Verified.get("Message"):
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except:
+            return jsonify({"Error": "Unknown Exception Occurred."}), 500
+
+    @app.route('/api/endpoints')
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_endpoints():
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified.get("Token"):
+
+                    if request.method == 'GET':
+
+                        if Authentication_Verified["Admin"]:
+                            Auth_Endpoint = {'POST': {"Obtain API Key": {"Endpoint": "/api/auth", "Fields": {"Username": {"Attributes": {"Required": True, "Type": "String"}}, "Password": {"Attributes": {"Required": True, "Type": "String"}}}}}}
+                            Dashboard_Endpoints = {"GET": {"Retrive dashboard statistics": "api/dashboard"}}
+                            Result_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/results", "Optional Search Filters": {"ID": "Integer", "Associated Task ID": "Integer", "Title": "String", "Plugin": "String", "Domain": "String", "Link": "String", "Screenshot URL": "String", "Status": "String", "Output Files": "String", "Result Type": "String", "Screenshot Requested": "String", "Created At": "String - Timestamp", "Updated At": "String - Timestamp"}}}, "POST": {"Create a new manual result": {"Endpoint": "/api/result/new", "Fields": {"Name": {"Attributes": {"Required": True, "Type": "String"}}, "URL": {"Attributes": {"Required": True, "Type": "String"}}, "Type": {"Attributes": {"Required": True, "Type": "String"}}}}, "Delete a result": "/api/result/delete/<result_id>", "Re-open a result": "/api/result/changestatus/open/<result_id>", "Label a result as under inspection": "/api/result/changestatus/inspect/<result_id>", "Label a result as under review": "/api/result/changestatus/review/<result_id>", "Close a result": "/api/result/changestatus/close/<result_id>"}}
+                            Task_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/tasks", "Optional Search Filters": {"ID": "Integer", "Query": "String", "Plugin": "String", "Description": "String", "Frequency": "String - Cronjob", "Limit": "Integer", "Status": "String", "Created At": "String - Timestamp", "Updated At": "String - Timestamp"}}, "Show which output options are enabled for receiving task results": "/api/tasks/output/options/verify"}, "POST": {"Create a new task": {"Endpoint": "/api/task/new", "Fields": {"Task Type": {"Required": True, "Type": "String"}, "Query": {"Required": True, "Type": "String"}, "Frequency": {"Required": False, "Type": "String - Cronjob"}, "Description": {"Required": False, "Type": "String"}, "Limit": {"Required": False, "Type": "Integer"}}}, "Edit a task": {"Endpoint": "/api/task/edit/<task_id>", "Fields": {"Task Type": {"Required": True, "Type": "String"}, "Query": {"Required": True, "Type": "String"}, "Frequency": {"Required": False, "Type": "String - Cronjob"}, "Description": {"Required": False, "Type": "String"}, "Limit": {"Required": False, "Type": "Integer"}}}, "Run a task": "/api/task/run/<task_id>", "Duplicate a task": "/api/task/duplicate/<task_id>", "Delete a task": "/api/task/delete/<task_id>"}}
+                            Event_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/events", "Optional Search Filters": {"ID": "Integer", "Description": "String", "Created At": "String - Timestamp"}}}}
+                            Account_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/accounts", "Optional Search Filters": {"ID": "Integer", "Username": "String", "Blocked": "Boolean", "Administrative Rights": "Boolean"}}}, "POST": {"Create new account": {"Endpoint": "/api/account/new", "Fields": {"Username": {"Attributes": {"Required": True, "Type": "String"}}, "Password": {"Attributes": {"Required": True, "Type": "String"}}, "Password Retype": {"Attributes": {"Required": True, "Type": "String"}}}}, "Delete account": "/api/account/delete/<account_id>", "Disable account": "/api/account/disable/<account_id>", "Enable account": "/api/account/enable/<account_id>", "Give account administrative rights": "/api/account/promote/<account_id>", "Strip account of administrative rights": "/api/account/demote/<account_id>", "Change any user's password": {"Endpoint": "/api/account/password/change/<account_id>", "Fields": {"Password": {"Attributes": {"Required": True, "Type": "String"}}, "Password Retype": {"Attributes": {"Required": True, "Type": "String"}}}}}}
+                            return jsonify({"Endpoints": {"API": {"GET": {"Endpoint Checking": "/api/endpoints"}}, "Authentication": Auth_Endpoint, "Dashboard": Dashboard_Endpoints, "Tasks": Task_Endpoints, "Results": Result_Endpoints, "Events": Event_Endpoints, "User Management": Account_Endpoints}}), 200
+
+                        else:
+                            Auth_Endpoint = {'POST': {"Obtain API Key": {"Endpoint": "/api/auth", "Fields": {"Username": {"Attributes": {"Required": True, "Type": "String"}}, "Password": {"Attributes": {"Required": True, "Type": "String"}}}}}}
+                            Dashboard_Endpoints = {"GET": {"Retrive dashboard statistics": "api/dashboard"}}
+                            Result_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/results", "Optional Search Filters": {"ID": "Integer", "Associated Task ID": "Integer", "Title": "String", "Plugin": "String", "Domain": "String", "Link": "String", "Screenshot URL": "String", "Status": "String", "Output Files": "String", "Result Type": "String", "Screenshot Requested": "String", "Created At": "String - Timestamp", "Updated At": "String - Timestamp"}}}}
+                            Task_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/tasks", "Optional Search Filters": {"ID": "Integer", "Query": "String", "Plugin": "String", "Description": "String", "Frequency": "String - Cronjob", "Limit": "Integer", "Status": "String", "Created At": "String - Timestamp", "Updated At": "String - Timestamp"}}}}
+                            Event_Endpoints = {"GET": {"Retrieve account data": {"Endpoint": "/api/events", "Optional Search Filters": {"ID": "Integer", "Description": "String", "Created At": "String - Timestamp"}}}}
+                            return jsonify({"Endpoints": {"API": {"GET": {"Endpoint Checking": "/api/endpoints"}}, "Authentication": Auth_Endpoint, "Dashboard": Dashboard_Endpoints, "Tasks": Task_Endpoints, "Results": Result_Endpoints, "Events": Event_Endpoints}}), 200
+                                       
+                    else:
+                        return jsonify({"Error": "Method not allowed."}), 500
 
                 else:
 
@@ -944,6 +1190,81 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.error(e)
             return redirect(url_for('tasks'))
+
+    @app.route('/api/task/duplicate/<taskid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_tasks_duplicate(taskid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            dup_id = int(dup_id)
+                            Cursor.execute("SELECT * FROM tasks WHERE task_id = %s", (dup_id,))
+                            result = Cursor.fetchone()
+
+                            if result:
+                                Current_Timestamp = General.Date() # Variable set to create consistency in timestamps across two seperate database queries.
+                                Cursor.execute('INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', (result[1], result[2], result[3], result[4], str(result[5]), "Stopped", str(Current_Timestamp), str(Current_Timestamp)))
+                                Connection.commit()
+
+                                if result[4]:
+                                    time.sleep(1)
+                                    Cursor.execute("SELECT * FROM tasks WHERE query = %s AND plugin = %s AND description = %s AND frequency = %s AND task_limit = %s AND status = %s AND created_at = %s AND updated_at = %s;", (result[1], result[2], result[3], result[4], str(result[5]), "Stopped", str(Current_Timestamp), str(Current_Timestamp),))
+                                    result = Cursor.fetchone()
+                                    task_id = result[0]
+                                    Cron_Command = f'/usr/bin/python3 {File_Path}/plugin_caller.py -t {str(task_id)}'
+
+                                    try:
+                                        my_cron = CronTab(user=getpass.getuser())
+                                        job = my_cron.new(command=Cron_Command)
+                                        job.setall(result[4])
+                                        my_cron.write()
+
+                                    except Exception as e:
+                                        Cursor.execute('UPDATE tasks SET frequency = %s WHERE task_id = %s', ("", task_id,))
+                                        Connection.commit()
+                                        return jsonify({"Error": f"Failed to create cronjob. Task was still created.", "Attempted Cronjob": Cron_Command}), 500
+
+                                    User = Authentication_Verified["Username"]
+                                    Message = f"Task ID {str(dup_id)} duplicated by {User}."
+                                    app.logger.warning(Message)
+                                    Create_Event(Message)
+                                    return jsonify({"Message": "Successfully duplicated task.", "Provided Task ID": dup_id, "New Task ID": task_id}), 200
+
+                                else:
+                                    return jsonify({"Error": "Unable to retrieve database value."}), 500
+
+                            else:
+                                return jsonify({"Error": f"Unable to find provided task id {str(dup_id)}."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/tasks/duplicate/<taskid>', methods=['POST'])
     def duplicate_task(taskid):
@@ -1047,6 +1368,69 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('tasks'))
 
+    @app.route('/api/task/delete/<taskid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_tasks_delete(taskid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            del_id = int(taskid)
+                            Cursor.execute("SELECT frequency FROM tasks WHERE task_id = %s", (del_id,))
+                            result = Cursor.fetchone()
+
+                            if result:
+                                Cron_Command = f'/usr/bin/python3 {File_Path}/plugin_caller.py -t {str(del_id)}'
+
+                                try:
+                                    my_cron = CronTab(user=getpass.getuser())
+
+                                    for job in my_cron:
+
+                                        if job.command == Cron_Command:
+                                            my_cron.remove(job)
+                                            my_cron.write()
+
+                                except:
+                                    return jsonify({"Error": f"Failed to remove old cronjob. No changes made to task.", "Attempted Cronjob": Cron_Command}), 500
+
+                            Cursor.execute("DELETE FROM tasks WHERE task_id = %s;", (del_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"Task ID {str(del_id)} deleted by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully deleted task id {str(del_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/tasks/delete/<taskid>', methods=['POST'])
     def delete_task(taskid):
 
@@ -1111,6 +1495,58 @@ if __name__ == '__main__':
                                    is_admin=session.get('is_admin'), results=results,
                                    error="Invalid value provided. Failed to delete object.")
 
+    @app.route('/api/task/run/<taskid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_tasks_run(taskid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            Plugin_ID = int(taskid)
+                            Cursor.execute("SELECT * FROM tasks WHERE task_id = %s;", (Plugin_ID,))
+                            result = Cursor.fetchone()
+
+                            if result[6] == "Running":
+                                return jsonify({"Error": "Task is already running."}), 500
+
+                            if Output_API_Checker(result[2]) == "Failed":
+                                jsonify({"Error": f"The task type {result[2]} has not been configured. Please update its configuration in the config.json file."}), 500
+
+                            else:
+                                Plugin_to_Call = plugin_caller.Plugin_Caller(Plugin_Name=result[2], Limit=result[5], Query=result[1], Task_ID=Plugin_ID)
+                                plugin_caller_thread = threading.Thread(target=Plugin_to_Call.Call_Plugin)
+                                plugin_caller_thread.start()
+                                return jsonify({"Message": f"Successfully executed task id {str(Plugin_ID)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/tasks/run/<taskid>', methods=['POST'])
     def run_task(taskid):
 
@@ -1154,6 +1590,112 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('tasks'))
 
+    @app.route('/api/task/new', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_tasks_new():
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            if request.is_json:
+                                Content = request.get_json()
+
+                                if all(Items in Content for Items in ["Task Type", "Query"]):
+                                    Frequency = ""
+                                    Description = ""
+                                    Limit = 0
+                                    
+                                    if Content['Task Type'] not in Valid_Plugins:
+                                        return jsonify({"Error": "The task type is not a valid option."}), 500
+
+                                    if any(char in Content['Query'] for char in Bad_Characters):
+                                        return jsonify({"Error": "Potentially dangerous query identified. Please ensure your query does not contain any bad characters."}), 500
+
+                                    if 'Frequency' in Content:
+                                        Frequency_Regex = re.search(r"[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}", Content["Frequency"])
+
+                                        if not Frequency_Regex and not Content["Frequency"] == "":
+                                            return jsonify({"Error": "The task type is not a valid option."}), 500
+
+                                        else:
+                                            Frequency = Content["Frequency"]
+
+                                    if 'Description' in Content:
+                                        Description = html.escape(Content['Description'])
+
+                                    if 'Limit' in Content and Content['Task Type'] not in Plugins_without_Limit:
+                                        
+                                        try:
+                                            Limit = int(Content['Limit'])
+
+                                        except:
+                                            return jsonify({"Error": "Failed to convert limit to an integer."}), 500
+
+                                    Current_Timestamp = General.Date()  # Variable set as it is needed for two different functions and needs to be consistent.
+                                    Cursor.execute('INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', (
+                                    Content["Query"], Content["Task Type"], Description, Frequency, str(Limit), "Stopped", Current_Timestamp, Current_Timestamp,))
+                                    Connection.commit()
+                                    time.sleep(1)
+                                    Cursor.execute("SELECT * FROM tasks WHERE query = %s AND plugin = %s AND description = %s AND frequency = %s AND task_limit = %s AND status = %s AND created_at = %s AND updated_at = %s;", (
+                                    Content["Query"], Content["Task Type"], Description, Frequency, str(Limit), "Stopped", str(Current_Timestamp), str(Current_Timestamp),))
+                                    result = Cursor.fetchone()
+                                    current_task_id = result[0]
+
+                                    if Frequency != "":
+                                        Cron_Command = f'/usr/bin/python3 {File_Path}/plugin_caller.py -t {str(current_task_id)}'
+
+                                        try:
+                                            my_cron = CronTab(user=getpass.getuser())
+                                            job = my_cron.new(command=Cron_Command)
+                                            job.setall(session.get('task_frequency'))
+                                            my_cron.write()
+                                            Message = f"Task ID {(current_task_id)} created by {session.get('user')}."
+                                            app.logger.warning(Message)
+                                            Create_Event(Message)
+
+                                        except:
+                                            Cursor.execute('UPDATE tasks SET frequency = %s WHERE task_id = %s', ("", current_task_id,))
+                                            Connection.commit()
+                                            return jsonify({"Error": f"Failed to create cronjob. Task was still created.", "Attempted Cronjob": Cron_Command}), 500
+
+                                    return jsonify({"Message": f"Successfully created task id {str(current_task_id)}"}), 200
+
+                                else:
+                                    return jsonify({"Error": "Missing one or more required fields."}), 500
+
+                            else:
+                                return jsonify({"Error": "Request is not in JSON format."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/tasks/new', methods=['POST'])
     def new_task():
 
@@ -1171,35 +1713,32 @@ if __name__ == '__main__':
 
                 elif session.get('form_step') == 1:
 
-                    if request.form.get('tasktype') and request.form.get('tasktype') in Valid_Plugins:
-
-                        if 'frequency' in request.form:
-                            session['task_frequency'] = request.form['frequency']
-                            task_frequency_regex = re.search(
-                                r"[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}",
-                                session.get('task_frequency'))
-
-                            if not task_frequency_regex and not session.get('task_frequency') == "":
-                                return render_template('tasks.html', username=session.get('user'),
-                                                       form_step=session.get('form_step'),
-                                                       form_type=session.get('form_type'),
-                                                       is_admin=session.get('is_admin'), new_task=True,
-                                                       Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
-                                                       error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* */5 * * *\"")
-
-                        if 'description' in request.form:
-                            session['task_description'] = html.escape(request.form['description'])
-
-                        session['form_type'] = request.form['tasktype']
-
-
-                    else:
+                    if request.form.get('tasktype') and request.form.get('tasktype') not in Valid_Plugins:
                         return render_template('tasks.html', username=session.get('user'),
                                                form_type=session.get('form_type'),
                                                new_task=True, Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
                                                is_admin=session.get('is_admin'),
                                                form_step=session.get('form_step'),
                                                error="Invalid task type, please select an option from the provided list for the Task Type field.")
+
+                    if 'frequency' in request.form:
+                        session['task_frequency'] = request.form['frequency']
+                        task_frequency_regex = re.search(
+                            r"[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}",
+                            session.get('task_frequency'))
+
+                        if not task_frequency_regex and not session.get('task_frequency') == "":
+                            return render_template('tasks.html', username=session.get('user'),
+                                                   form_step=session.get('form_step'),
+                                                   form_type=session.get('form_type'),
+                                                   is_admin=session.get('is_admin'), new_task=True,
+                                                   Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
+                                                   error="Invalid frequency, please provide a valid frequency in the same way you would set up a cronjob or leave the field blank. i.e. \"* */5 * * *\"")
+
+                    if 'description' in request.form:
+                        session['task_description'] = html.escape(request.form['description'])
+
+                    session['form_type'] = request.form['tasktype']                        
 
                     if 'query' in request.form:
 
@@ -1209,10 +1748,8 @@ if __name__ == '__main__':
 
                             if request.form.get('limit') and session.get('form_type') not in Plugins_without_Limit:
 
-                                for char in session.get('task_query'):
-
-                                    if char in Bad_Characters:
-                                        return render_template('tasks.html', username=session.get('user'),
+                                if any(char in session.get('task_query') for char in Bad_Characters):
+                                    return render_template('tasks.html', username=session.get('user'),
                                                                form_type=session.get('form_type'),
                                                                form_step=session.get('form_step'), Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
                                                                is_admin=session.get('is_admin'), new_task=True, error="Invalid query specified, please provide a valid query with no special characters.")
@@ -1228,26 +1765,11 @@ if __name__ == '__main__':
 
                             else:
 
-                                if session.get('form_type') not in Plugins_without_Limit:
-
-                                    for char in session.get('task_query'):
-
-                                        if char in Bad_Characters:
-                                            return render_template('tasks.html', username=session.get('user'),
-                                                                   form_type=session.get('form_type'),
-                                                                   form_step=session.get('form_step'), Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
-                                                                   is_admin=session.get('is_admin'), new_task=True, error="Invalid query specified, please provide a valid query with no special characters.")
-
-                                else:
-
-                                    for char in session.get('task_query'):
-
-                                        if char in Bad_Characters:
-                                            return render_template('tasks.html', username=session.get('user'),
-                                                                   form_type=session.get('form_type'),
-                                                                   form_step=session.get('form_step'), Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
-                                                                   is_admin=session.get('is_admin'), new_task=True,
-                                                                   error="Invalid query specified, please provide a valid query with no special characters.")
+                                if any(char in session.get('task_query') for char in Bad_Characters):
+                                    return render_template('tasks.html', username=session.get('user'),
+                                                               form_type=session.get('form_type'),
+                                                               form_step=session.get('form_step'), Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
+                                                               is_admin=session.get('is_admin'), new_task=True, error="Invalid query specified, please provide a valid query with no special characters.")
 
                             Current_Timestamp = General.Date()  # Variable set as it is needed for two different functions and needs to be consistent.
                             Cursor.execute('INSERT INTO tasks (query, plugin, description, frequency, task_limit, status, created_at, updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', (
@@ -1319,6 +1841,158 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('tasks'))
 
+    @app.route('/api/task/edit/<taskid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_tasks_edit(taskid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            try:
+                                current_task_id = int(taskid)
+
+                            except:
+                                return jsonify({"Error": "Failed to convert task id to an integer."}), 500
+
+                            if request.is_json:
+                                Content = request.get_json()
+
+                                if all(Items in Content for Items in ["Task Type", "Query"]):
+                                    Frequency = ""
+                                    Description = ""
+                                    Limit = 0
+                                    
+                                    if Content['Task Type'] not in Valid_Plugins:
+                                        return jsonify({"Error": "The task type is not a valid option."}), 500
+
+                                    if any(char in Content['Query'] for char in Bad_Characters):
+                                        return jsonify({"Error": "Potentially dangerous query identified. Please ensure your query does not contain any bad characters."}), 500
+
+                                    if 'Frequency' in Content:
+                                        Frequency_Regex = re.search(r"[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}\s[\d\/\*\-]{1,6}", Content["Frequency"])
+
+                                        if not Frequency_Regex and Content["Frequency"] != "":
+                                            return jsonify({"Error": "The task type is not a valid option."}), 500
+
+                                        else:
+                                            Update_Cron = False
+                                            Cursor.execute("SELECT frequency FROM tasks WHERE task_id = %s;", (session.get('task_id'),))
+                                            result = Cursor.fetchone()
+                                            Original_Frequency = result[0]
+                                            Frequency = Content['Frequency']
+                                            Cron_Command = f'/usr/bin/python3 {File_Path}/plugin_caller.py -t {current_task_id}'
+
+                                            if Content['Frequency'] != "" and Content['Frequency'] != Original_Frequency:
+                                                Update_Cron = True
+
+                                            elif Content['Frequency'] != "" and Content['Frequency'] == Original_Frequency:
+                                                Update_Cron = False
+
+                                            elif Content['Frequency'] == "" and Original_Frequency == "":
+                                                Remove_Cron = True
+
+                                            elif Content['Frequency'] != "" and Original_Frequency == "":
+                                                Creat_Cron = True
+
+                                            if Remove_Cron:
+
+                                                try:
+                                                    my_cron = CronTab(user=getpass.getuser())
+
+                                                    for job in my_cron:
+
+                                                        if job.command == Cron_Command:
+                                                            my_cron.remove(job)
+                                                            my_cron.write()
+
+                                                except:
+                                                    return jsonify({"Error": f"Failed to create cronjob. No changes made to task.", "Attempted Cronjob": Cron_Command}), 500
+
+                                            if Update_Cron:
+                                                my_cron = CronTab(user=getpass.getuser())
+
+                                                try:
+
+                                                    for job in my_cron:
+
+                                                        if job.command == Cron_Command:
+                                                            my_cron.remove(job)
+                                                            my_cron.write()
+
+                                                except:
+                                                    return jsonify({"Error": f"Failed to remove old cronjob. No changes made to task.", "Attempted Cronjob": Cron_Command}), 500
+
+                                                try:
+                                                    job = my_cron.new(command=Cron_Command)
+                                                    job.setall(Frequency)
+                                                    my_cron.write()
+
+                                                except:
+                                                    return jsonify({"Error": f"Failed to create new cronjob. No changes made to task.", "Attempted Cronjob": Cron_Command}), 500
+
+                                            if Create_Cron:
+
+                                                try:
+                                                    job = my_cron.new(command=Cron_Command)
+                                                    job.setall(Frequency)
+                                                    my_cron.write()
+
+                                                except:
+                                                    return jsonify({"Error": f"Failed to create new cronjob. No changes made to task.", "Attempted Cronjob": Cron_Command}), 500
+                                            
+
+                                    if 'Description' in Content:
+                                        Description = html.escape(Content['Description'])
+
+                                    if 'Limit' in Content and Content['Task Type'] not in Plugins_without_Limit:
+                                        
+                                        try:
+                                            Limit = int(Content['Limit'])
+
+                                        except:
+                                            return jsonify({"Error": "Failed to convert limit to an integer."}), 500
+
+                                    Current_Timestamp = General.Date()  # Variable set as it is needed for two different functions and needs to be consistent.
+                                    Cursor.execute('UPDATE tasks SET query = %s, plugin = %s, description = %s, frequency = %s, task_limit = %s, updated_at = %s WHERE task_id = %s', (Content["Query"], Content["Task Type"], Description, Frequency, str(Limit), Current_Timestamp, current_task_id,))
+                                    Connection.commit()
+                                    return jsonify({"Message": f"Successfully updated task id {str(current_task_id)}"}), 200
+
+                                else:
+                                    return jsonify({"Error": "Missing one or more required fields."}), 500
+
+                            else:
+                                return jsonify({"Error": "Request is not in JSON format."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/tasks/edit/<taskid>', methods=['POST'])
     def edit_task(taskid):
 
@@ -1374,10 +2048,8 @@ if __name__ == '__main__':
 
                             if request.form.get('limit') and session.get('form_type') not in Plugins_without_Limit:
 
-                                for char in session.get('task_query'):
-
-                                    if char in Bad_Characters:
-                                        return render_template('tasks.html', username=session.get('user'),
+                                if any(char in session.get('task_query') for char in Bad_Characters):
+                                    return render_template('tasks.html', username=session.get('user'),
                                                                form_step=session.get('form_step'), edit_task=True, Valid_Plugins=Valid_Plugins, Plugins_without_Limit=Plugins_without_Limit,
                                                                results=results, is_admin=session.get('is_admin'),
                                                                form_type=session.get('form_type'),
@@ -1412,10 +2084,8 @@ if __name__ == '__main__':
                                                            is_admin=session.get('is_admin'),
                                                            error="For the task Domain Fuzzer - Punycode (Comprehensive), the length of the query cannot be longer than 10 characters.")
 
-                                for char in session.get('task_query'):
-
-                                    if char in Bad_Characters:
-                                        return render_template('tasks.html', username=session.get('user'),
+                                if any(char in session.get('task_query') for char in Bad_Characters):
+                                    return render_template('tasks.html', username=session.get('user'),
                                                                form_type=session.get('form_type'),
                                                                form_step=session.get('form_step'), edit_task=True,
                                                                is_admin=session.get('is_admin'),
@@ -1525,7 +2195,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('tasks'))
 
-    @app.route('/api/v1/task_details', methods=['POST'])
+    @app.route('/api/tasks')
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_task_details():
 
@@ -1536,13 +2206,78 @@ if __name__ == '__main__':
                 Authentication_Verified = API_verification(Auth_Token)
 
                 if Authentication_Verified.get("Token"):
-                    data = {}
-                    Cursor.execute('SELECT * FROM tasks ORDER BY task_id DESC LIMIT 1000')
 
-                    for Task in Cursor.fetchall():
-                        data[Task[0]] = [{"Query": Task[1], "Plugin": Task[2], "Description": Task[3], "Frequency": Task[4], "Limit": Task[5], "Status": Task[6], "Created Timestamp": Task[7], "Last Updated Timestamp": Task[8]}]
+                    if request.method == 'GET':
 
-                    return jsonify(data), 200
+                        if request.is_json:
+                            Content = request.get_json()
+                            data = {}
+                            Safe_Content = {}
+
+                            for Item in ["ID", "Query", "Plugin", "Description", "Frequency", "Limit", "Status", "Created At", "Updated At"]:
+
+                                if Item in Content:
+
+                                    if any(char in Item for char in Bad_Characters):
+                                        return jsonify({"Error": f"Bad characters detected in the {Item} field."}), 500
+
+                                    if Item == "ID":
+
+                                        if type(Content[Item]) != int:
+                                            return jsonify({"Error": f"The ID provided is not an integer."}), 500
+
+                                        Safe_Content["task_id"] = Content[Item]
+
+                                    elif Item == "Limit":
+                                        Safe_Content["task_limit"] = Content[Item]
+
+                                    elif Item == "Created At":
+                                        Safe_Content["created_at"] = Content[Item]
+
+                                    elif Item == "Updated At":
+                                        Safe_Content["updated_at"] = Content[Item]
+
+                                    else:
+                                        Safe_Content[Item.lower()] = Content[Item]
+
+                            if len(Safe_Content) > 1:
+                                Select_Query = "SELECT * FROM tasks WHERE "
+
+                                for Item_Key, Item_Value in sorted(Safe_Content.items()):
+                                    Select_Query += f"{Item_Key} = '{Item_Value}'"
+
+                                    if Item_Key != sorted(Safe_Content.keys())[-1]:
+                                        Select_Query += " and "
+
+                                    else:
+                                        Select_Query += ";"
+
+                                Cursor.execute(Select_Query)
+
+                            elif len(Safe_Content) == 1:
+                                Key = list(Safe_Content.keys())[0]
+                                Val = list(Safe_Content.values())[0]
+                                Cursor.execute(f"SELECT * FROM tasks WHERE {Key} = '{Val}';")
+
+                            else:
+                                return jsonify({"Error": "No valid fields found in request."}), 500
+
+                            for Task in Cursor.fetchall():
+                                data[Task[0]] = {"Query": Task[1], "Plugin": Task[2], "Description": Task[3], "Frequency": Task[4], "Limit": int(Task[5]), "Status": Task[6], "Created Timestamp": Task[7], "Last Updated Timestamp": Task[8]}
+
+                            return jsonify(data), 200
+
+                        else:
+                            data = {}
+                            Cursor.execute('SELECT * FROM tasks ORDER BY task_id DESC LIMIT 1000')
+
+                            for Task in Cursor.fetchall():
+                                data[Task[0]] = {"Query": Task[1], "Plugin": Task[2], "Description": Task[3], "Frequency": Task[4], "Limit": int(Task[5]), "Status": Task[6], "Created Timestamp": Task[7], "Last Updated Timestamp": Task[8]}
+
+                            return jsonify(data), 200
+
+                    else:
+                        return jsonify({"Error": "Method not allowed."}), 500
 
                 else:
 
@@ -1579,10 +2314,8 @@ if __name__ == '__main__':
 
                     if name and URL and Type:
 
-                        for char in Bad_Characters:
-
-                            if char in name:
-                                return render_template('results.html', username=session.get('user'),
+                        if any(char in name for char in Bad_Characters):
+                            return render_template('results.html', username=session.get('user'),
                                                        form_step=session.get('form_step'),
                                                        is_admin=session.get('is_admin'),
                                                        error="Bad characters identified in the name field, please remove special characters from the name field.")
@@ -1651,6 +2384,109 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('results'))
 
+    @app.route('/api/result/new', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_results_new():
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            if request.is_json:
+                                Content = request.get_json()
+
+                                if all(Items in Content for Items in ["Name", "URL", "Type"]):
+                                    Name = Content['Name']
+                                    URL = Content['URL']
+                                    Type = Content['Type']
+
+                                    if any(char in Name for char in Bad_Characters):
+                                        return jsonify({"Error": "Bad characters identified in the name field, please remove special characters."}), 500
+
+                                    if not Type in Finding_Types:
+                                        Joint_Finding_Types = ", ".join(Finding_Types)
+                                        return jsonify({"Error": f"Result type is not valid. Please use one of the following result types {Joint_Finding_Types}"}), 500
+
+                                    if type(Name) == list:
+                                        Query_List = Name
+
+                                    else:
+                                        Query_List = General.Convert_to_List(Name)
+
+                                    if type(URL) == list:
+                                        Hosts_List = URL
+
+                                    else:
+                                        Hosts_List = General.Convert_to_List(URL)
+
+                                    if len(Query_List) != len(Hosts_List):
+                                        return jsonify({"Error": "Please provide the same amount of result names as result URLs."}), 500
+
+                                    Iterator_List = []
+                                    i = 0
+
+                                    while i < len(Hosts_List) and len(Query_List):
+                                        URL_Regex = re.search(r"https?:\/\/(www\.)?([a-z0-9\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?)", Hosts_List[i])
+
+                                        if URL_Regex:
+                                            Iterator_List.append(i)
+                                            i += 1
+
+                                        else:
+                                            return jsonify({"Error": "Information supplied to the URL field could not be identified as a URL / URLs."}), 500
+
+                                    for Iterator in Iterator_List:
+                                        URL_Regex = re.search(r"https?:\/\/(www\.)?([a-z0-9\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?)", Hosts_List[Iterator])
+
+                                        try:
+                                            Cursor.execute('INSERT INTO results (task_id, title, status, plugin, domain, link, created_at, updated_at, result_type) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)', (
+                                            0, str(Query_List[Iterator]), "Open", "Manual Entry", str(URL_Regex.group(2)), str(Hosts_List[Iterator]), General.Date(), General.Date(), Type,))
+                                            Connection.commit()
+
+                                        except Exception as e:
+                                            app.logger.error(e)
+
+                                    if len(Query_List) > 1:
+                                        return jsonify({"Message": "Successfully created results."}), 200
+
+                                    else:
+                                        return jsonify({"Message": "Successfully created result."}), 200
+
+                                else:
+                                    return jsonify({"Error": "One or more fields has not been provided."}), 500
+
+                            else:
+                                return jsonify({"Error": "Request is not in JSON format."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/results/delete/<resultid>', methods=['POST'])
     def delete_result(resultid):
 
@@ -1704,6 +2540,68 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('results'))
 
+    @app.route('/api/result/delete/<resultid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_results_delete(resultid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            result_id = int(resultid)
+                            Cursor.execute("SELECT * FROM results WHERE result_id = %s", (result_id,))
+                            Result = Cursor.fetchone()
+
+                            if not Result:
+                                return jsonify({"Error": f"Unable to find result id {str(result_id)}."}), 500
+
+                            if Result[9]:
+                                Screenshot_File = f"{File_Path}/static/protected/screenshots/{Result[9]}"
+
+                                if os.path.exists(Screenshot_File):
+                                    os.remove(Screenshot_File)
+
+                            if Result[10]:
+                                Output_File = f"{File_Path}/{Result[10]}"
+
+                                if os.path.exists(Output_File):
+                                    os.remove(Output_File)
+
+                            Cursor.execute("DELETE FROM results WHERE result_id = %s;", (result_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"Result ID {str(result_id)} deleted by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": "Successfully deleted result."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/results/changestatus/<status>/<resultid>', methods=['POST'])
     def change_result_status(status, resultid):
@@ -1762,6 +2660,66 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('results'))
 
+    @app.route('/api/result/changestatus/<status>/<resultid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_results_changestatus(status, resultid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            result_id = int(resultid)
+                            User = Authentication_Verified["Username"]
+
+                            if status == "open":
+                                Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Open", str(General.Date()), resultid,))
+                                Message = f"Result ID {str(resultid)} closed by {User}."
+
+                            elif status == "close":
+                                Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Closed", str(General.Date()), resultid,))
+                                Message = f"Result ID {str(resultid)} re-opened by {User}."
+
+                            elif status == "inspect":
+                                Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Inspecting", str(General.Date()), resultid,))
+                                Message = f"Result ID {str(resultid)} now under inspection by {User}."
+
+                            elif status == "review":
+                                Cursor.execute('UPDATE results SET status = %s, updated_at = %s WHERE result_id = %s', ("Reviewing", str(General.Date()), resultid,))
+                                Message = f"Result ID {str(resultid)} now under review by {User}."
+
+                            Connection.commit()
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully changed the status for result ID {resultid}."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/results/details/<resultid>', methods=['POST', 'GET'])
     def result_details(resultid):
 
@@ -1810,9 +2768,9 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('results'))
 
-    @app.route('/api/v1/result_details', methods=['POST'])
+    @app.route('/api/results')
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
-    def api_result_details():
+    def api_results_all():
 
         try:
 
@@ -1821,13 +2779,75 @@ if __name__ == '__main__':
                 Authentication_Verified = API_verification(Auth_Token)
 
                 if Authentication_Verified.get("Token"):
-                    data = {}
-                    Cursor.execute('SELECT * FROM results ORDER BY result_id DESC LIMIT 1000')
 
-                    for Result in Cursor.fetchall():
-                        data[Result[0]] = [{"Associated Task ID": Result[1], "Title": Result[2], "Plugin": Result[3], "Status": Result[4], "Domain": Result[5], "Link": Result[6], "Created Timestamp": Result[7], "Last Updated Timestamp": Result[8], "Screenshot Location": Result[9], "Output File Location": Result[10], "Result Type": Result[11], "Screenshot Requested": Result[12]}]
+                    if request.method == 'GET':
 
-                    return jsonify(data), 200
+                        if request.is_json:
+                            Content = request.get_json()
+                            data = {}
+                            Safe_Content = {}
+
+                            for Item in ["ID", "Associated Task ID", "Title", "Plugin", "Domain", "Link", "Screenshot URL", "Status", "Created At", "Updated At", "Output Files", "Result Type", "Screenshot Requested"]:
+
+                                if Item in Content:
+
+                                    if any(char in Item for char in Bad_Characters):
+                                        return jsonify({"Error": f"Bad characters detected in the {Item} field."}), 500
+
+                                    if Item == "ID":
+
+                                        if type(Content[Item]) != int:
+                                            return jsonify({"Error": f"The ID provided is not an integer."}), 500
+
+                                        Safe_Content["result_id"] = Content[Item]
+
+                                    elif Item == "Associated Task ID":
+                                        Safe_Content["task_id"] = Content[Item]
+
+                                    elif " " in Item:
+                                        Safe_Content[Item.lower().replace(" ", "_")] = Content[Item]
+
+                                    else:
+                                        Safe_Content[Item.lower()] = Content[Item]
+
+                            if len(Safe_Content) > 1:
+                                Select_Query = "SELECT * FROM results WHERE "
+
+                                for Item_Key, Item_Value in sorted(Safe_Content.items()):
+                                    Select_Query += f"{Item_Key} = '{Item_Value}'"
+
+                                    if Item_Key != sorted(Safe_Content.keys())[-1]:
+                                        Select_Query += " and "
+
+                                    else:
+                                        Select_Query += ";"
+
+                                Cursor.execute(Select_Query)
+
+                            elif len(Safe_Content) == 1:
+                                Key = list(Safe_Content.keys())[0]
+                                Val = list(Safe_Content.values())[0]
+                                Cursor.execute(f"SELECT * FROM results WHERE {Key} = '{Val}';")
+
+                            else:
+                                return jsonify({"Error": "No valid fields found in request."}), 500
+
+                            for Result in Cursor.fetchall():
+                                data[Result[0]] = {"Associated Task ID": Result[1], "Title": Result[2], "Plugin": Result[3], "Status": Result[4], "Domain": Result[5], "Link": Result[6], "Created Timestamp": Result[7], "Last Updated Timestamp": Result[8], "Screenshot Location": Result[9], "Output File Location": Result[10], "Result Type": Result[11], "Screenshot Requested": Result[12]}
+
+                            return jsonify(data), 200
+
+                        else:
+                            data = {}
+                            Cursor.execute('SELECT * FROM results ORDER BY result_id DESC LIMIT 1000')
+
+                            for Result in Cursor.fetchall():
+                                data[Result[0]] = {"Associated Task ID": Result[1], "Title": Result[2], "Plugin": Result[3], "Status": Result[4], "Domain": Result[5], "Link": Result[6], "Created Timestamp": Result[7], "Last Updated Timestamp": Result[8], "Screenshot Location": Result[9], "Output File Location": Result[10], "Result Type": Result[11], "Screenshot Requested": Result[12]}
+
+                            return jsonify(data), 200
+
+                    else:
+                        return jsonify({"Error": "Method not allowed."}), 500
 
                 else:
 
@@ -1871,6 +2891,90 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('dashboard'))
 
+    @app.route('/api/account/new', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_new():
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            if request.is_json:
+                                Content = request.get_json()
+
+                                if all(Items in Content for Items in ["Username", "Password", "Password Retype", "Administrator"]):
+
+                                    if not Content['Username']:
+                                        return jsonify({"Error": "Please provide a valid username."}), 500
+
+                                    if any(char in Content['Username'] for char in Bad_Characters):
+                                        return jsonify({"Error": "Bad character detected in username."}), 500
+
+                                    Cursor.execute('SELECT * FROM users WHERE username = %s', (request.form.get('Username'),))
+                                    User = Cursor.fetchone()
+
+                                    if User:
+                                        return jsonify({"Error": "Username already exists."}), 500
+
+                                    if Content['Password'] != Content['Password Retype']:
+                                        return jsonify({"Error": "Please make sure the \"Password\" and \"Retype Password\" fields match."}), 500
+
+                                    else:
+
+                                        if not check_security_requirements(Content['Password']):
+                                            return jsonify({"Error": "The supplied password does not meet security complexity requirements."}), 500
+
+                                        else:
+                                            Password = generate_password_hash(Content['Password'])
+                                            User = Authentication_Verified["Username"]
+
+                                            if Content["Administrator"]:
+                                                Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)',(Content['Username'], Password, "False", "True",))
+                                                Message = f"New administrative user {Content['Username']} created by {User}."
+
+                                            else:
+                                                Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)',(Content['Username'], Password, "False", "False",))
+                                                Message = f"New low-privileged user {Content['Username']} created by {User}."
+
+                                            Connection.commit()
+                                            Create_Event(Message)
+                                            return jsonify({"Message": f"Successfully created user {Content['Username']}."}), 200
+
+                                else:
+                                    return jsonify({"Error": "One or more fields has not been provided."}), 500
+
+                            else:
+                                return jsonify({"Error": "Request is not in JSON format."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/account/new', methods=['POST'])
     def new_account():
 
@@ -1895,10 +2999,8 @@ if __name__ == '__main__':
                                                error="Please provide a valid username.", api_key=session.get('api_key'),
                                                current_user_id=session.get('user_id'))
 
-                    for char in Bad_Characters:
-
-                        if char in request.form['Username']:
-                            return render_template('account.html', username=session.get('user'),
+                    if any(char in request.form['Username'] for char in Bad_Characters):
+                        return render_template('account.html', username=session.get('user'),
                                                    form_type=session.get('form_type'),
                                                    form_step=session.get('form_step'), is_admin=session.get('is_admin'),
                                                    results=Cursor.fetchall(),
@@ -1927,10 +3029,8 @@ if __name__ == '__main__':
                                                api_key=session.get('api_key'), current_user_id=session.get('user_id'))
 
                     else:
-                        Password_Security_Requirements_Check = check_security_requirements(
-                            request.form['New_Password'])
 
-                        if Password_Security_Requirements_Check == False:
+                        if not check_security_requirements(request.form['New_Password']):
                             return render_template('account.html', username=session.get('user'),
                                                    form_type=session.get('form_type'),
                                                    form_step=session.get('form_step'), is_admin=session.get('is_admin'),
@@ -1944,32 +3044,24 @@ if __name__ == '__main__':
                                                    current_user_id=session.get('user_id'))
 
                         else:
+                            Password = generate_password_hash(request.form['New_Password'])
 
                             if 'is_new_user_admin' in request.form:
-                                New_User_Is_Admin = "True"
-
-                            else:
-                                New_User_Is_Admin = "False"
-
-                            password = generate_password_hash(request.form['New_Password'])
-                            Cursor.execute(
-                                'INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)',
-                                (request.form['Username'], password, "False", New_User_Is_Admin,))
-                            Connection.commit()
-
-                            if New_User_Is_Admin == "True":
+                                Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (request.form['Username'], Password, "False", "True",))
                                 Message = f"New administrative user created by {session.get('user')}."
 
                             else:
+                                Cursor.execute('INSERT INTO users (username, password, blocked, is_admin) VALUES (%s,%s,%s,%s)', (request.form['Username'], Password, "False", "False",))
                                 Message = f"New low-privileged user created by {session.get('user')}."
 
+                            Connection.commit()
+                            Create_Event(Message)
                             return render_template('account.html', username=session.get('user'),
                                                    form_type=session.get('form_type'),
                                                    form_step=session.get('form_step'), is_admin=session.get('is_admin'),
                                                    results=Cursor.fetchall(), message=Message,
                                                    api_key=session.get('api_key'),
                                                    current_user_id=session.get('user_id'))
-                            Create_Event(Message)
 
                 else:
                     return redirect(url_for('account'))
@@ -1987,6 +3079,82 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('account'))
 
+    @app.route('/api/account/password/change/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_password_change(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+
+                            if request.is_json:
+                                Content = request.get_json()
+
+                                if all(Items in Content for Items in ["Password", "Password Retype"]):
+
+                                    try:
+                                        accountid = int(accountid)
+
+                                    except:
+                                        return jsonify({"Error": "Could not convert the provided account ID to an integer."}), 500
+
+                                    Cursor.execute('SELECT * FROM users WHERE user_id = %s', (accountid,))
+                                    User = Cursor.fetchone()
+
+                                    if User:
+
+                                        if Content['Password'] != Content['Password Retype']:
+                                            return jsonify({"Error": "Please make sure the \"Password\" and \"Retype Password\" fields match."}), 500
+
+                                        else:
+
+                                            if not check_security_requirements(Content['Password']):
+                                                return jsonify({"Error": "The supplied password does not meet security complexity requirements."}), 500
+
+                                            else:
+                                                Password = generate_password_hash(Content['Password'])
+                                                Cursor.execute('UPDATE users SET password = %s WHERE user_id = %s', (Password, accountid,))
+                                                Connection.commit()
+                                                return jsonify({"Message": f"Successfully changed password for user {User[1]}."}), 200
+
+                                    else:
+                                        return jsonify({"Error": f"Could not find any users with the account ID {str(accountid)}"}), 500
+
+                                else:
+                                    return jsonify({"Error": "One or more fields has not been provided."}), 500
+
+                            else:
+                                return jsonify({"Error": "Request is not in JSON format."}), 500
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/account/password/change/<account>', methods=['POST'])
     def change_account_password(account):
 
@@ -1998,9 +3166,8 @@ if __name__ == '__main__':
                     Current_Password = request.form['Current_Password']
                     Cursor.execute('SELECT * FROM users WHERE username = %s', (session.get('user'),))
                     User = Cursor.fetchone()
-                    Current_Password_Check = check_password_hash(User[2], Current_Password)
 
-                    if not Current_Password_Check:
+                    if not check_password_hash(User[2], Current_Password):
                         return render_template('account.html', username=session.get('user'),
                                                form_step=session.get('form_step'), is_admin=session.get('is_admin'),
                                                error="Current Password is incorrect.", api_key=session.get('api_key'),
@@ -2016,9 +3183,8 @@ if __name__ == '__main__':
                                                    current_user_id=account)
 
                         else:
-                            Password_Security_Requirements_Check = check_security_requirements(request.form['New_Password'])
 
-                            if not Password_Security_Requirements_Check:
+                            if not check_security_requirements(request.form['New_Password']):
                                 return render_template('account.html', username=session.get('user'),
                                                        form_step=session.get('form_step'),
                                                        is_admin=session.get('is_admin'), requirement_error=[
@@ -2180,6 +3346,51 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('account'))
 
+    @app.route('/api/account/delete/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_delete(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            user_id = int(accountid)
+                            Cursor.execute("DELETE FROM users WHERE user_id = %s;", (user_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"User ID {str(user_id)} deleted by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully deleted user {str(user_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/account/delete/<accountid>', methods=['POST'])
     def delete_account(accountid):
 
@@ -2217,6 +3428,51 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.error(e)
             return redirect(url_for('account'))
+
+    @app.route('/api/account/disable/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_disable(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            user_id = int(accountid)
+                            Cursor.execute('UPDATE users SET blocked = %s WHERE user_id = %s', ("True", user_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"User ID {str(user_id)} blocked by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully blocked user {str(user_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/account/disable/<accountid>', methods=['POST'])
     def disable_account(accountid):
@@ -2256,6 +3512,51 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('account'))
 
+    @app.route('/api/account/enable/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_enable(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            user_id = int(accountid)
+                            Cursor.execute('UPDATE users SET blocked = %s WHERE user_id = %s', ("False", user_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"User ID {str(user_id)} unblocked by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully unblocked user {str(user_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/account/enable/<accountid>', methods=['POST'])
     def enable_account(accountid):
 
@@ -2294,6 +3595,51 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('account'))
 
+    @app.route('/api/account/demote/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_demote(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            user_id = int(accountid)
+                            Cursor.execute('UPDATE users SET is_admin = %s WHERE user_id = %s', ("False", user_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"Privileges for user ID {str(user_id)} demoted by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully demoted user {str(user_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
+
     @app.route('/account/demote/<accountid>', methods=['POST'])
     def demote_account(accountid):
 
@@ -2331,6 +3677,51 @@ if __name__ == '__main__':
         except Exception as e:
             app.logger.error(e)
             return redirect(url_for('account'))
+
+    @app.route('/api/account/promote/<accountid>', methods=['POST'])
+    @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
+    def api_accounts_promote(accountid):
+
+        try:
+
+            if 'Authorization' in request.headers:
+                Auth_Token = request.headers['Authorization'].replace("Bearer ", "").replace("bearer ", "")
+                Authentication_Verified = API_verification(Auth_Token)
+
+                if Authentication_Verified["Token"]:
+
+                    if Authentication_Verified["Admin"]:
+
+                        if request.method == 'POST':
+                            user_id = int(accountid)
+                            Cursor.execute('UPDATE users SET is_admin = %s WHERE user_id = %s', ("True", user_id,))
+                            Connection.commit()
+                            User = Authentication_Verified["Username"]
+                            Message = f"Privileges for user ID {str(user_id)} promoted by {User}."
+                            app.logger.warning(Message)
+                            Create_Event(Message)
+                            return jsonify({"Message": f"Successfully promoted user {str(user_id)}."}), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
+
+                    else:
+                        return jsonify({"Error": "Insufficient privileges."}), 500
+
+                else:
+
+                    if Authentication_Verified["Message"]:
+                        return jsonify({"Error": Authentication_Verified["Message"]}), 500
+
+                    else:
+                        return jsonify({"Error": "Unauthorised."}), 500
+
+            else:
+                return jsonify({"Error": "Missing Authorization header."}), 500
+
+        except Exception as e:
+            app.logger.error(e)
+            return jsonify({"Error": "Unknown error."}), 500
 
     @app.route('/account/promote/<accountid>', methods=['POST'])
     def promote_account(accountid):
@@ -2395,7 +3786,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('account'))
 
-    @app.route('/api/v1/account_details', methods=['POST'])
+    @app.route('/api/accounts')
     @RateLimiter(max_calls=API_Max_Calls, period=API_Period)
     def api_account_details():
 
@@ -2408,13 +3799,72 @@ if __name__ == '__main__':
                 if Authentication_Verified.get("Token"):
 
                     if Authentication_Verified["Admin"]:
-                        data = {}
-                        Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
 
-                        for User in Cursor.fetchall():
-                            data[User[0]] = [{"Username": User[1], "Blocked": User[3], "Admin": User[4]}]
+                        if request.method == 'GET':
 
-                        return jsonify(data), 200
+                            if request.is_json:
+                                Content = request.get_json()
+                                data = {}
+                                Safe_Content = {}
+
+                                for Item in ["ID", "Username", "Blocked", "Administrative Rights"]:
+
+                                    if Item in Content:
+
+                                        if any(char in Item for char in Bad_Characters):
+                                            return jsonify({"Error": f"Bad characters detected in the {Item} field."}), 500
+
+                                        if Item == "ID":
+
+                                            if type(Content[Item]) != int:
+                                                return jsonify({"Error": f"The ID provided is not an integer."}), 500
+
+                                            Safe_Content["user_id"] = Content[Item]
+
+                                        elif Item == "Administrative Rights":
+                                            Safe_Content["is_admin"] = Content[Item]
+
+                                        else:
+                                            Safe_Content[Item.lower()] = Content[Item]
+
+                                if len(Safe_Content) > 1:
+                                    Select_Query = "SELECT * FROM users WHERE "
+
+                                    for Item_Key, Item_Value in sorted(Safe_Content.items()):
+                                        Select_Query += f"{Item_Key} = '{Item_Value}'"
+
+                                        if Item_Key != sorted(Safe_Content.keys())[-1]:
+                                            Select_Query += " and "
+
+                                        else:
+                                            Select_Query += ";"
+
+                                    Cursor.execute(Select_Query)
+
+                                elif len(Safe_Content) == 1:
+                                    Key = list(Safe_Content.keys())[0]
+                                    Val = list(Safe_Content.values())[0]
+                                    Cursor.execute(f"SELECT * FROM users WHERE {Key} = '{Val}';")
+
+                                else:
+                                    return jsonify({"Error": "No valid fields found in request."}), 500
+
+                                for User in Cursor.fetchall():
+                                    data[User[0]] = [{"Username": User[1], "Blocked": User[3], "Administrative Rights": User[4]}]
+
+                                return jsonify(data), 200
+
+                            else:
+                                data = {}
+                                Cursor.execute('SELECT * FROM users ORDER BY user_id DESC LIMIT 1000')
+
+                                for User in Cursor.fetchall():
+                                    data[User[0]] = [{"Username": User[1], "Blocked": User[3], "Administrative Rights": User[4]}]
+
+                                return jsonify(data), 200
+
+                        else:
+                            return jsonify({"Error": "Method not allowed."}), 500
 
                     else:
                         return jsonify({"Error": "Insufficient privileges."}), 500
