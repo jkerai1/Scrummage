@@ -10,6 +10,8 @@
 - Phishtank plugin removed and replaced with Phishstats (See The Wiki Pages linked below)
 - Divided Punycode Fuzzer into comprehensive search and condensed search (See The Wiki Pages linked below)
 - Better, more accurate results. Results also allow users to access Main Files (Related to all results from the relevant query used to find the result), Individual Files (Related to result), CSV and DOCX Output files (If the functionality is switched on in the configuration file).
+- New API endpoints to manage tasks, results, accounts, etc. Refer to the [Wiki Page](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API)  
+   
 **There is currently a known bug with the Google Play Store plugin.**
 
 Scrummage is an OSINT tool that centralises search functionality from powerful, yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
