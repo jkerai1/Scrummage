@@ -163,7 +163,7 @@ class Fuzzer:
                             if Output_File:
                                 Output_File_List = [Main_File, Output_File]
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
@@ -244,7 +244,7 @@ class Fuzzer:
                             if Output_File:
                                 Output_File_List = [Main_File, Output_File]
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
@@ -325,7 +325,7 @@ class Fuzzer:
                             if Output_File:
                                 Output_File_List = [Main_File, Output_File]
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
@@ -412,7 +412,7 @@ class Fuzzer:
                             if Output_File:
                                 Output_File_List = [Main_File, Output_File]
                                 Output_Connections = General.Connections(Query, Local_Plugin_Name, Current_Domain, "Domain Spoof", self.Task_ID, Local_Plugin_Name.lower())
-                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}")
+                                Output_Connections.Output(Output_File_List, Host[0], f"Domain Spoof for {URL_Domain} - {Current_Domain} : {Host[1]}", Directory_Plugin_Name=self.Concat_Plugin_Name)
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
