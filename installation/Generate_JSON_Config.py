@@ -8,12 +8,8 @@ Arguments = Parser.parse_args()
 
 if Arguments.database and Arguments.username and Arguments.password:
 
-    Bad_Chars = ["\"", "'"]
-
-    for Char in Bad_Chars:
-
-        if Char in Arguments.database or Char in Arguments.username or Char in Arguments.password:
-            sys.exit("[-] Bad character, please remove any quotes from the provided arguments.")
+    if any(Char in Arguments.database or Char in Arguments.username or Char in Arguments.password for Char in ["\"", "'"]):
+        sys.exit("[-] Bad character, please remove any quotes from the provided arguments.")
 
     try:
         API_Secret = secrets.token_hex(32)
