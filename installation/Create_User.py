@@ -21,7 +21,7 @@ def Load_Main_Database():
     try:
         with open('db.json') as JSON_File:
             Configuration_Data = json.load(JSON_File)
-            DB_Info = Configuration_Data['postgresql']:
+            DB_Info = Configuration_Data['postgresql']
             DB_Host = DB_Info['host']
             DB_Port = str(int(DB_Info['port']))
             DB_Username = DB_Info['user']
