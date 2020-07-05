@@ -25,6 +25,18 @@ def Load_Configuration():
     except:
         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to load location details.")
 
+def Convert_to_JSON(Data):
+    Data = str(Data)
+    Flickr_Regex = re.search(r"\[(.+)\]", Data)
+
+    if Flickr_Regex:
+        New_Data = Flickr_Regex.group(1).replace("id=b", "'id': ").replace("title=b", "'title': ").replace("(", "{").replace(")", "}")
+        New_Data = New_Data.replace("Photo", "")
+        New_Data = f"[{New_Data}]"
+        New_Data = eval(New_Data)
+        New_Data = json.dumps(New_Data, indent=4, sort_keys=True)
+        return New_Data
+
 def Search(Query_List, Task_ID, **kwargs):
 
     try:
@@ -57,25 +69,30 @@ def Search(Query_List, Task_ID, **kwargs):
                 try:
                     User = flickr_api.Person.findByEmail(Query)
                     Photos = User.getPhotos()
-                    Main_File = General.Main_File_Create(Directory, Plugin_Name, Photos, Query, The_File_Extensions["Main"])
-                    Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
-                    Current_Step = 0
 
-                    for Photo in Photos:
-                        Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
+                    if Photos:
+                        Main_File = General.Main_File_Create(Directory, Plugin_Name, Convert_to_JSON(Photos), Query, The_File_Extensions["Main"])
+                        Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                        Current_Step = 0
 
-                        if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
-                            Photo_Response = requests.get(Photo_URL, headers=headers).text
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, Photo, The_File_Extensions["Query"])
+                        for Photo in Photos:
+                            Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
 
-                            if Output_file:
-                                Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
-                                Data_to_Cache.append(Photo_URL)
+                            if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
+                                Photo_Response = requests.get(Photo_URL, headers=headers).text
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, Photo, The_File_Extensions["Query"])
 
-                            else:
-                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+                                if Output_file:
+                                    Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
+                                    Data_to_Cache.append(Photo_URL)
 
-                            Current_Step += 1
+                                else:
+                                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+                                Current_Step += 1
+
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - No photos found.")
 
                 except:
                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
@@ -85,24 +102,30 @@ def Search(Query_List, Task_ID, **kwargs):
                 try:
                     User = flickr_api.Person.findByUserName(Query)
                     Photos = User.getPhotos()
-                    Main_File = General.Main_File_Create(Directory, Plugin_Name, Photos, Query, The_File_Extensions["Main"])
-                    Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
-                    Current_Step = 0
 
-                    for Photo in Photos:
-                        Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
+                    if Photos:
+                        Main_File = General.Main_File_Create(Directory, Plugin_Name, Convert_to_JSON(Photos), Query, The_File_Extensions["Main"])
+                        Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                        Current_Step = 0
 
-                        if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
-                            Photo_Response = requests.get(Photo_URL, headers=headers).text
-                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, str(Photo['id']), The_File_Extensions["Query"])
+                        for Photo in Photos:
+                            Photo_URL = f"https://www.flickr.com/photos/{Query}/{Photo['id']}"
 
-                            if Output_file:
-                                Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
-                                Data_to_Cache.append(Photo_URL)
+                            if Photo_URL not in Cached_Data and Photo_URL not in Data_to_Cache and Current_Step < int(Limit):
+                                Photo_Response = requests.get(Photo_URL, headers=headers).text
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Photo_Response, str(Photo['id']), The_File_Extensions["Query"])
+
+                                if Output_file:
+                                    Output_Connections.Output([Main_File, Output_file], Photo_URL, General.Get_Title(Photo_URL), Plugin_Name.lower())
+                                    Data_to_Cache.append(Photo_URL)
+
+                                else:
+                                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
                                 Current_Step += 1
 
-                            else:
-                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+                    else:
+                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - No photos found.")
 
                 except:
                     logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to make API call.")
