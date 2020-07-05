@@ -63,9 +63,6 @@ def Search(Query_List, Task_ID, **kwargs):
 
                             Current_Step += 1
 
-                    else:
-                        logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Query not found.")
-
         if Cached_Data:
             General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")
 
