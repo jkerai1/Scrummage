@@ -126,7 +126,7 @@ class Connections():
         try:
             Complete_Files = "\n".join(Complete_File_List)
 
-            if "Dump_Types" in kwargs:
+            if kwargs.get("Dump_Types"):
                 self.Dump_Types = kwargs["Dump_Types"]
                 Joined_Dump_Types = ", ".join(Dump_Types)
                 self.Title = f"Data for input: {self.Input}, found by Scrummage plugin {self.Plugin_Name}.\nData types include: {Joined_Dump_Types}.\nAll data is stored in {Complete_Files}."
@@ -306,9 +306,8 @@ def Load_Location_Configuration():
 
         with open(Configuration_File) as JSON_File:  
             Configuration_Data = json.load(JSON_File)
-
-            for General_Details in Configuration_Data['general']:
-                Location = General_Details['location']
+            General_Details = Configuration_Data['general']
+            Location = General_Details['location']
 
             if (len(Location) > 2) or (Location not in Valid_Locations):
                 logging.warning(f"{Date()} General Library - An invalid location has been specified, please provide a valid location in the config.json file.")
