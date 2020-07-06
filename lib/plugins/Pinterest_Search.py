@@ -48,49 +48,52 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Request_URL = "https://api.pinterest.com/v1/pins/" + Query + "/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Ccreated_at%2Ccreator%2Cmedia%2Coriginal_link%2Cmetadata%2Ccounts%2Ccolor%2Cboard%2Cattribution"
                 Search_Response = requests.get(Request_URL).text
                 Search_Response = json.loads(Search_Response)
-                JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
-                Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
 
-                Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
-                Result_URL = Search_Response["data"]["url"]
-                Search_Result_Response = requests.get(Result_URL).text
-
-                if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
-                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
-
-                    if Output_file:
-                        Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                        Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
-                        Data_to_Cache.append(Result_URL)
-
-                    else:
-                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
-
-            elif Type == "board":
-                Local_Plugin_Name = Plugin_Name + "-" + Type
-                Request_URL = "https://api.pinterest.com/v1/boards/" + Query + "/pins/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Coriginal_link%2Cmetadata%2Cmedia%2Cimage%2Ccreator%2Ccreated_at%2Ccounts%2Ccolor%2Cboard%2Cattribution"
-                Search_Response = requests.get(Request_URL).text
-                Search_Response = json.loads(Search_Response)
-                JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
-                Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                Current_Step = 0
-
-                for Response in Search_Response["data"]:
-                    Result_Title = Response["note"]
-                    Result_URL = Response["url"]
+                if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
+                    JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
+                    Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
+                    Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
+                    Result_URL = Search_Response["data"]["url"]
                     Search_Result_Response = requests.get(Result_URL).text
 
-                    if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
+                    if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache:
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
 
                         if Output_file:
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
                             Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
                             Data_to_Cache.append(Result_URL)
-                            Current_Step += 1
 
                         else:
                             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+            elif Type == "board":
+                Local_Plugin_Name = Plugin_Name + "-" + Type
+                Request_URL = "https://api.pinterest.com/v1/boards/" + Query + "/pins/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Coriginal_link%2Cmetadata%2Cmedia%2Cimage%2Ccreator%2Ccreated_at%2Ccounts%2Ccolor%2Cboard%2Cattribution&limit=" + str(Limit) + ""
+                Search_Response = requests.get(Request_URL).text
+                Search_Response = json.loads(Search_Response)
+
+                if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
+                    JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
+                    Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                    Current_Step = 0
+
+                    for Response in Search_Response["data"]:
+                        Result_Title = Response["note"]
+                        Result_URL = Response["url"]
+                        Search_Result_Response = requests.get(Result_URL).text
+
+                        if Result_URL not in Cached_Data and Result_URL not in Data_to_Cache and Current_Step < int(Limit):
+                            Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
+
+                            if Output_file:
+                                Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
+                                Data_to_Cache.append(Result_URL)
+                                Current_Step += 1
+
+                            else:
+                                logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
         if Cached_Data:
             General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

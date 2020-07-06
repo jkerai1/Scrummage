@@ -21,7 +21,7 @@ def Load_Configuration():
             YouTube_Location = YouTube_Details['location']
             YouTube_Location_Radius = YouTube_Details['location_radius']
 
-            if YouTube_Developer_Key and YouTube_Application_Name and YouTube_Application_Version and YouTube_Location and YouTube_Location_Radius:
+            if YouTube_Developer_Key and YouTube_Application_Name and YouTube_Application_Version:
                 return [YouTube_Developer_Key, YouTube_Application_Name, YouTube_Application_Version, YouTube_Location, YouTube_Location_Radius]
 
             else:
@@ -49,19 +49,19 @@ def Search(Query_List, Task_ID, **kwargs):
         Limit = General.Get_Limit(kwargs)
 
         for Query in Query_List:
-            YouTube_Handler = discovery.build(YouTube_Details[1], YouTube_Details[2], developerKey=YouTube_Details[0])
-            Search_Response = YouTube_Handler.search().list(
-            q=Query,
-            type='video',
-            location=YouTube_Details[3],
-            locationRadius=YouTube_Details[4],
-            part='id,snippet',
-            maxResults=Limit,
-            ).execute()
+            YouTube_Handler = discovery.build(YouTube_Details[1], YouTube_Details[2], developerKey=YouTube_Details[0], cache_discovery=False)
+
+            if YouTube_Details[3] and YouTube_Details[4]:
+                Search_Response = YouTube_Handler.search().list(q=Query, type='video', location=YouTube_Details[3], locationRadius=YouTube_Details[4], part='id,snippet', maxResults=Limit,).execute()
+
+            else:
+                Search_Response = YouTube_Handler.search().list(q=Query, type='video', part='id,snippet', maxResults=Limit,).execute()
+            
             Main_File = General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
             Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
 
             for Search_Result in Search_Response.get('items', []):
+                print(Search_Result)
                 Full_Video_URL = "https://www.youtube.com/watch?v=" + Search_Result['id']['videoId']
                 Search_Video_Response = requests.get(Full_Video_URL).text
 
@@ -69,7 +69,7 @@ def Search(Query_List, Task_ID, **kwargs):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extensions["Query"])
 
                     if Output_file:
-                        Output_Connections.Output([Main_File, Output_file], Full_Video_URL, General.Get_Title(Full_Video_URL), Plugin_Name.lower())
+                        Output_Connections.Output([Main_File, Output_file], Full_Video_URL, Search_Result['snippet']['title'], Plugin_Name.lower())
                         Data_to_Cache.append(Full_Video_URL)
 
                     else:

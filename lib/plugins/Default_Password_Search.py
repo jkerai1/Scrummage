@@ -46,10 +46,9 @@ def Search(Query_List, Task_ID, **kwargs):
                         try:
                             Detailed_Item_URL = URL_Body + Current_Item_Regex.group(1)
                             Detailed_Response = requests.get(Detailed_Item_URL, headers=headers).text
-                            JSON_Response = json.loads(Detailed_Response)
 
                             if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache and Current_Step < int(Limit):
-                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, JSON_Response['data'], Title, The_File_Extension)
+                                Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Detailed_Response, Title, The_File_Extension)
 
                                 if Output_file:
                                     Output_Connections.Output([Main_File, Output_file], Item_URL, General.Get_Title(Item_URL), Concat_Plugin_Name)

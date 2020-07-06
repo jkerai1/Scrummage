@@ -278,6 +278,8 @@ def Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Output_Data,
             Query_Result_Name = Query_Result_Name.replace(Character, "-")
 
     Query_Result_Name = Query_Result_Name.replace(",", "-")
+    Query_Result_Name = Query_Result_Name.replace(" ", "-")
+    Query_Result_Name = Query_Result_Name.replace("---", "-")
     Query_Result_Name = Query_Result_Name.replace("--", "-")
 
     try:

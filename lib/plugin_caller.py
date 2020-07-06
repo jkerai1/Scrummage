@@ -97,7 +97,7 @@ class Plugin_Caller:
 
             elif self.plugin_name == "Library Genesis Search":
                 import plugins.Library_Genesis_Search as Library_Genesis_Search
-                Thread_1 = threading.Thread(target=Library_Genesis_Search.Search, args=(self.query, self.task_id, "board"), kwargs={"Limit": self.limit, })
+                Thread_1 = threading.Thread(target=Library_Genesis_Search.Search, args=(self.query, self.task_id), kwargs={"Limit": self.limit, })
                 Thread_1.start()
                 Thread_1.join()
 
