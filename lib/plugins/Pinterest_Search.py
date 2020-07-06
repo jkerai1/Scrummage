@@ -50,6 +50,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 Search_Response = json.loads(Search_Response)
 
                 if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
+                    print(Search_Response)
                     JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
                     Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
                     Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
@@ -66,6 +67,9 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                         else:
                             logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+                else:
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
             elif Type == "board":
                 Local_Plugin_Name = Plugin_Name + "-" + Type
@@ -94,6 +98,9 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+                else:
+                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
         if Cached_Data:
             General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

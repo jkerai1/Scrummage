@@ -16,12 +16,12 @@ def Load_Configuration():
             Configuration_Data = json.load(JSON_File)
             Google_Details = Configuration_Data[Plugin_Name.lower()]
             Google_CX = Google_Details['cx']
-            Google_Developer_Key = Google_Details['developer_key']
             Google_Application_Name = Google_Details['application_name']
             Google_Application_Version = Google_Details['application_version']
+            Google_Developer_Key = Google_Details['developer_key']
 
-            if Google_CX and Google_Developer_Key and Google_Application_Name and Google_Application_Version:
-                return [Google_CX, Google_Developer_Key, Google_Application_Name, Google_Application_Version]
+            if Google_CX and Google_Application_Name and Google_Application_Version and Google_Developer_Key:
+                return [Google_CX, Google_Application_Name, Google_Application_Version, Google_Developer_Key]
 
             else:
                 return None
@@ -63,26 +63,28 @@ def Search(Query_List, Task_ID, **kwargs):
                         Google_Item = JSON_Response_Items['pagemap']['metatags']
 
                         for Google_Item_Line in Google_Item:
-                            Google_Item_URL = Google_Item_Line['og:url']
 
-                            if Google_Item_URL not in Cached_Data and Google_Item_URL not in Data_to_Cache:
-                                Path_Regex = re.search(r"https?\:\/\/(www\.)?[\w\d\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?\/([\w\d\-\_\/]+)?", Google_Item_URL)
+                            if 'og:url' in Google_Item_URL:
+                                Google_Item_URL = Google_Item_Line['og:url']
 
-                                if Path_Regex:
-                                    headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
-                                    Google_Item_Response = requests.get(Google_Item_URL, headers=headers).text
-                                    Output_Path = Path_Regex.group(4).replace("/", "-")
-                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extensions["Query"])
+                                if Google_Item_URL not in Cached_Data and Google_Item_URL not in Data_to_Cache:
+                                    Path_Regex = re.search(r"https?\:\/\/(www\.)?[\w\d\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?\/([\w\d\-\_\/]+)?", Google_Item_URL)
 
-                                    if Output_file:
-                                        Output_Connections.Output([Main_File, Output_file], Google_Item_URL, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
-                                        Data_to_Cache.append(Google_Item_URL)
+                                    if Path_Regex:
+                                        headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+                                        Google_Item_Response = requests.get(Google_Item_URL, headers=headers).text
+                                        Output_Path = Path_Regex.group(4).replace("/", "-")
+                                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extensions["Query"])
+
+                                        if Output_file:
+                                            Output_Connections.Output([Main_File, Output_file], Google_Item_URL, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
+                                            Data_to_Cache.append(Google_Item_URL)
+
+                                        else:
+                                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
                                     else:
-                                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
-
-                                else:
-                                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
+                                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
                     except Exception as e:
                         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")
