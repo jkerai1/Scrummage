@@ -45,12 +45,12 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
             if Type == "pin":
                 Local_Plugin_Name = Plugin_Name + "-" + Type
-                Request_URL = "https://api.pinterest.com/v1/pins/" + Query + "/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Ccreated_at%2Ccreator%2Cmedia%2Coriginal_link%2Cmetadata%2Ccounts%2Ccolor%2Cboard%2Cattribution"
+                Request_URL = "https://api.pinterest.com/v1/pins/" + Query + "/?access_token=" + Load_Configuration() + "&fields=id%2Clink%2Cnote%2Curl%2Ccreated_at%2Cmedia%2Coriginal_link%2Cmetadata%2Ccounts%2Ccolor%2Cboard%2Cattribution"
                 Search_Response = requests.get(Request_URL).text
                 Search_Response = json.loads(Search_Response)
+                print(Search_Response)
 
                 if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
-                    print(Search_Response)
                     JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
                     Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
                     Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
