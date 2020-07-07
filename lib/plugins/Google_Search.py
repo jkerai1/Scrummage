@@ -57,34 +57,32 @@ def Search(Query_List, Task_ID, **kwargs):
 
             if 'items' in CSE_JSON_Response:
 
-                for JSON_Response_Items in CSE_JSON_Response['items']:
+                for Google_Item_Line in CSE_JSON_Response['items']:
 
                     try:
-                        Google_Item = JSON_Response_Items['pagemap']['metatags']
 
-                        for Google_Item_Line in Google_Item:
+                        if 'link' in Google_Item_Line and 'title' in Google_Item_Line:
+                            Google_Item_URL = Google_Item_Line['link']
+                            Title = Google_Item_Line['title']
 
-                            if 'og:url' in Google_Item_URL:
-                                Google_Item_URL = Google_Item_Line['og:url']
+                            if Google_Item_URL not in Cached_Data and Google_Item_URL not in Data_to_Cache:
+                                Path_Regex = re.search(r"https?\:\/\/(www\.)?[\w\d\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?\/([\w\d\-\_\/]+)?", Google_Item_URL)
 
-                                if Google_Item_URL not in Cached_Data and Google_Item_URL not in Data_to_Cache:
-                                    Path_Regex = re.search(r"https?\:\/\/(www\.)?[\w\d\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?\/([\w\d\-\_\/]+)?", Google_Item_URL)
+                                if Path_Regex:
+                                    headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+                                    Google_Item_Response = requests.get(Google_Item_URL, headers=headers).text
+                                    Output_Path = Path_Regex.group(4).replace("/", "-")
+                                    Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extensions["Query"])
 
-                                    if Path_Regex:
-                                        headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
-                                        Google_Item_Response = requests.get(Google_Item_URL, headers=headers).text
-                                        Output_Path = Path_Regex.group(4).replace("/", "-")
-                                        Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Google_Item_Response, Output_Path, The_File_Extensions["Query"])
-
-                                        if Output_file:
-                                            Output_Connections.Output([Main_File, Output_file], Google_Item_URL, General.Get_Title(Google_Item_URL), Plugin_Name.lower())
-                                            Data_to_Cache.append(Google_Item_URL)
-
-                                        else:
-                                            logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+                                    if Output_file:
+                                        Output_Connections.Output([Main_File, Output_file], Google_Item_URL, Title, Plugin_Name.lower())
+                                        Data_to_Cache.append(Google_Item_URL)
 
                                     else:
-                                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
+                                        logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
+
+                                else:
+                                    logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to match regular expression.")
 
                     except Exception as e:
                         logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - {str(e)}")
