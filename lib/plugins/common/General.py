@@ -124,20 +124,20 @@ class Connections():
     def Output(self, Complete_File_List, Link, DB_Title, Directory_Plugin_Name, **kwargs):
 
         try:
-            Complete_Files = "\n".join(Complete_File_List)
+            Text_Complete_Files = "\n- ".join(Complete_File_List)
 
             if kwargs.get("Dump_Types"):
                 self.Dump_Types = kwargs["Dump_Types"]
                 Joined_Dump_Types = ", ".join(Dump_Types)
-                self.Title = f"Data for input: {self.Input}, found by Scrummage plugin {self.Plugin_Name}.\nData types include: {Joined_Dump_Types}.\nAll data is stored in {Complete_Files}."
+                self.Title = f"Data for input: {self.Input}, found by Scrummage plugin {self.Plugin_Name}.\nData types include: {Joined_Dump_Types}.\nAll data is stored in\n- {Text_Complete_Files}."
                 self.Ticket_Subject = f"Scrummage {self.Plugin_Name} results for query {self.Input}."
-                NL_Joined_Dump_Types = "\n - ".join(Dump_Types)
-                self.Ticket_Text = f"Results were identified for the search {self.Input} performed by the Scrummage plugin {self.Plugin_Name}.\nThe following types of sensitive data were found:\n - {NL_Joined_Dump_Types}. Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at {Complete_Files}."
+                NL_Joined_Dump_Types = "\n- ".join(Dump_Types)
+                self.Ticket_Text = f"Results were identified for the search {self.Input} performed by the Scrummage plugin {self.Plugin_Name}.\nThe following types of sensitive data were found:\n- {NL_Joined_Dump_Types}. Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk.\n\nResult data can be found in the following output files:\n- {Text_Complete_Files}."
 
             else:
-                self.Title = f"Data for input: {self.Input}, found by Scrummage plugin {self.Plugin_Name}.\nAll data is stored in the files: {Complete_Files}."
+                self.Title = f"Data for input: {self.Input}, found by Scrummage plugin {self.Plugin_Name}.\nAll data is stored in the files:\n- {Text_Complete_Files}."
                 self.Ticket_Subject = f"Scrummage {self.Plugin_Name} results for query {self.Input}."
-                self.Ticket_Text = f"Results were identified for the search {self.Input} performed by the Scrummage plugin {self.Plugin_Name}. Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk. The result data is stored in a file located at {Complete_Files}."
+                self.Ticket_Text = f"Results were identified for the search {self.Input} performed by the Scrummage plugin {self.Plugin_Name}. Please ensure these results do not pose a threat to your organisation, and take the appropriate action necessary if they pose a security risk.\n\nResult data can be found in the following output files:\n- {Text_Complete_Files}."
 
         except:
             logging.warning(f"{Date()} General Library - Error setting unique variables.")
