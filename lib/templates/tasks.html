@@ -173,7 +173,7 @@
                     <form action="{{ url_for('new_task') }}" method=post autocomplete="off">
                         <input name="newtask" class="button" type=submit value="New Task">
                     </form>
-                    <form class="form_vo" action="{{ url_for('verify_output') }}" method=post autocomplete="off">
+                    <form class="form_vo" action="{{ url_for('verify_output') }}" method=get autocomplete="off">
                         <input name="verify" class="button" type=submit value="Verify Output">
                     </form>
                     <button id="select_all_button" style="display: none;" class="button" onclick="checkAll(this)">Select All</button>

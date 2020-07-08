@@ -14,7 +14,7 @@
     {% if form_step == 0 and not details %}
     <body onload="myFunction()" style="margin:0;">
     {% else %}
-    <body>
+    <body onload="setDocuments()">
     {% endif %}
     {% extends "template.html" %}
     {% block content %}
@@ -32,7 +32,7 @@
                     <thead>
                         <tr>
                             <th>Screenshot</th>
-                            <th>Files</th>
+                            <th style="width: 130px;">Files</th>
                             <th id="result_task_mob">Plugin</th>
                             <th>Result Type</th>
                             <th>Domain</th>
@@ -69,7 +69,7 @@
                             {% if Output_Files %}
                                 <td style="padding-left: 10px;">
                                 {% for Output_File in Output_Files %}
-                                <a href="{{Output_File}}"><div class="document"></div></a>
+                                <a id="documenta" href="{{Output_File}}"><div id="document"></div></a>
                                 {% endfor %}
                                 </td>
                             {% else %}
@@ -234,7 +234,7 @@
                             <td class="nonscreenshottab" id="created_at">{{result[7]}}</td>
                             <td class="nonscreenshottab" id="updated_at">{{result[8]}}</td>
                             <td class="buttons_in_table" id="resultsbuttons">
-                                <form class="task_buttons" action="{{url_for('result_details', resultid=result[0])}}" method=post onclick="load_home()" autocomplete="off">
+                                <form class="task_buttons" action="{{url_for('result_details', resultid=result[0])}}" method=get onclick="load_home()" autocomplete="off">
                                     <input class="button" type=submit value="Show">
                                 </form>
                             </td>
@@ -263,6 +263,20 @@
 
             function myFunction() {
               myVar = setTimeout(showPage, 1000);
+            }
+
+            function setDocuments() {
+                document.querySelectorAll('#documenta').forEach(e => {
+                    if (e.getAttribute("href").includes(".docx") == true) {
+                        e.getElementsByTagName("div")[0].className="docx";
+                    } else if (e.getAttribute("href").includes(".json") == true) {
+                        e.getElementsByTagName("div")[0].className="json";
+                    } else if (e.getAttribute("href").includes(".csv") == true) {
+                        e.getElementsByTagName("div")[0].className="csv";
+                    } else if (e.getAttribute("href").includes(".html") == true) {
+                        e.getElementsByTagName("div")[0].className="html";
+                    }
+               });
             }
 
             function showPage() {

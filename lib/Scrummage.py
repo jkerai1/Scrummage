@@ -462,7 +462,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return redirect(url_for('index'))
 
-    @app.route('/verify_output', methods=['POST', 'GET'])
+    @app.route('/verify_output', methods=['GET'])
     def verify_output():
 
         try:
@@ -2720,7 +2720,7 @@ if __name__ == '__main__':
             app.logger.error(e)
             return jsonify({"Error": "Unknown error."}), 500
 
-    @app.route('/results/details/<resultid>', methods=['POST', 'GET'])
+    @app.route('/results/details/<resultid>', methods=['GET'])
     def result_details(resultid):
 
         try:
