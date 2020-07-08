@@ -362,7 +362,7 @@ if __name__ == "__main__":
     import argparse, sys
     Parser = argparse.ArgumentParser(description='Plugin Caller calls Scrummage plugins.')
     Parser.add_argument('-t', '--task', help='This option is used to specify a task ID to run. ./plugin_caller.py -t 1')
-    Arguments = Parser.parse_args()/pro
+    Arguments = Parser.parse_args()
 
     Task_ID = 0
 
