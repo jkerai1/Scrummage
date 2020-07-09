@@ -7,8 +7,8 @@
         {% if refreshrate > 0 %}
         <meta http-equiv="refresh" content="{{refreshrate}}">
         {% endif %}
-        <link rel="icon" href="static/icons/main.ico" />
-        <link rel="apple-touch-icon" href="static/icons/main.ico" />
+        <link rel="icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
         <script type="text/javascript" src='static/js/Chart.min.js'></script>
         <title>Scrummage Dashboard</title>
     </head>

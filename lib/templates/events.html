@@ -4,11 +4,11 @@
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="Scrummage Events.">
-        <link rel="icon" href="static/icons/main.ico" />
-        <link rel="apple-touch-icon" href="static/icons/main.ico" />
-        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
-		<script type="text/javascript" src="static/js/datatables.min.js"></script>
-		<script type="text/javascript" src="static/js/main.js"></script>
+        <link rel="icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/main.ico') }}" />
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
         <title>Scrummage Events</title>
     </head>
     <body onload="myFunction()" style="margin:0;">
