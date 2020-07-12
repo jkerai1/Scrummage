@@ -133,13 +133,17 @@ if __name__ == '__main__':
 
                 if not Password_Check:
 
-                    for char in self.password:
+                    if any(char in Bad_Characters for char in self.password):
+                        Message = f"Failed login attempt for the provided user ID {str(User_Details[0])} with a password that contains potentially dangerous characters."
+                        app.logger.warning(Message)
+                        Create_Event(Message)
+                        return {"Message": True}
 
-                        if char in Bad_Characters:
-                            Message = f"Failed login attempt for the provided user ID {str(User_Details[0])} with a password that contains potentially dangerous characters."
-                            app.logger.warning(Message)
-                            Create_Event(Message)
-                            return {"Message": True}
+                    else:
+                        Message = f"Failed login attempt for the provided user ID {str(User_Details[0])}."
+                        app.logger.warning(Message)
+                        Create_Event(Message)
+                        return {"Message": True}
 
                     Message = f"Failed login attempt for user {str(User_Details[0])}."
                     app.logger.warning(Message)
@@ -163,19 +167,17 @@ if __name__ == '__main__':
 
             else:
 
-                for char in self.username:
+                if any(char in Bad_Characters for char in self.username):
+                    Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Message": True}
 
-                    if char in Bad_Characters:
-                        Message = "Failed login attempt for a provided username that contained potentially dangerous characters."
-                        app.logger.warning(Message)
-                        Create_Event(Message)
-                        return {"Message": True}
-
-                    else:
-                        Message = f"Failed login attempt for user {self.username}."
-                        app.logger.warning(Message)
-                        Create_Event(Message)
-                        return {"Message": True}
+                else:
+                    Message = f"Failed login attempt for user {self.username}."
+                    app.logger.warning(Message)
+                    Create_Event(Message)
+                    return {"Message": True}
 
         def API_registration(self):
 
@@ -368,10 +370,8 @@ if __name__ == '__main__':
 
                 if 'username' in request.form and 'password' in request.form:
 
-                    for char in request.form['username']:
-
-                        if char in Bad_Characters:
-                            return render_template('login.html', error="Login Unsuccessful.")
+                    if any(char in Bad_Characters for char in request.form['username']):
+                        return render_template('login.html', error="Login Unsuccessful.")
 
                     Current_User_Object = User(request.form['username'], request.form['password'])
                     Current_User = Current_User_Object.authenticate()
