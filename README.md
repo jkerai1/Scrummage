@@ -38,7 +38,7 @@ Any feedback is welcome.
 **Dashboard**  
 The dashboard is the home screen which the application directs a user to when they log in. It provides a high-level chart which shows the amount of each results based on their result type. It does this for each kind of finding. However, if a graph doesn’t load, this is most likely due to none of the results being in that category, I.e if there are no closed results, no graph will appear under “Overview of Closed Results”.  
 
-
+![Dashboard](/installation/images_dark_theme/Dashboard.png)
 
 
 **Events**  
