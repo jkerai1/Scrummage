@@ -192,6 +192,7 @@
                 </div>
                 {% endif %}
             </div>
+            {% if is_admin %}
             <script type="text/javascript">
             var myVar;
 
@@ -209,9 +210,7 @@
                 document.getElementsByTagName("INPUT")[0].placeholder='Search';
                 document.getElementsByTagName("INPUT")[0].className='js_search';
             }
-            </script>
-            {% if is_admin %}
-            <script type="text/javascript">
+
             function getSelectValues() {
                var checkedArray = []
                document.querySelectorAll('#select:checked').forEach(e => {
@@ -324,6 +323,23 @@
                         }
                     }
                 }
+            }
+            </script>
+            {% else %}
+            <script type="text/javascript">
+            var myVar;
+
+            function myFunction() {
+              myVar = setTimeout(showPage, 1000);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("loader-message").style.display = "none";
+                document.getElementById("paginate").style.display = null;
+                document.getElementById("fc").style.display = null;
+                document.getElementsByTagName("INPUT")[0].placeholder='Search';
+                document.getElementsByTagName("INPUT")[0].className='js_search';
             }
             </script>
             {% endif %}

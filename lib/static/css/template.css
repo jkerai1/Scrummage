@@ -1475,13 +1475,20 @@ input, textarea {
 }
 
 input[type="search"]:hover {
-     background-color: grey;
-     border: 1px solid grey;
+    background-color: grey;
+    border: 1px solid grey;
 }
 
 input[type="search"]:focus {
-     background-color: grey;
-     border: 1px solid grey;
+    background-color: grey;
+    border: 1px solid grey;
+}
+
+input[type="search"]::placeholder {
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
 }
 
 input[type="search"]:focus::placeholder {
