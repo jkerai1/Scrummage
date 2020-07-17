@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, f"new-zealand-business-number-{Query.lower()}", The_File_Extension)
 
                                 if Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Company Details", Task_ID, Plugin_Name)
                                     Output_Connections.Output([Output_file], Main_URL, f"New Zealand Business Number {Query}", Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
@@ -62,7 +62,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             NZBNs_Regex = re.findall(r"\<span\sclass\=\"entityName\"\>([\w\d\s\-\_\&\|\!\@\#\$\%\^\*\(\)\.\,]+)\<\/span\>\s<span\sclass\=\"entityInfo\"\>\((\d+)\)\s\(NZBN\:\s(\d+)\)", Response)
 
                             if NZBNs_Regex:
-                                Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "app.companiesoffice.govt.nz", "Company Details", Task_ID, Plugin_Name)
 
                                 for NZCN, NZ_ID, NZBN_URL in NZBNs_Regex:
                                     Full_NZBN_URL = f'https://app.companiesoffice.govt.nz/companies/app/ui/pages/companies/{NZ_ID}?backurl=H4sIAAAAAAAAAEXLuwrCQBCF4bfZNtHESIpBbLQwhWBeYNgddSF7cWai5O2NGLH7zwenyHgjKWwKGaOfSwjZ3ncPaOt1W9bbsmqaamMoqtepnzIJ7Ltu2RdFHeXIacxf9tEmzgdOAZbuExh0jknk%2F17gRNMrsQMjiqxQmsEHr7Aycp3NfY5PjJbcGSMNoDySCckR%2FPwNLgXMiL4AAAA%3D'

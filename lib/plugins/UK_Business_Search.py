@@ -73,7 +73,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Result_Response, str(JSON_Response["company_name"]), The_File_Extensions["Query"])
 
                                     if Output_file:
-                                        Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+                                        Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Company Details", Task_ID, Plugin_Name)
                                         Output_Connections.Output([Main_Output_File, Output_file], Result_URL, f"UK Business Number {Query}", Concat_Plugin_Name)
                                         Data_to_Cache.append(Main_URL)
 
@@ -104,7 +104,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
 
                                 if JSON_Response['total_results'] > 0:
                                     General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "companieshouse.gov.uk", "Company Details", Task_ID, Plugin_Name)
 
                                     for Item in JSON_Response['items']:
                                         UKBN_URL = Item['links']['self']

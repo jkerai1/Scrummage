@@ -37,7 +37,12 @@
             <section>
             <div class="dashboard_large_outer_div">
                 <div class="dashboard_large_div">
+                    {% if Use_Open %}
+                    {% if not Use_Closed and not Use_Mixed %}
                     <div class="dashboard_small_outer_div">
+                    {% else %}
+                    <div class="dashboard_small_outer_div_left">
+                    {% endif %}
                         <div class="dashboard_small_div"><p class="dashboard_p">Overview of Open Findings</p><canvas id="chart1"></canvas>
                         <script>
                           var pieData1 = [
@@ -57,7 +62,15 @@
                           new Chart(document.getElementById("chart1").getContext("2d")).Pie(pieData1);
                         </script></div>
                     </div>
+                    {% endif %}
+                    {% if Use_Closed %}
+                    {% if Use_Open and not Use_Mixed %}
+                    <div class="dashboard_small_outer_div_right">
+                    {% elif not Use_Open and Use_Mixed %}
+                    <div class="dashboard_small_outer_div_left">
+                    {% else %}
                     <div class="dashboard_small_outer_div">
+                    {% endif %}
                         <div class="dashboard_small_div"><p class="dashboard_p">Overview of Closed Findings</p><canvas id="chart2"></canvas>
                         <script>
                           var pieData2 = [
@@ -77,7 +90,13 @@
                           new Chart(document.getElementById("chart2").getContext("2d")).Pie(pieData2);
                         </script></div>
                     </div>
-                    <div class="dashboard_small_outer_right_div">
+                    {% endif %}
+                    {% if Use_Mixed %}
+                    {% if not Use_Open and not Use_Closed %}
+                    <div class="dashboard_small_outer_div">
+                    {% else %}
+                    <div class="dashboard_small_outer_div_right">
+                    {% endif %}
                         <div class="dashboard_small_div"><p class="dashboard_p">Overview of Findings Under Inspection or Review</p><canvas id="chart3"></canvas>
                         <script>
                           var pieData3 = [
@@ -97,6 +116,7 @@
                           new Chart(document.getElementById("chart3").getContext("2d")).Pie(pieData3);
                         </script></div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             </section>

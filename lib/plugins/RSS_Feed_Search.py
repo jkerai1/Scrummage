@@ -52,16 +52,20 @@ def Search(Query_List, Task_ID, **kwargs):
 
                         if Feed.link not in Cached_Data and Feed.link not in Data_to_Cache and Current_Step < int(Limit):
                             Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Feed.description, File_Link, The_File_Extension)
+                            Title = "RSS Feed | " + General.Get_Title(Feed.link)
 
                             if Output_file:
-                                Output_Connections = General.Connections(Query, Plugin_Name, Domain, "Data Leakage", Task_ID, Plugin_Name.lower())
-                                Output_Connections.Output([Output_file], Feed.link, General.Get_Title(Feed.link), Plugin_Name.lower(), Dump_Types=Dump_Types)
+                                Output_Connections = General.Connections(Query, Plugin_Name, Domain, "News Report", Task_ID, Plugin_Name.lower())
+                                Output_Connections.Output([Output_file], Feed.link, Title, Plugin_Name.lower(), Dump_Types=Dump_Types)
                                 Data_to_Cache.append(Feed.link)
 
                             else:
                                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to create output file. File may already exist.")
 
                             Current_Step += 1
+
+                    else:
+                        logging.info(f"{General.Date()} - {__name__.strip('plugins.')} - Query not found.")
 
         if Cached_Data:
             General.Write_Cache(Directory, Data_to_Cache, Plugin_Name, "a")

@@ -82,6 +82,10 @@ if Arguments.database and Arguments.username and Arguments.password:
                 "password": "",
                 "ticket_type": ""
             },
+            "naver": {
+                "client_id": "",
+                "client_secret": ""
+            },
             "pinterest": {
                 "oauth_token": ""
             },
@@ -131,6 +135,9 @@ if Arguments.database and Arguments.username and Arguments.password:
             "ukbusiness": {
                 "api_key": ""
             },
+            "vkontakte": {
+                "access_token": ""
+            },
             "vulners": {
                 "api_key": ""
             },
@@ -144,6 +151,10 @@ if Arguments.database and Arguments.username and Arguments.password:
                 "api-validity-minutes": 1440,
                 "api-max-calls": 10,
                 "api-period-in-seconds": 60
+            },
+            "yandex": {
+                "username": "",
+                "api_key": ""
             },
             "youtube": {
                 "developer_key": "",

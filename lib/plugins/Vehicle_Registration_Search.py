@@ -25,7 +25,7 @@ def Search(Query_List, Task_ID):
         Query_List = General.Convert_to_List(Query_List)
 
         for Query in Query_List:
-            Output_Connections = General.Connections(Query, Plugin_Name, "general-insurance.coles.com.au", "Data Leakage", Task_ID, Concat_Plugin_Name)
+            Output_Connections = General.Connections(Query, Plugin_Name, "general-insurance.coles.com.au", "Vehicle Details", Task_ID, Concat_Plugin_Name)
 
             for State in States:
                 Post_URL = 'https://general-insurance.coles.com.au/bin/wesfarmers/search/vehiclerego'
@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID):
                 Registration_Response = json.loads(Registration_Response)
 
                 try:
-                    Title = Registration_Response['vehicles'][0]['make'] + " " + Registration_Response['vehicles'][0]['model']
+                    Title = "Vehicle Registration | " + Registration_Response['vehicles'][0]['make'] + " " + Registration_Response['vehicles'][0]['model']
                     Item_URL = Post_URL + "?" + Query
 
                     if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache:

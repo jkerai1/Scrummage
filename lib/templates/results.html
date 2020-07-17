@@ -35,6 +35,7 @@
                             <th style="width: 130px;">Files</th>
                             <th id="result_task_mob">Plugin</th>
                             <th>Result Type</th>
+                            <th>Status</th>
                             <th>Domain</th>
                             <th>Link</th>
                         </tr>
@@ -42,13 +43,13 @@
                     <tbody>
                         <tr>
                             {% if results[9] %}
-                            <td style="padding-left: 10px;"><a href="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><div class="arrow-up"></div><img src="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
+                            <td><a href="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}"><div class="screenshot"><span class="large-screenshot"><img src="{{ url_for('index') }}static/protected/screenshots/{{results[9]}}" class="large-image" alt="screenshot"/></span></div></a></td>
                             {% else %}
                                 {% if is_admin %}
                                     {% if not results[12]%}
                                         {% if '.onion' not in results[6] and 'general-insurance.coles.com.au' not in results[6] and 'magnet:?xt=urn:btih:' not in results[6] %}
                                             {% if Screenshot_Permitted %}
-                                            <td class="buttons_in_table">
+                                            <td>
                                                 <form class="task_buttons" action="{{ url_for('screenshot', resultid=results[0]) }}" method=post autocomplete="off">
                                                     <input class="button" type=submit value="Generate">
                                                 </form>
@@ -77,6 +78,7 @@
                             {% endif %}
                             <td class="nonscreenshottab" id="resultid2">{{results[3]}}</td>
                             <td class="nonscreenshottab">{{results[11]}}</td>
+                            <td class="nonscreenshottab">{{results[4]}}</td>
                             <td class="nonscreenshottab" id="link"><a href="https://{{results[5]}}">{{results[5]}}</a></td>
                             <td class="nonscreenshottab"><a href="{{results[6]}}">Link</a></td>
                         </tr>
@@ -86,61 +88,7 @@
                 <table style="border: 0px solid #fff">
                     <tbody>
                         <tr>
-                            {% if is_admin %}
-                                {% if results[4] == "Open" %}
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='open', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="open_button" type=submit value="Open">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='inspect', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Inspect">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='review', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Review">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='close', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Close">
-                                </form></td>
-                                {% elif results[4] == "Inspecting" %}
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='open', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="open_button" type=submit value="Opened">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='inspect', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="inspect_button" type=submit value="Inspecting">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='review', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Review">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='close', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Close">
-                                </form></td>
-                                {% elif results[4] == "Reviewing" %}
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='open', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="open_button" type=submit value="Opened">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='inspect', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="inspect_button" type=submit value="Inspected">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='review', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="review_button" type=submit value="Reviewing">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='close', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="non_progressed_button" type=submit value="Close">
-                                </form></td>
-                                {% elif results[4] == "Closed" %}
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='open', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="open_button" type=submit value="Opened">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='inspect', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="inspect_button" type=submit value="Inspected">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='review', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="review_button" type=submit value="Reviewed">
-                                </form></td>
-                                <td style="width: 25%;"><form class="form_left_multiple" action="{{url_for('change_result_status', status='close', resultid=results[0])}}" method=post autocomplete="off">
-                                    <input class="close_button" type=submit value="Closed">
-                                </form></td>
-                                {% endif %}
-                            {% else %}
+                            {% if not is_admin %}
                                 {% if results[4] == "Open" %}
                                 <p class="open_p" style="width: 100%">Open</p>
                                 {% elif results[4] == "Inspecting" %}
@@ -189,10 +137,39 @@
                 <p class="message">The task that discovered this result couldn't be found, this is the result of the task being deleted.</p>
                 {% endif %}
                 {% if is_admin %}
-                <form style="padding: 10px 0px 0px 0px" id="deleteresult" class="form_left" action="{{url_for('delete_result', resultid=results[0])}}" method=post autocomplete="off">
-                    <input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button-delete" type=submit value="Delete Result">
-                </form>
+                <div class="result_buttons">
+                    <form id="deleteresult" class="form_left_multiple" action="{{url_for('delete_result', resultid=results[0])}}" method=post autocomplete="off">
+                        <input onclick="return confirm('Are you sure you want to delete result item {{results[0]}}?');" class="button-red" type=submit value="Delete Result">
+                    </form>
+                    <form class="form_left_multiple" action="{{url_for('change_result_status', status='open', resultid=results[0])}}" method=post autocomplete="off">
+                        <input class="button" type=submit value="Open">
+                    </form>
+                    <form class="form_left_multiple" action="{{url_for('change_result_status', status='inspect', resultid=results[0])}}" method=post autocomplete="off">
+                        <input class="button" type=submit value="Inspect">
+                    </form>
+                    <form class="form_left_multiple" action="{{url_for('change_result_status', status='review', resultid=results[0])}}" method=post autocomplete="off">
+                        <input class="button" type=submit value="Review">
+                    </form>
+                    <form class="form_left_multiple" action="{{url_for('change_result_status', status='close', resultid=results[0])}}" method=post autocomplete="off">
+                        <input class="button" type=submit value="Close">
+                    </form>
+                </div>
                 {% endif %}
+                <script type="text/javascript">
+                function setDocuments() {
+                    document.querySelectorAll('#documenta').forEach(e => {
+                        if (e.getAttribute("href").includes(".docx") == true) {
+                            e.getElementsByTagName("div")[0].className="docx";
+                        } else if (e.getAttribute("href").includes(".json") == true) {
+                            e.getElementsByTagName("div")[0].className="json";
+                        } else if (e.getAttribute("href").includes(".csv") == true) {
+                            e.getElementsByTagName("div")[0].className="csv";
+                        } else if (e.getAttribute("href").includes(".html") == true) {
+                            e.getElementsByTagName("div")[0].className="html";
+                        }
+                   });
+                }
+                </script>>
             </div>
         </main>
         {% else %}
@@ -242,190 +219,180 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% if is_admin %}
+                <div id="resbuttons" class="buttons-bottom">
+                    <form style="display: none;" id="newresult" class="form_left" action="{{url_for('new_result')}}" method=post autocomplete="off">
+                        <input class="button" name="newresult" type=submit value="New Result">
+                    </form>
+                    <button id="select_all_button" style="display: none;" class="button" onclick="checkAll(this)">Select All</button>
+                    <button id="deselect_all_button" style="display: none;" class="button-disabled" onclick="checkAll(this)" disabled="true">Deselect All</button>
+                    <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected result items: ' + getSelectValues() + '?') && sendRequest('delete');" disabled="true">Delete Result</button>
+                    <button id="bottom_open_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to open the selected result items: ' + getSelectValues() + '?') && sendRequest('open');" disabled="true">Open Result</button>
+                    <button id="bottom_inspect_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to inspect the selected result items: ' + getSelectValues() + '?') && sendRequest('inspect');" disabled="true">Inspect Result</button>
+                    <button id="bottom_review_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to review the selected result items: ' + getSelectValues() + '?') && sendRequest('review');" disabled="true">Review Result</button>
+                    <button id="bottom_close_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to close the selected result items: ' + getSelectValues() + '?') && sendRequest('close');" disabled="true">Close Result</button>
+                </div>
+                <script type="text/javascript">
+                var myVar;
+                var ButtonArr = [['bottom_delete_button', 'Delete'], ['bottom_open_button', 'Open'], ['bottom_inspect_button', 'Inspect'], ['bottom_review_button', 'Review'], ['bottom_close_button', 'Close']];
+
+                function myFunction() {
+                  myVar = setTimeout(showPage, 1000);
+                }
+
+                function showPage() {
+                    document.getElementById("loader").style.display = "none";
+                    document.getElementById("loader-message").style.display = "none";
+                    document.getElementById("paginate").style.display = null;
+                    document.getElementById("newresult").style.display = null;
+                    ButtonArr.forEach(function(item) {
+                        document.getElementById(item[0]).style.display = null;
+                    });
+                    document.getElementById("select_all_button").style.display = null;
+                    document.getElementById("deselect_all_button").style.display = null;
+                    document.getElementById("fc").style.display = null;
+                    document.getElementsByTagName("INPUT")[0].placeholder='Search';
+                    document.getElementsByTagName("INPUT")[0].className='js_search';
+                }
+
+                function getSelectValues() {
+                   var checkedArray = []
+                   document.querySelectorAll('#select:checked').forEach(e => {
+                       checkedArray.push(e.value);
+                   });
+                   checkedArrayStr = checkedArray.toString();
+                   return checkedArrayStr
+                }
+
+                function sendRequest(extension) {
+                    var xhr = new XMLHttpRequest();
+                    var selectedValArray = getSelectValues();
+                    if (extension == "delete") {
+                        var uri = "results/" + extension + "/" + selectedValArray;
+                    } else {
+                        var uri = "results/changestatus/" + extension + "/" + selectedValArray;
+                    }
+                    xhr.open("POST", uri, true);
+                    xhr.send();
+                    xhr.onreadystatechange = function(e) {
+                        if (xhr.readyState === 4) {
+                            location.reload();
+                        }
+                    }
+                }
+
+                function terms_changed(termsCheckBox){
+                    //If the checkbox has been checked
+                    if (checkAny("Checked") == true && checkAny("Unchecked") == false) {
+                        document.getElementById("deselect_all_button").disabled = false;
+                        document.getElementById("deselect_all_button").className = "button";
+                        document.getElementById("select_all_button").disabled = true;
+                        document.getElementById("select_all_button").className = "button-disabled";
+                    } else if (checkAny("Checked") == false && checkAny("Unchecked") == true) {
+                        document.getElementById("select_all_button").disabled = false;
+                        document.getElementById("select_all_button").className = "button";
+                        document.getElementById("deselect_all_button").disabled = true;
+                        document.getElementById("deselect_all_button").className = "button-disabled";
+                    } else if (checkAny("Checked") == true && checkAny("Unchecked") == true) {
+                        document.getElementById("select_all_button").disabled = false;
+                        document.getElementById("select_all_button").className = "button";
+                        document.getElementById("deselect_all_button").disabled = false;
+                        document.getElementById("deselect_all_button").className = "button";
+                    }
+                    if (termsCheckBox.checked) {
+                        //Set the disabled property to FALSE and enable the button.
+                        ButtonArr.forEach(function(item) {
+                            document.getElementById(item[0]).disabled = false;
+                            if (item[0] == "bottom_delete_button") {
+                                document.getElementById(item[0]).className = "button-red";
+                            } else {
+                                document.getElementById(item[0]).className = "button";
+                            }
+                            if($('#select:checked').length >= 2) {
+                                document.querySelector("#" + item[0]).innerText = item[1] + ' Results';
+                            }
+                        });
+                    } else{
+                        if($('#select:checked').length === 1) {
+                            ButtonArr.forEach(function(item) {
+                                document.querySelector("#" + item[0]).innerText = item[1] + ' Result';
+                            });
+                        }
+                        if($('#select:checked').length === 0) {
+                        //Otherwise, disable the submit button.
+                            ButtonArr.forEach(function(item) {
+                                document.getElementById(item[0]).disabled = true;
+                                document.getElementById(item[0]).className = "button-disabled";
+                            });
+                        }
+                    }
+                }
+
+                function checkAny(type) {
+                    var checkboxes = document.getElementsByTagName('input');
+                    if (type == "Checked") {
+                        var ischecked = false;
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            if (checkboxes[i].type == 'checkbox') {
+                                if (checkboxes[i].checked == true) {
+                                    ischecked = true;
+                                }
+                            }
+                        }
+                        return ischecked;
+                    } else if (type == "Unchecked") {
+                        var unchecked = false;
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            if (checkboxes[i].type == 'checkbox') {
+                                if (checkboxes[i].checked == false) {
+                                    unchecked = true;
+                                }
+                            }
+                        }
+                        return unchecked;
+                    }
+                }
+
+                function checkAll(ele) {
+                    var checkboxes = document.getElementsByTagName('input');
+                    if (ele.innerText == "Select All") {
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            if (checkboxes[i].type == 'checkbox') {
+                                checkboxes[i].checked = true;
+                                terms_changed(checkboxes[i]);
+                            }
+                        }
+                    } else {
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            if (checkboxes[i].type == 'checkbox') {
+                                checkboxes[i].checked = false;
+                                terms_changed(checkboxes[i]);
+                            }
+                        }
+                    }
+                }
+                </script>
+                {% else %}
+                <script type="text/javascript">
+                var myVar;
+
+                function myFunction() {
+                  myVar = setTimeout(showPage, 1000);
+                }
+
+                function showPage() {
+                    document.getElementById("loader").style.display = "none";
+                    document.getElementById("loader-message").style.display = "none";
+                    document.getElementById("paginate").style.display = null;
+                    document.getElementById("fc").style.display = null;
+                    document.getElementsByTagName("INPUT")[0].placeholder='Search';
+                    document.getElementsByTagName("INPUT")[0].className='js_search';
+                }
+                </script>
+                {% endif %}
             </div>
             {% endif %}
-            {% if is_admin %}
-            <div class="buttons-bottom">
-                <form style="display: none;" id="newresult" class="form_left" action="{{url_for('new_result')}}" method=post autocomplete="off">
-                    <input class="button" name="newresult" type=submit value="New Result">
-                </form>
-                <button id="select_all_button" style="display: none;" class="button" onclick="checkAll(this)">Select All</button>
-                <button id="deselect_all_button" style="display: none;" class="button-disabled" onclick="checkAll(this)" disabled="true">Deselect All</button>
-                <button id="bottom_delete_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to delete the selected result items: ' + getSelectValues() + '?') && sendRequest('delete');" disabled="true">Delete Result</button>
-                <button id="bottom_open_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to open the selected result items: ' + getSelectValues() + '?') && sendRequest('open');" disabled="true">Open Result</button>
-                <button id="bottom_inspect_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to inspect the selected result items: ' + getSelectValues() + '?') && sendRequest('inspect');" disabled="true">Inspect Result</button>
-                <button id="bottom_review_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to review the selected result items: ' + getSelectValues() + '?') && sendRequest('review');" disabled="true">Review Result</button>
-                <button id="bottom_close_button" style="display: none;" class="button-disabled" onclick="return confirm('Are you sure you want to close the selected result items: ' + getSelectValues() + '?') && sendRequest('close');" disabled="true">Close Result</button>
-            </div>
-            <script type="text/javascript">
-            var myVar;
-            var ButtonArr = [['bottom_delete_button', 'Delete'], ['bottom_open_button', 'Open'], ['bottom_inspect_button', 'Inspect'], ['bottom_review_button', 'Review'], ['bottom_close_button', 'Close']];
-
-            function myFunction() {
-              myVar = setTimeout(showPage, 1000);
-            }
-
-            function setDocuments() {
-                document.querySelectorAll('#documenta').forEach(e => {
-                    if (e.getAttribute("href").includes(".docx") == true) {
-                        e.getElementsByTagName("div")[0].className="docx";
-                    } else if (e.getAttribute("href").includes(".json") == true) {
-                        e.getElementsByTagName("div")[0].className="json";
-                    } else if (e.getAttribute("href").includes(".csv") == true) {
-                        e.getElementsByTagName("div")[0].className="csv";
-                    } else if (e.getAttribute("href").includes(".html") == true) {
-                        e.getElementsByTagName("div")[0].className="html";
-                    }
-               });
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("loader-message").style.display = "none";
-                document.getElementById("paginate").style.display = null;
-                document.getElementById("newresult").style.display = null;
-                ButtonArr.forEach(function(item) {
-                    document.getElementById(item[0]).style.display = null;
-                });
-                document.getElementById("select_all_button").style.display = null;
-                document.getElementById("deselect_all_button").style.display = null;
-                document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[0].placeholder='Search';
-                document.getElementsByTagName("INPUT")[0].className='js_search';
-            }
-
-            function getSelectValues() {
-               var checkedArray = []
-               document.querySelectorAll('#select:checked').forEach(e => {
-                   checkedArray.push(e.value);
-               });
-               checkedArrayStr = checkedArray.toString();
-               return checkedArrayStr
-            }
-
-            function sendRequest(extension) {
-                var xhr = new XMLHttpRequest();
-                var selectedValArray = getSelectValues();
-                if (extension == "delete") {
-                    var uri = "results/" + extension + "/" + selectedValArray;
-                } else {
-                    var uri = "results/changestatus/" + extension + "/" + selectedValArray;
-                }
-                xhr.open("POST", uri, true);
-                xhr.send();
-                xhr.onreadystatechange = function(e) {
-                    if (xhr.readyState === 4) {
-                        location.reload();
-                    }
-                }
-            }
-
-            function terms_changed(termsCheckBox){
-                //If the checkbox has been checked
-                if (checkAny("Checked") == true && checkAny("Unchecked") == false) {
-                    document.getElementById("deselect_all_button").disabled = false;
-                    document.getElementById("deselect_all_button").className = "button";
-                    document.getElementById("select_all_button").disabled = true;
-                    document.getElementById("select_all_button").className = "button-disabled";
-                } else if (checkAny("Checked") == false && checkAny("Unchecked") == true) {
-                    document.getElementById("select_all_button").disabled = false;
-                    document.getElementById("select_all_button").className = "button";
-                    document.getElementById("deselect_all_button").disabled = true;
-                    document.getElementById("deselect_all_button").className = "button-disabled";
-                } else if (checkAny("Checked") == true && checkAny("Unchecked") == true) {
-                    document.getElementById("select_all_button").disabled = false;
-                    document.getElementById("select_all_button").className = "button";
-                    document.getElementById("deselect_all_button").disabled = false;
-                    document.getElementById("deselect_all_button").className = "button";
-                }
-                if (termsCheckBox.checked) {
-                    //Set the disabled property to FALSE and enable the button.
-                    ButtonArr.forEach(function(item) {
-                        document.getElementById(item[0]).disabled = false;
-                        document.getElementById(item[0]).className = "button";
-                        if($('#select:checked').length >= 2) {
-                            document.querySelector("#" + item[0]).innerText = item[1] + ' Results';
-                        }
-                    });
-                } else{
-                    if($('#select:checked').length === 1) {
-                        ButtonArr.forEach(function(item) {
-                            document.querySelector("#" + item[0]).innerText = item[1] + ' Result';
-                        });
-                    }
-                    if($('#select:checked').length === 0) {
-                    //Otherwise, disable the submit button.
-                        ButtonArr.forEach(function(item) {
-                            document.getElementById(item[0]).disabled = true;
-                            document.getElementById(item[0]).className = "button-disabled";
-                        });
-                    }
-                }
-            }
-
-            function checkAny(type) {
-                var checkboxes = document.getElementsByTagName('input');
-                if (type == "Checked") {
-                    var ischecked = false;
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        if (checkboxes[i].type == 'checkbox') {
-                            if (checkboxes[i].checked == true) {
-                                ischecked = true;
-                            }
-                        }
-                    }
-                    return ischecked;
-                } else if (type == "Unchecked") {
-                    var unchecked = false;
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        if (checkboxes[i].type == 'checkbox') {
-                            if (checkboxes[i].checked == false) {
-                                unchecked = true;
-                            }
-                        }
-                    }
-                    return unchecked;
-                }
-            }
-
-            function checkAll(ele) {
-                var checkboxes = document.getElementsByTagName('input');
-                if (ele.innerText == "Select All") {
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        if (checkboxes[i].type == 'checkbox') {
-                            checkboxes[i].checked = true;
-                            terms_changed(checkboxes[i]);
-                        }
-                    }
-                } else {
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        if (checkboxes[i].type == 'checkbox') {
-                            checkboxes[i].checked = false;
-                            terms_changed(checkboxes[i]);
-                        }
-                    }
-                }
-            }
-            </script>
-            {% else %}
-            <script type="text/javascript">
-            var myVar;
-
-            function myFunction() {
-              myVar = setTimeout(showPage, 1000);
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                document.getElementById("loader-message").style.display = "none";
-                document.getElementById("paginate").style.display = null;
-                document.getElementById("fc").style.display = null;
-                document.getElementsByTagName("INPUT")[0].placeholder='Search';
-                document.getElementsByTagName("INPUT")[0].className='js_search';
-            }
-            </script>
-        </main> 
-        {% endif %}
+        </main>
     {% elif form_step == 1 %}
         {% if is_admin %}
         <main>
@@ -446,12 +413,9 @@
                                 <dd>
                                     <input class="field_textarea" list="browsers" name=type onkeypress="return false;" placeholder="Result(s) Type">
                                     <datalist id="browsers">
-                                        <option value="Data Leakage">
-                                        <option value="Domain Spoof">
-                                        <option value="Exploit">
-                                        <option value="Phishing">
-                                        <option value="Blockchain Address">
-                                        <option value="Blockchain Transaction">
+                                        {% for Finding_Type in Finding_Types %}
+                                        <option value="{{Finding_Type}}">
+                                        {% endfor %}
                                     </datalist>
                                 </dd>
                             </dl>

@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extensions["Query"])
 
                                 if Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Company Details", Task_ID, Plugin_Name)
                                     Output_Connections.Output([Output_file], Main_URL, General.Get_Title(Main_URL).strip(" | ABN Lookup"), Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
@@ -67,7 +67,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             ABNs_Regex = re.findall(r"\<input\sid\=\"Results\_NameItems\_\d+\_\_Compressed\"\sname\=\"Results\.NameItems\[\d+\]\.Compressed\"\stype\=\"hidden\"\svalue\=\"(\d{11})\,\d{2}\s\d{3}\s\d{3}\s\d{3}\,0000000001\,Active\,active\,([\d\w\s\&\-\_\.]+)\,Current\,", Response)
 
                             if ABNs_Regex:
-                                Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "abr.business.gov.au", "Company Details", Task_ID, Plugin_Name)
 
                                 for ABN_URL, ACN in ABNs_Regex:
                                     Full_ABN_URL = 'https://abr.business.gov.au/ABN/View?abn=' + ABN_URL

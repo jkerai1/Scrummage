@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import requests, os, logging, json, re, plugins.common.General as General
 
-Plugin_Name = "SSlMate"
+Plugin_Name = "SSLMate"
 The_File_Extension = ".json"
 
 def Load_Configuration():
@@ -61,7 +61,7 @@ def Search(Query_List, Task_ID):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, json.dumps(JSON_Response, indent=4, sort_keys=True), SSLMate_Regex.group(1), The_File_Extension)
 
                                 if Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "sslmate.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "sslmate.com", "Certificate", Task_ID, Plugin_Name.lower())
                                     Data_to_Cache.append(Request)
 
                                     if Subdomains:

@@ -58,18 +58,18 @@ def Search(Query_List, Task_ID, **kwargs):
                 Search_Response = YouTube_Handler.search().list(q=Query, type='video', part='id,snippet', maxResults=Limit,).execute()
             
             Main_File = General.Main_File_Create(Directory, Plugin_Name, json.dumps(Search_Response.get('items', []), indent=4, sort_keys=True), Query, The_File_Extensions["Main"])
-            Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+            Output_Connections = General.Connections(Query, Plugin_Name, "youtube.com", "Social Media - Media", Task_ID, Plugin_Name.lower())
 
             for Search_Result in Search_Response.get('items', []):
-                print(Search_Result)
                 Full_Video_URL = "https://www.youtube.com/watch?v=" + Search_Result['id']['videoId']
                 Search_Video_Response = requests.get(Full_Video_URL).text
+                Title = "YouTube | " + Search_Result['snippet']['title']
 
                 if Full_Video_URL not in Cached_Data and Full_Video_URL not in Data_to_Cache:
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Search_Video_Response, Search_Result['id']['videoId'], The_File_Extensions["Query"])
 
                     if Output_file:
-                        Output_Connections.Output([Main_File, Output_file], Full_Video_URL, Search_Result['snippet']['title'], Plugin_Name.lower())
+                        Output_Connections.Output([Main_File, Output_file], Full_Video_URL, Title, Plugin_Name.lower())
                         Data_to_Cache.append(Full_Video_URL)
 
                     else:

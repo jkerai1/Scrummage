@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, f"edgar-american-business-search-{Query.lower()}", The_File_Extensions["Query"])
 
                                 if Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Company Details", Task_ID, Plugin_Name)
                                     Output_Connections.Output([Output_file], Main_URL, f"American Business Number (EDGAR) {Query}", Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
@@ -63,7 +63,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                             CIKs_Regex = re.findall(r"(\d{10})\<\/a\>\<\/td\>\s+\<td\sscope\=\"row\"\>(.*\S.*)\<\/td\>", Response)
 
                             if CIKs_Regex:
-                                Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Data Leakage", Task_ID, Plugin_Name)
+                                Output_Connections = General.Connections(Query, Plugin_Name, "sec.gov", "Company Details", Task_ID, Plugin_Name)
 
                                 for CIK_URL, ACN in CIKs_Regex:
                                     Full_CIK_URL = f'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={CIK_URL}&owner=exclude&count=40&hidefilings=0'

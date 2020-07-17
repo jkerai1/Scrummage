@@ -42,7 +42,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                                 Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, General.Get_Title(Main_URL), The_File_Extensions["Query"])
 
                                 if Output_file:
-                                    Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
+                                    Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Company Details", Task_ID, Plugin_Name)
                                     Output_Connections.Output([Output_file], Main_URL, f"Canadian Business Number {Query}", Concat_Plugin_Name)
                                     Data_to_Cache.append(Main_URL)
 
@@ -62,7 +62,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     try:
                         Main_File = General.Main_File_Create(Directory, Plugin_Name, Indented_JSON_Response, Query, The_File_Extensions["Main"])
                         Current_Step = 0
-                        Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Data Leakage", Task_ID, Plugin_Name)
+                        Output_Connections = General.Connections(Query, Plugin_Name, "canadasbusinessregistries.ca", "Company Details", Task_ID, Plugin_Name)
 
                         for JSON_Item in JSON_Response['docs']:
 

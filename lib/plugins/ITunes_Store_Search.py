@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import requests, logging, json, re, os, urllib.parse, plugins.common.General as General
 
-Plugin_Name = "iTunes-Store"
-Concat_Plugin_Name = "itunesstore"
+Plugin_Name = "iTunes-App-Store"
+Concat_Plugin_Name = "itunesappstore"
 The_File_Extensions = {"Main": ".json", "Query": ".html"}
 
 def Search(Query_List, Task_ID, **kwargs):
@@ -38,7 +38,7 @@ def Search(Query_List, Task_ID, **kwargs):
             if 'resultCount' in JSON_Response:
 
                 if JSON_Response['resultCount'] > 0:
-                    Output_Connections = General.Connections(Query, Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
+                    Output_Connections = General.Connections(Query, Plugin_Name, "instagram.com", "Application", Task_ID, Concat_Plugin_Name)
 
                     for JSON_Object in JSON_Response['results']:
                         JSON_Object_Response = requests.get(JSON_Object['artistViewUrl']).text

@@ -31,7 +31,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
             if Output_file:
                 Current_Step = 0
-                Output_Connections = General.Connections(Query, Plugin_Name, "thepiratebay.org", "Data Leakage", Task_ID, Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Plugin_Name, "thepiratebay.org", "Torrent", Task_ID, Plugin_Name.lower())
 
                 for Search_Result in Response:
                     Result_Title = Search_Result["title"]

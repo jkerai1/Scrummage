@@ -26,7 +26,7 @@
                         <p class="message"><strong>Message:</strong> {{ message }}</p>
                         {% endif %}
                         <div style="text-align: center;">
-                            <div class="form_div" style="padding: 0px 0px 0px 0px; width: 80%;">                                    
+                            <div class="form_div" style="padding: 0px; width: 80%;">                                    
                                 <form class="form" action="{{ url_for('edit_task', taskid=results[0]) }}" method=post autocomplete="off">
                                     <dl>
                                         <dd>
@@ -46,12 +46,15 @@
                                         <dd>
                                             <input class="field_textarea" type=text name=description placeholder="Description" value="{{results[3]}}">
                                         </dd>
-                                        <dd>
-                                            {% if Without_Limit %}
+                                        {% if Without_Limit %}
+                                        <dd id="limitdd" style="display: none;">
                                             <input id="limitfield" style="display: none;" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit" value="{{results[5]}}">
-                                            {% else %}
+                                        </dd>
+                                        {% else %}
+                                        <dd id="limitdd">
                                             <input id="limitfield" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit" value="{{results[5]}}">
-                                            {% endif %}
+                                        </dd>
+                                        {% endif %}
                                         </dd>
                                     </dl>
                                     <input style="display: inline-block;" id="submitbutton" class="button_next" name="next" type=submit value="Update">
@@ -71,10 +74,12 @@
                         if (Plugins_without_Limit.includes(element.value) == false) {
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = null;
+                                document.getElementById("limitdd").style.display = null;
                             }
                         } else {
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = "none";
+                                document.getElementById("limitdd").style.display = "none";
                             }
                         }
                     }
@@ -84,10 +89,12 @@
                         if (Plugins_without_Limit.includes(element.value) == false) {
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = null;
+                                document.getElementById("limitdd").style.display = null;
                             }
                         } else {
                             if (Valid_Plugins.includes(element.value) == true) {
                                 document.getElementById("limitfield").style.display = "none";
+                                document.getElementById("limitdd").style.display = "none";
                             }
                         }
                     }
@@ -117,22 +124,22 @@
                     <p class="message"><strong>Message:</strong> {{ message }}</p>
                 {% endif %}
                 {% if api_check == "Failed" %}
-                <div style="padding-top: 10px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" /></svg></div><p class="api_message">API Configuration Check Failed.</p><p class="api_message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
+                <div style="padding-top: 50px;"><svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36" /></svg></div><p class="api_message">API Configuration Check Failed.</p><p class="api_message">Please add the appropriate details to the Scrummage configuration file before running this task.</p>
                 {% endif %}
-                <table id="paginate">
+                <table id="paginate" style="width: 100%;">
                     <thead>
                         <tr>
                             <th style="min-width: 40px;">ID</th>
                             {% if is_admin %}
                             <th></th>
                             {% endif %}
-                            <th>Query</th>
-                            <th>Plugin</th>
-                            <th style="min-width: 105px;">Description</th>
-                            <th style="min-width: 100px;">Frequency</th>
-                            <th style="min-width: 60px;">Limit</th>
+                            <th id="queryplugintasktab">Query</th>
+                            <th id="queryplugintasktab">Plugin</th>
+                            <th id="desfreqlimtasktab" style="min-width: 105px;">Description</th>
+                            <th id="desfreqlimtasktab" style="min-width: 100px;">Frequency</th>
+                            <th id="desfreqlimtasktab" style="min-width: 60px;">Limit</th>
                             {% if is_admin %}
-                            <th style="min-width: 95px;">Functions</th>
+                            <th id="functiontaskth">Functions</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -143,25 +150,27 @@
                             {% if is_admin %}
                             <td id="checkboxtd"><input type="checkbox" onclick="terms_changed(this)" id="select" name="taskchkbox" value="{{result[0]}}"></td>
                             {% endif %}
-                            <td class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{result[1]}}</td>
-                            <td class="nonscreenshottab">{{result[2]}}</td>
-                            <td class="nonscreenshottab">{{result[3]}}</td>
-                            <td class="nonscreenshottab">{{result[4]}}</td>
-                            <td class="nonscreenshottab">{{result[5]}}</td>
+                            <td id="queryplugintasktab" class="nonscreenshottab" style="max-width: 200px; word-wrap: break-word">{{result[1]}}</td>
+                            <td id="queryplugintasktab" class="nonscreenshottab">{{result[2]}}</td>
+                            <td id="desfreqlimtasktab" class="nonscreenshottab">{{result[3]}}</td>
+                            <td id="desfreqlimtasktab" class="nonscreenshottab">{{result[4]}}</td>
+                            <td id="desfreqlimtasktab" class="nonscreenshottab">{{result[5]}}</td>
                             {% if is_admin %}
                                 <td class="buttons_in_tasks_table" id="tsk_in_tbl_btns">
-                                    {% if result[6] == "Running" %}
-                                    <form class="task_buttons" action="" method=post autocomplete="off" disabled>
-                                        <input class="button-disabled" type=submit value="Run" disabled>
-                                    </form>
-                                    {% else %}
-                                    <form class="task_buttons" action="{{ url_for('run_task', taskid=result[0]) }}" method=post autocomplete="off">
-                                        <input class="button-run" type=submit value="Run">
-                                    </form>
-                                    {% endif %}
-                                    <form class="task_buttons" action="{{ url_for('edit_task', taskid=result[0]) }}" method=post autocomplete="off">
-                                        <input class="button" type=submit value="Edit">
-                                    </form>
+                                    <div class="table_buttons">
+                                        {% if result[6] == "Running" %}
+                                        <form class="task_buttons" action="" method=post autocomplete="off" disabled>
+                                            <input class="button-disabled" type=submit value="Run" disabled>
+                                        </form>
+                                        {% else %}
+                                        <form class="task_buttons" action="{{ url_for('run_task', taskid=result[0]) }}" method=post autocomplete="off">
+                                            <input class="button-run" type=submit value="Run">
+                                        </form>
+                                        {% endif %}
+                                        <form class="task_buttons" action="{{ url_for('edit_task', taskid=result[0]) }}" method=post autocomplete="off">
+                                            <input class="button" type=submit value="Edit">
+                                        </form>
+                                    </div>
                                 </td>
                             {% endif %}
                         </tr>
@@ -251,7 +260,7 @@
                 if(termsCheckBox.checked){
                     //Set the disabled property to FALSE and enable the button.
                     document.getElementById("bottom_delete_button").disabled = false;
-                    document.getElementById("bottom_delete_button").className = "button";
+                    document.getElementById("bottom_delete_button").className = "button-red";
                     document.getElementById("bottom_duplicate_button").disabled = false;
                     document.getElementById("bottom_duplicate_button").className = "button";
                     if($('#select:checked').length >= 2) {
@@ -364,9 +373,15 @@
                                     <input class="field_textarea" type=text name=description placeholder="Description">
                                     {% endif %}
                                 </dd>
-                                <dd>
-                                    <input style="display: none;" class="field_textarea" id="limitfield" type=text name=limit placeholder="Limit">
+                                {% if Without_Limit %}
+                                <dd id="limitdd" style="display: none;">
+                                    <input id="limitfield" style="display: none;" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit">
                                 </dd>
+                                {% else %}
+                                <dd id="limitdd">
+                                    <input id="limitfield" class="field_textarea" id="limitfield" type=number name=limit placeholder="Limit">
+                                </dd>
+                                {% endif %}
                             </dl>
                             <input id="submitbutton" style="display: inline-block;" class="button_next" name="next" type=submit value="Finish">
                         </form>
@@ -390,10 +405,12 @@
                 if (Plugins_without_Limit.includes(element.value) == false) {
                     if (Valid_Plugins.includes(element.value) == true) {
                         document.getElementById("limitfield").style.display = null;
+                        document.getElementById("limitdd").style.display = null;
                     }
                 } else {
                     if (Valid_Plugins.includes(element.value) == true) {
                         document.getElementById("limitfield").style.display = "none";
+                        document.getElementById("limitdd").style.display = "none";
                     }
                 }
             }

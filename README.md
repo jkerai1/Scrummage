@@ -3,14 +3,12 @@
 
 # Scrummage  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
-**VERSION 2.4**
-- UI Simplifications.
-- Simplified new code that retains the same look and feel as before with a few improvements.
-- Bug fixes for task management functions and plugins. 
-- Phishtank plugin removed and replaced with Phishstats (See The Wiki Pages linked below)
-- Divided Punycode Fuzzer into comprehensive search and condensed search (See The Wiki Pages linked below)
-- Better, more accurate results. Results also allow users to access Main Files (Related to all results from the relevant query used to find the result), Individual Files (Related to result), CSV and DOCX Output files (If the functionality is switched on in the configuration file).
-- New API endpoints to manage tasks, results, accounts, etc. Refer to the [Wiki Page](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API)  
+**VERSION 2.5**
+- Major UI Improvements.
+- Lots of New Plugins. Read more [here](https://github.com/matamorphosis/Scrummage/wiki/The-Long-List-of-Tasks).
+- Code enhancements.
+- More verbose result types.
+- New API endpoints to manage tasks, results, accounts, etc. Refer to the [Wiki Page](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API).
    
 **There is currently a known bug with the Google Play Store plugin.**
 
@@ -61,10 +59,6 @@ The results page, simply shows results that have been created by a task. The res
 For optimisation purposes, the results table only displays some of the general information regarding a result, to investigate a result further, the user should use the Details button. The details page allows the user to view the soft copy of the result's link and provides the ability for a user to generate a screenshot.  
   
 ![Results](/installation/images_dark_theme/Result_Details1.png)
-
-Furthermore, buttons for reviewing, inspecting and closing a result are provided to show other users where a result is at in terms of assessment. The buttons are colour coded and are coloured as the result progresses through the assessment.  
-  
-![Results](/installation/images_dark_theme/Result_Details2.png)
 
 *Results are categorised into the following:*  
 * Data Leakage

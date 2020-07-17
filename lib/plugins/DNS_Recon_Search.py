@@ -39,7 +39,7 @@ def Search(Query_List, Task_ID):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Title, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
+                            Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Information", Task_ID, Concat_Plugin_Name)
                             Output_Connections.Output([Main_File, Output_file], Link, Title, Concat_Plugin_Name)
                             Data_to_Cache.append(Link)
 
@@ -58,7 +58,7 @@ def Search(Query_List, Task_ID):
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Response, Title, The_File_Extensions["Query"])
 
                     if Output_file:
-                        Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Spoof", Task_ID, Concat_Plugin_Name)
+                        Output_Connections = General.Connections(Query, Plugin_Name, Query, "Domain Information", Task_ID, Concat_Plugin_Name)
                         Output_Connections.Output([Main_File, Output_file], Link, Title, Concat_Plugin_Name)
                         Data_to_Cache.append(Link)
 

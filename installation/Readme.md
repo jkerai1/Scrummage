@@ -10,11 +10,17 @@
 ```console
 user@linux:~$ git clone https://github.com/matamorphosis/Scrummage
 ```
-2. Navigate to the installation directory.
+2. Create Missing Directories.
+```
+user@linux:~$ mkdir ../lib/static/protected
+user@linux:~$ mkdir ../lib/static/protected/output
+user@linux:~$ mkdir ../lib/static/protected/screenshots
+```
+3. Navigate to the installation directory.
 ```console
 user@linux:~$ cd installation
 ```
-3. Run the dependencies.sh bash script with root privileges, to install all necessary dependencies. As part of this script it will install all python dependencies in the **"python_requirements.txt"** file and run the **"Create_Tables.py"** script to create all necessary tables in the back-end database. If you want to change the default username and database, which are both set to “scrummage” by default, change the following lines in the "dependencies.sh" script:  
+4. Run the dependencies.sh bash script with root privileges, to install all necessary dependencies. As part of this script it will install all python dependencies in the **"python_requirements.txt"** file and run the **"Create_Tables.py"** script to create all necessary tables in the back-end database. If you want to change the default username and database, which are both set to “scrummage” by default, change the following lines in the "dependencies.sh" script:  
 ```console
 DATABASE="scrummage"  
 USER="scrummage"  
@@ -28,19 +34,19 @@ Command to run:
 user@linux:~$ sudo bash dependencies.sh
 ```
 
-4. When the script finishes, it should **print out the username and database it has created; furthermore, a randomly generated password will also be printed to the screen**. While the script creates a new config.json file, located in the lib/plugins/common/configuration/ directory, please retain this information. Provide the details under **"postgresql"**. If you would like to create a new user, use the **"Create_User.py"** script located in the installation directory. The command is as follows:
+5. When the script finishes, it should **print out the username and database it has created; furthermore, a randomly generated password will also be printed to the screen**. While the script creates a new config.json file, located in the lib/plugins/common/configuration/ directory, please retain this information. Provide the details under **"postgresql"**. If you would like to create a new user, use the **"Create_User.py"** script located in the installation directory. The command is as follows:
 ```console
 user@linux:~$ python3 Create_User.py --username/-u Username --password/-p Password --admin/-a [True | False] --blocked/-b [True | False]
 ```
-5. Next you will either need to provide certificates **or** generate a self-signed certificate to use. In either case you will need to create a directory called "certs" in the root Scrummage directory:
+6. Next you will either need to provide certificates **or** generate a self-signed certificate to use. In either case you will need to create a directory called "certs" in the root Scrummage directory:
 ```console
 user@linux:~$ mkdir certs && cd certs
 ```
-6. After which, you will then need to either provide a .key and .crt file to that directory **or** create the certificates with the command below:
+7. After which, you will then need to either provide a .key and .crt file to that directory **or** create the certificates with the command below:
 ```console
 user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
 ```
-7. Next, navigate to "/lib/plugins/common/config", and verify the web application details are correct under "web-app". Ensure the certificates are set correctly. Using the path "../certs/*FILE*":
+8. Next, navigate to "/lib/plugins/common/config", and verify the web application details are correct under "web-app". Ensure the certificates are set correctly. Using the path "../certs/*FILE*":
 ```
 "web-app": {
     "debug": false,
@@ -54,7 +60,7 @@ user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyou
     "api-period-in-seconds": 60
 },
 ```
-8. Next, ensure the path of both Google Chrome and Chromedriver are valid, without these installed, and listed in the config.json file, screenshot functionality won't work. Please also ensure the version of your Chromedriver is in line with your current version of Google Chrome. Requesting a screenshot will tell you if they aren't compatible.
+9. Next, ensure the path of both Google Chrome and Chromedriver are valid, without these installed, and listed in the config.json file, screenshot functionality won't work. Please also ensure the version of your Chromedriver is in line with your current version of Google Chrome. Requesting a screenshot will tell you if they aren't compatible.
 ```
 "google-chrome": {
     "application-path": "/usr/bin/google-chrome",
@@ -62,7 +68,7 @@ user@linux:~$ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyou
 },
 ```
 
-9. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
+10. Lastly, navigate to the parent directory and then to the bin directory and start the server. You should be able to access it on https://[HOST]:[PORT], [HOST] and [PORT] should match the JSON attributes above.
 ```console
 user@linux:~$ cd ../lib
 user@linux:~$ python3 Scrummage.py

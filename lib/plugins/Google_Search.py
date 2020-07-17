@@ -79,7 +79,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 CSE_JSON_Response = json.loads(CSE_JSON_Output_Response)
                 Output_Name = f"{Query}-{str(Current_Start)}"
                 Main_File = General.Main_File_Create(Directory, Plugin_Name, CSE_JSON_Output_Response, Output_Name, The_File_Extensions["Main"])
-                Output_Connections = General.Connections(Query, Plugin_Name, "google.com", "Domain Spoof", Task_ID, Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Plugin_Name, "google.com", "Search Result", Task_ID, Plugin_Name.lower())
 
                 if 'items' in CSE_JSON_Response:
 
@@ -89,7 +89,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
                             if 'link' in Google_Item_Line and 'title' in Google_Item_Line:
                                 Google_Item_URL = Google_Item_Line['link']
-                                Title = Google_Item_Line['title']
+                                Title = "Google | " + Google_Item_Line['title']
 
                                 if Google_Item_URL not in Cached_Data and Google_Item_URL not in Data_to_Cache and Current_Step < int(Limit):
                                     Path_Regex = re.search(r"https?\:\/\/(www\.)?[\w\d\.]+\.\w{2,3}(\.\w{2,3})?(\.\w{2,3})?\/([\w\d\-\_\/]+)?", Google_Item_URL)

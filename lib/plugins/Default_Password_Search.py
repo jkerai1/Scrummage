@@ -27,14 +27,14 @@ def Search(Query_List, Task_ID, **kwargs):
         for Query in Query_List:
             URL_Body = 'https://default-password.info'
             Main_URL = URL_Body + '/' + Query.lower().replace(' ', '-')
-            headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+            headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
             Response = requests.get(Main_URL, headers=headers).text
             Main_File = General.Main_File_Create(Directory, Plugin_Name, Response, Query, The_File_Extension)
             Regex = re.findall(r'\<tr\>\s+\<td\sclass\=\"name\"\>\s+\<a\shref\=\"([\/\d\w\-\+\?\.]+)\"\>([\/\d\w\-\+\?\.\(\)\s\,\;\:\~\`\!\@\#\$\%\^\&\*\[\]\{\}]+)\<\/a\>\s+\<\/td\>', Response)
 
             if Regex:
                 Current_Step = 0
-                Output_Connections = General.Connections(Query, Plugin_Name, "default-password.info", "Data Leakage", Task_ID, Concat_Plugin_Name)
+                Output_Connections = General.Connections(Query, Plugin_Name, "default-password.info", "Credentials", Task_ID, Concat_Plugin_Name)
 
                 for URL, Title in Regex:
                     Item_URL = URL_Body + URL

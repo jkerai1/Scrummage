@@ -58,7 +58,7 @@ def General_Pull(Handle, Limit, Directory, API, Task_ID):
                 })
 
         JSON_Output = json.dumps(JSON_Response, indent=4, sort_keys=True)
-        Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+        Output_Connections = General.Connections(Handle, Plugin_Name, "twitter.com", "Social Media - Media", Task_ID, Plugin_Name.lower())
         Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Output, Handle, The_File_Extensions["Main"])
 
         for JSON_Item in JSON_Response:

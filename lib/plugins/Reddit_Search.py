@@ -4,7 +4,7 @@ import os, re, praw, json, logging, requests, plugins.common.General as General
 
 Plugin_Name = "Reddit"
 The_File_Extension = ".html"
-headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
 
 def Load_Configuration():
     File_Dir = os.path.dirname(os.path.realpath('__file__'))
@@ -61,7 +61,7 @@ def Search(Query_List, Task_ID, **kwargs):
             except:
                 logging.warning(f"{General.Date()} - {__name__.strip('plugins.')} - Failed to get results. Are you connected to the internet?")
 
-            Output_Connections = General.Connections(Query, Plugin_Name, "reddit.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+            Output_Connections = General.Connections(Query, Plugin_Name, "reddit.com", "Forum", Task_ID, Plugin_Name.lower())
 
             for Result in Results:
 

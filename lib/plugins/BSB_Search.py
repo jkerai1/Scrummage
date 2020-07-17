@@ -24,7 +24,7 @@ def Search(Query_List, Task_ID):
             BSB_Search_URL = f"https://www.bsbnumbers.com/{Query}.html"
             Response = requests.get(BSB_Search_URL).text
             Error_Regex = re.search(r"Correct\sthe\sfollowing\serrors", Response)
-            Output_Connections = General.Connections(Query, Plugin_Name, "bsbnumbers.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+            Output_Connections = General.Connections(Query, Plugin_Name, "bsbnumbers.com", "BSB Details", Task_ID, Plugin_Name.lower())
 
             if not Error_Regex:
 

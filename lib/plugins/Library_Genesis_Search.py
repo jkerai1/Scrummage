@@ -36,14 +36,15 @@ def Search(Query_List, Task_ID, **kwargs):
 
                 for Regex in Lib_Gen_Regex:
                     Item_URL = "http://gen.lib.rus.ec/" + Regex
+                    Title = General.Get_Title(Item_URL).replace("Genesis:", "Genesis |")
                     Lib_Item_Response = requests.get(Item_URL).text
 
                     if Item_URL not in Cached_Data and Item_URL not in Data_to_Cache and Current_Step < int(Limit):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Lib_Item_Response, Regex, The_File_Extension)
 
                         if Output_file:
-                            Output_Connections = General.Connections(Query, Plugin_Name, "gen.lib.rus.ec", "Data Leakage", Task_ID, Concat_Plugin_Name)
-                            Output_Connections.Output([Main_File, Output_file], Item_URL, General.Get_Title(Item_URL), Concat_Plugin_Name)
+                            Output_Connections = General.Connections(Query, Plugin_Name, "gen.lib.rus.ec", "Publication", Task_ID, Concat_Plugin_Name)
+                            Output_Connections.Output([Main_File, Output_file], Item_URL, Title, Concat_Plugin_Name)
                             Data_to_Cache.append(Item_URL)
 
                         else:

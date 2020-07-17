@@ -15,7 +15,7 @@
                 <h1 class="title">Scrummage</h1>
             </header>
             {% if session.get('user') != None and session.get('user') == username %}
-                <p class="follow">Welcome {{ username }}</p>
+                <p class="follow">{{ username }}</p>
             {% endif %}
             <div class="navbar-toggle" id="hamburger">
                 <div class="hamburger_slice_outer_top">

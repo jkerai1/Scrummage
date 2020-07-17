@@ -53,7 +53,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
                     JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
                     Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
-                    Result_Title = Search_Response["data"]["metadata"]["link"]["title"]
+                    Result_Title = "Pinterest | " + Search_Response["data"]["metadata"]["link"]["title"]
                     Result_URL = Search_Response["data"]["url"]
                     Search_Result_Response = requests.get(Result_URL).text
 
@@ -61,7 +61,7 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Search_Result_Response, Result_Title, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Social Media - Media", Task_ID, Local_Plugin_Name.lower())
                             Output_Connections.Output([Main_File, Output_file], Result_URL, Result_Title, Plugin_Name.lower())
                             Data_to_Cache.append(Result_URL)
 
@@ -80,11 +80,11 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 if Search_Response.get('message') != "You have exceeded your rate limit. Try again later.":
                     JSON_Response = json.dumps(Search_Response, indent=4, sort_keys=True)
                     Main_File = General.Main_File_Create(Directory, Plugin_Name, JSON_Response, Query, The_File_Extensions["Main"])
-                    Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                    Output_Connections = General.Connections(Query, Local_Plugin_Name, "pinterest.com", "Social Media - Page", Task_ID, Local_Plugin_Name.lower())
                     Current_Step = 0
 
                     for Response in Search_Response["data"]:
-                        Result_Title = Response["note"]
+                        Result_Title = "Pinterest | " + Response["note"]
                         Result_URL = Response["url"]
                         Search_Result_Response = requests.get(Result_URL).text
 

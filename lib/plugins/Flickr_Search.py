@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import requests, logging, os, re, plugins.common.General as General, json, flickr_api
-headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
 
 Plugin_Name = "Flickr"
 The_File_Extensions = {"Main": ".json", "Query": ".html"}
@@ -72,7 +72,7 @@ def Search(Query_List, Task_ID, **kwargs):
 
                     if Photos:
                         Main_File = General.Main_File_Create(Directory, Plugin_Name, Convert_to_JSON(Photos), Query, The_File_Extensions["Main"])
-                        Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Data Leakage", Task_ID, Plugin_Name.lower())
+                        Output_Connections = General.Connections(Query, Plugin_Name, "flickr.com", "Social Media - Media", Task_ID, Plugin_Name.lower())
                         Current_Step = 0
 
                         for Photo in Photos:

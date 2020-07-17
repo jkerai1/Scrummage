@@ -39,12 +39,13 @@ def Search(Query_List, Task_ID, **kwargs):
 
                 if Output_file:
                     Current_Step = 0
-                    Output_Connections = General.Connections(Query, Tor_Plugin_Name, "ahmia.fl", "Domain Spoof", Task_ID, Plugin_Name.lower())
+                    Output_Connections = General.Connections(Query, Tor_Plugin_Name, "ahmia.fl", "Darkweb Link", Task_ID, Plugin_Name.lower())
 
                     for URL in Tor_Scrape_URLs:
 
                         if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
-                            Output_Connections.Output([Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Title = f"Ahmia Tor | {URL}" 
+                            Output_Connections.Output([Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
                             Current_Step += 1
 
@@ -62,12 +63,13 @@ def Search(Query_List, Task_ID, **kwargs):
 
                 if Output_file:
                     Current_Step = 0
-                    Output_Connections = General.Connections(Query, I2P_Plugin_Name, "ahmia.fl", "Domain Spoof", Task_ID, Plugin_Name.lower())
+                    Output_Connections = General.Connections(Query, I2P_Plugin_Name, "ahmia.fl", "Darkweb Link", Task_ID, Plugin_Name.lower())
 
                     for URL in I2P_Scrape_URLs:
 
                         if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
-                            Output_Connections.Output([Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Title = f"Ahmia I2P | {URL}" 
+                            Output_Connections.Output([Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
                             Current_Step += 1
 

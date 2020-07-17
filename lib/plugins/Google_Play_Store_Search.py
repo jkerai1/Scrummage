@@ -29,7 +29,7 @@ def Search(Query_List, Task_ID, **kwargs):
         Play_Store_Response = play_scraper.developer(Query, results=Limit)
         Play_Store_Response_JSON = json.dumps(Play_Store_Response, indent=4, sort_keys=True)
         Main_File = General.Main_File_Create(Plugin_Name, Play_Store_Response_JSON, Query, The_File_Extensions["Main"])
-        Output_Connections = General.Connections(Query, Plugin_Name, "play.google.com", "Data Leakage", Task_ID, Concat_Plugin_Name)
+        Output_Connections = General.Connections(Query, Plugin_Name, "play.google.com", "Application", Task_ID, Concat_Plugin_Name)
 
         for Result_Details in Play_Store_Response:
             Result_URL = Result_Details['url']
@@ -38,7 +38,7 @@ def Search(Query_List, Task_ID, **kwargs):
                 Win_Store_Regex = re.search(r"https\:\/\/play\.google\.com\/store\/apps\/details\?id\=([\w\d\_\-\.]+)", Result_URL)
 
                 if Win_Store_Regex:
-                    headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+                    headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
                     Play_Store_Response = requests.get(Result_URL, headers=headers).text
                     Output_file = General.Create_Query_Results_Output_File(Directory, Query, Plugin_Name, Play_Store_Response, Win_Store_Regex.group(1), The_File_Extensions["Query"])
 

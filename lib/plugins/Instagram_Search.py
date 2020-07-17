@@ -2,7 +2,7 @@
 import json, requests, os, logging, instagram_explore, requests, plugins.common.General as General
 from collections import namedtuple
 
-headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
+headers = {'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0', 'Accept': 'ext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5'}
 Plugin_Name = "Instagram"
 The_File_Extensions = {"Main": ".json", "Query": ".html"}
 InstagramExploreResponse = namedtuple('InstagramExploreResponse', 'data cursor')
@@ -52,19 +52,20 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
                 Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, The_File_Extensions["Main"])
                 Posts = CSE_Response[0]["edge_owner_to_timeline_media"]["edges"]
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Social Media - Person", Task_ID, Local_Plugin_Name.lower())
                 Current_Step = 0
 
                 for Post in Posts:
                     Shortcode = Post["node"]["shortcode"]
                     URL = f"https://www.instagram.com/p/{Shortcode}/"
+                    Title = "IG | " + General.Get_Title(URL)
 
                     if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
                         Response = requests.get(URL, headers=headers).text
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Response, Shortcode, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections.Output([Main_File, Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Output_Connections.Output([Main_File, Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
 
                         else:
@@ -78,19 +79,20 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
                 Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, The_File_Extensions["Main"])
                 Posts = CSE_Response[0]["edge_hashtag_to_media"]["edges"]
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Social Media - Person", Task_ID, Local_Plugin_Name.lower())
                 Current_Step = 0
 
                 for Post in Posts:
                     Shortcode = Post["node"]["shortcode"]
                     URL = f"https://www.instagram.com/p/{Shortcode}/"
+                    Title = "IG | " + General.Get_Title(URL)
 
                     if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
                         Response = requests.get(URL, headers=headers).text
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Response, Shortcode, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections.Output([Main_File, Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Output_Connections.Output([Main_File, Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
 
                         else:
@@ -104,19 +106,20 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                 CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
                 Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, The_File_Extensions["Main"])
                 Posts = CSE_Response[0]["edge_location_to_media"]["edges"]
-                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
+                Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Social Media - Place", Task_ID, Local_Plugin_Name.lower())
                 Current_Step = 0
 
                 for Post in Posts:
                     Shortcode = Post["node"]["shortcode"]
                     URL = f"https://www.instagram.com/p/{Shortcode}/"
+                    Title = "IG | " + General.Get_Title(URL)
 
                     if URL not in Cached_Data and URL not in Data_to_Cache and Current_Step < int(Limit):
                         Response = requests.get(URL, headers=headers).text
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Response, Shortcode, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections.Output([Main_File, Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Output_Connections.Output([Main_File, Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
 
                         else:
@@ -132,14 +135,15 @@ def Search(Query_List, Task_ID, Type, **kwargs):
                     CSE_JSON_Output_Response = json.dumps(CSE_Response, indent=4, sort_keys=True)
                     Main_File = General.Main_File_Create(Directory, Local_Plugin_Name, CSE_JSON_Output_Response, Query, The_File_Extensions["Main"])
                     URL = f"https://www.instagram.com/p/{Query}/"
+                    Title = "IG | " + General.Get_Title(URL)
 
                     if URL not in Cached_Data and URL not in Data_to_Cache:
                         Response = requests.get(URL, headers=headers).text
                         Output_file = General.Create_Query_Results_Output_File(Directory, Query, Local_Plugin_Name, Response, Shortcode, The_File_Extensions["Query"])
 
                         if Output_file:
-                            Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Data Leakage", Task_ID, Local_Plugin_Name.lower())
-                            Output_Connections.Output([Main_File, Output_file], URL, General.Get_Title(URL), Plugin_Name.lower())
+                            Output_Connections = General.Connections(Query, Local_Plugin_Name, "instagram.com", "Social Media - Media", Task_ID, Local_Plugin_Name.lower())
+                            Output_Connections.Output([Main_File, Output_file], URL, Title, Plugin_Name.lower())
                             Data_to_Cache.append(URL)
 
                         else:
