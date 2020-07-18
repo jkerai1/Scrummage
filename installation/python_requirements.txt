@@ -1,12 +1,9 @@
 praw
 pandas
 feedparser
-python-rtkit
 jira
 pyhibp
-bandit
 ebaysdk
-play-scraper
 google-api-python-client
 facebook-sdk
 selenium
@@ -15,7 +12,6 @@ python-crontab
 instagram_explore
 slackclient==2.0.0
 vulners
-StackAPI
 defectdojo_api
 flickr_api
 python-docx

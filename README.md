@@ -7,11 +7,10 @@
 - Major UI Improvements.
 - Lots of New Plugins. Read more [here](https://github.com/matamorphosis/Scrummage/wiki/The-Long-List-of-Tasks).
 - Code enhancements.
+- Resolved PlayStore Plugin bug.
 - More verbose result types.
-- New API endpoints to manage tasks, results, accounts, etc. Refer to the [Wiki Page](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API).
-   
-**There is currently a known bug with the Google Play Store plugin.**
-
+- New API endpoints to manage tasks, results, accounts, etc. Refer to the [Wiki Page](https://github.com/matamorphosis/Scrummage/wiki/The-Scrummage-API).  
+  
 Scrummage is an OSINT tool that centralises search functionality from powerful, yet simple OSINT sites. This project draws inspiration mainly from two other projects, including:  
 - The https://github.com/Netflix-Skunkworks/Scumblr project, which while is now deprecated, inspired this concept.
 - The OSINT framework, a high-level overview of a range of sites that can be used to search for a variety of things, which can be found at https://osintframework.com/ or https://github.com/lockfale/OSINT-Framework.

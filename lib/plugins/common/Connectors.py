@@ -417,16 +417,18 @@ def RTIR_Main(Ticket_Subject, Ticket_Text):
     if RTIR_Details:
 
         try:
-            Request_Data = "content=id: ticket/new\nQueue: 1\nSubject: " + Ticket_Subject + "\nText: " + Ticket_Text
+            Request_Data = f"content=id: ticket/new\nQueue: 1\nSubject: {Ticket_Subject}\nText: {Ticket_Text}"
 
-            if RTIR_Details[5] == "cookie_based":
-                requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
+            if RTIR_Details[5] != "cookie_based":
+                logging.info(f"{Date()} Connectors Library - No Authenticator specified, using the default which is cookie-based authentication.")
+
+            RTIR_Response = requests.post(f"{RTIR_Details[4]}://{RTIR_Details[0]}:{RTIR_Details[1]}/REST/1.0/ticket/new?user={RTIR_Details[2]}&pass={RTIR_Details[3]}", Request_Data)
+
+            if RTIR_Response.status_code == 200:
+                logging.info(f"{Date()} Connectors Library - New RTIR ticket created.")
 
             else:
-                logging.info(f"{Date()} Connectors Library - No Authenticator specified, using the default which is cookie-based authentication,")
-                requests.post(RTIR_Details[4] + '://' + RTIR_Details[0] + ':' + RTIR_Details[1] + '/REST/1.0/ticket/new?user=' + RTIR_Details[2] + "&pass=" + RTIR_Details[3], Request_Data)
-
-            logging.info(f"{Date()} Connectors Library - New RTIR ticket created.")
+                logging.warning(f"{Date()} Connectors Library - Failed to create ticket in RTIR.")
 
         except Exception as e:
             logging.warning(f"{Date()} Connectors Library - {str(e)}.")
