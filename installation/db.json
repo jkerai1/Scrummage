@@ -1,9 +1,0 @@
-{
-    "postgresql": {
-        "host": "127.0.0.1",
-        "port": 5432,
-        "database": "scrummage",
-        "user": "scrummage",
-        "password": "E6FDSSekYgwf3d4Elrdjt8aTGuCWPK"
-    }
-}
