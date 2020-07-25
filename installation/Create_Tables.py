@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import psycopg2, sys, json, datetime
 
 def Load_Main_Database():
