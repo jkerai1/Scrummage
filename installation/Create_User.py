@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import psycopg2, datetime, argparse, sys, re, json
 from werkzeug.security import generate_password_hash
 
