@@ -1205,9 +1205,21 @@ table.dataTable,table.dataTable th,table.dataTable td
     overflow: hidden;
 }
 
-#accbuttons {
-    width: 864px;
+@-moz-document url-prefix() {
+	#accbuttons {
+	    width: 920px !important;
+	}
 }
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+	#accbuttons {
+	    width: 864px;
+	}
+}
+
+/*#accbuttons {
+    width: 864px;
+}*/
 
 #resbuttons {
     width: 784px;
